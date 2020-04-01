@@ -1,5 +1,5 @@
 {
-    "name": "MagnaFacta/zalt-model",
+    "name": "magnafacta/zalt-model",
     "description": "Zend Alternative Model",
     "type": "library",
     "require": {
