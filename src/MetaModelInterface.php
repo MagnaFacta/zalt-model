@@ -441,7 +441,7 @@ interface MetaModelInterface
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
      * @return array or \Traversable Nested
      */
-    public function processAfterLoad($data, $new = false, $isPostData = false);
+    public function processAfterLoad($data, $new = false, $isPostData = false): mixed;
 
     /**
      * Helper function that procesess the raw data after a save.

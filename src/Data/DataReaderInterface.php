@@ -90,21 +90,21 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @return boolean
      */
-    public function hasFilter(): boolean;
+    public function hasFilter(): bool;
 
     /**
      * True if this model allows the creation of new model items.
      *
      * @return boolean
      */
-    public function hasNew(): boolean;
+    public function hasNew(): bool;
 
     /**
      * Does the model have a sort?
      *
      * @return boolean
      */
-    public function hasSort(): boolean;
+    public function hasSort(): bool;
 
     /**
      * True when the model supports general text filtering on all
@@ -114,7 +114,7 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @return boolean
      */
-    public function hasTextSearchFilter(): boolean;
+    public function hasTextSearchFilter(): bool;
 
     /**
      * Returns a nested array containing the items requested.

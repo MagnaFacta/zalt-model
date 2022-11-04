@@ -24,7 +24,7 @@ interface DataWriterInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @return boolean
      */
-    public function hasNew(): boolean;
+    public function hasNew(): bool;
 
     /**
      * Save a single model item.
