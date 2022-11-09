@@ -11,6 +11,8 @@
 
 namespace Zalt\Model\Data;
 
+use Zalt\Late\RepeatableInterface;
+
 /**
  *
  * @package    Zalt
@@ -133,6 +135,15 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return array An array or false
      */
     public function loadFirst($filter = null, $sort = null): array;
+
+    /**
+     * Returns a \MUtil\Lazy\RepeatableInterface for the items in the model
+     *
+     * @param mixed $filter True to use the stored filter, array to specify a different filter
+     * @param mixed $sort True to use the stored sort, array to specify a different sort
+     * @return ?\Zalt\Late\RepeatableInterface
+     */
+    public function loadRepeatable($filter = true, $sort = true): ?RepeatableInterface;
 
     /**
      * Creates new items - in memory only.
