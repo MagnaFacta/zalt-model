@@ -170,7 +170,7 @@ abstract class BridgeAbstract implements BridgeInterface
      * @return mixed Lazy unless in single row mode
      * @throws \Zalt\Model\Exceptions\MetaModelException
      */
-    public function getFormatted($name): mixed
+    public function getFormatted(string $name): mixed
     {
         if (isset($this->$name)) {
             return $this->$name;

@@ -88,7 +88,7 @@ interface BridgeInterface
      * @return mixed Lazy unless in single row mode
      * @throws \Zalt\Model\Exceptions\MetaModelException
      */
-    public function getFormatted($name): mixed;
+    public function getFormatted(string $name): mixed;
 
     /**
      * Get the mode to one of Lazy (works with any other mode), one single row or multi row mode.
