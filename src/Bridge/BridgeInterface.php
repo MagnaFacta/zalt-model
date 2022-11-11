@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Bridge;
 
+use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Data\DataReaderInterface;
 
@@ -89,6 +90,22 @@ interface BridgeInterface
      * @throws \Zalt\Model\Exceptions\MetaModelException
      */
     public function getFormatted(string $name): mixed;
+
+    /**
+     * Return the lazy value without any processing.
+     *
+     * @param string $name The field name or key name
+     * @return \Zalt\Late\LateCall
+     */
+    public function getLate(string $name): ?LateCall;
+
+    /**
+     * Get the repeater result for
+     *
+     * @param string $name The field name or key name
+     * @return mixed The result for name
+     */
+    public function getLateValue(string  $name): mixed;
 
     /**
      * Get the mode to one of Lazy (works with any other mode), one single row or multi row mode.

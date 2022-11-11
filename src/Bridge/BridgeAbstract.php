@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Bridge;
 
+use Zalt\Late\Late;
+use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Exceptions\MetaModelException;
@@ -87,7 +89,7 @@ abstract class BridgeAbstract implements BridgeInterface
      * @return string The real name and not e.g. the key id
      * @throws \Zalt\Model\Exceptions\MetaModelException
      */
-    protected function _checkName($name, $throwError = true): string
+    protected function _checkName(string $name, $throwError = true): string
     {
         if ($this->metaModel->has($name)) {
             return $name;
@@ -192,6 +194,42 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         return $this->$name;
+    }
+
+    /**
+     * Return the lazy value without any processing.
+     *
+     * @param string $name The field name or key name
+     * @return \Zalt\Late\LateCall
+     */
+    public function getLate(string $name): ?LateCall
+    {
+        $name = $this->_checkName($name, false);
+
+        // Make sure data is loaded
+        $this->metaModel->get($name);
+
+        return Late::method($this, 'getLateValue', $name);
+    }
+
+    /**
+     * Get the repeater result for
+     *
+     * @param string $name The field name or key name
+     * @return mixed The result for name
+     */
+    public function getLateValue(string $name): mixed
+    {
+        if (! $this->_repeater) {
+            $this->getRepeater();
+        }
+
+        $current = $this->_repeater->__current();
+        if ($current && isset($current[$name])) {
+            return $current[$name];
+        }
+
+        return null;
     }
 
     /**
