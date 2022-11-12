@@ -35,7 +35,14 @@ abstract class BridgeAbstract implements BridgeInterface
      * @var array $name => [displayFunctions]
      */
     protected $_compilations = [];
-    
+
+    /**
+     * Nested array or single row, depending on mode
+     *
+     * @var mixed array, ArrayObject or false when no row was found
+     */
+    protected $_data = null;
+
     /**
      * A lazy repeater
      *
@@ -270,6 +277,20 @@ abstract class BridgeAbstract implements BridgeInterface
     }
 
     /**
+     * Switch to single row mode and return that row.
+     *
+     * @return array, ArrayObject or false when no row was found
+     */
+    public function getRow(): mixed
+    {
+        if (null !== $this->_data) {
+            $this->setRow();
+        }
+
+        return $this->_data;
+    }
+    
+    /**
      * Is there a repeater
      *
      * @return bool
@@ -323,5 +344,34 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         return $this;
+    }
+    
+    /**
+     * Switch to single row mode and set that row.
+     *
+     * @param ?array $row Or load from model
+     * @throws \MUtil\Model\ModelException
+     */
+    public function setRow(array $row = null)
+    {
+        $this->setMode(self::MODE_SINGLE_ROW);
+
+        if (null === $row) {
+            // Stop tracking usage, in row mode it is unlikely
+            // all fields have been set.
+            $this->model->trackUsage(false);
+            $row = $this->model->loadFirst();
+
+            if (! $row) {
+                $row = array();
+            }
+        }
+
+        $this->_data = $row;
+        if ($this->_chainedBridge) {
+            $this->_chainedBridge->_data = $this->_data;
+        }
+
+        $this->setRepeater([$this->_data]);
     }
 }

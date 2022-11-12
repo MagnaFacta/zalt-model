@@ -128,6 +128,14 @@ interface BridgeInterface
     public function getRepeater(): RepeatableInterface;
 
     /**
+     * Switch to single row mode and return that row.
+     *
+     * @return array, ArrayObject or false when no row was found
+     * @throws \MUtil\Model\ModelException
+     */
+    public function getRow(): mixed;
+    
+    /**
      * Is there a repeater
      *
      * @return bool
