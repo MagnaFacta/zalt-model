@@ -51,6 +51,11 @@ abstract class BridgeAbstract implements BridgeInterface
     protected $_repeater = null;
 
     /**
+     * @var string Optional current url start for links on the page
+     */
+    public string $currentUrl = '';
+
+    /**
      * @var \Zalt\Model\MetaModelInterface
      */
     protected $metaModel;
