@@ -57,16 +57,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     public function getSort(): array;
 
     /**
-     * @return string The sort value for and ascending parameter
-     */
-    public function getSortParamAsc(): string;
-
-    /**
-     * @return string The sort value for and descending parameter
-     */
-    public function getSortParamDesc(): string;
-
-    /**
      * @return string The parameter used to store the text search value in
      */
     public function getTextFilter(): string;
@@ -175,18 +165,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
      */
     public function setSort($value): DataReaderInterface;
-
-    /**
-     * @param string $value The sort value for and ascending parameter
-     * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
-     */
-    public function setSortParamAsc(string $value): DataReaderInterface;
-
-    /**
-     * @param string $value The sort value for and descending parameter
-     * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
-     */
-    public function setSortParamDesc(string $value): DataReaderInterface;
 
     /**
      * @param string $value The parameter used to store the text search value in
