@@ -62,14 +62,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     public function getTextFilter(): string;
 
     /**
-     * Splits a wildcard search text into its constituent parts.
-     *
-     * @param string $searchText
-     * @return array
-     */
-    public function getTextSearches($searchText);
-
-    /**
      * Creates a filter for this model for the given wildcard search text.
      *
      * @param string $searchText

@@ -319,6 +319,14 @@ interface MetaModelInterface
     public function getOrder($name);
 
     /**
+     * Splits a wildcard search text into the constituent parts that are each searched on.
+     *
+     * @param string $searchText
+     * @return array
+     */
+    public function getTextSearches($searchText);
+
+    /**
      * Get the model transformers
      *
      * @return array of \Zalt\Model\Transformer\ModelTransformerInterface
