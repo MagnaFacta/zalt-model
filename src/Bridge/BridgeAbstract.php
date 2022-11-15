@@ -13,7 +13,9 @@ namespace Zalt\Model\Bridge;
 
 use Zalt\Late\Late;
 use Zalt\Late\LateCall;
+use Zalt\Late\Repeatable;
 use Zalt\Late\RepeatableInterface;
+use Zalt\Late\Stack\RepeatableStack;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Exceptions\MetaModelException;
 
@@ -65,7 +67,12 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @var int
      */
-    protected $mode = BridgeInterface::MODE_LAZY;
+    protected int $mode = BridgeInterface::MODE_LAZY;
+
+    /**
+     * @var bool When true we add all data to the Late Stack
+     */
+    public bool $useAsLateStack = true;
 
     /**
      * Construct the bridge while setting the model.
@@ -274,7 +281,7 @@ abstract class BridgeAbstract implements BridgeInterface
             if ($this->_chainedBridge && $this->_chainedBridge->hasRepeater()) {
                 $this->setRepeater($this->_chainedBridge->getRepeater());
             } else {
-                $this->setRepeater($this->metaModel->loadRepeatable());
+                $this->setRepeater($this->dataModel->loadRepeatable());
             }
         }
 
@@ -304,7 +311,6 @@ abstract class BridgeAbstract implements BridgeInterface
     {
         return $this->_repeater instanceof RepeatableInterface ||
             ($this->_chainedBridge && $this->_chainedBridge->hasRepeater());
-        
     }
 
     /**
@@ -347,7 +353,10 @@ abstract class BridgeAbstract implements BridgeInterface
         if ($this->_chainedBridge) {
             $this->_chainedBridge->_repeater = $repeater;
         }
-
+        if ($this->useAsLateStack) {
+            Late::addStack('bridge', new BridgeStack($this));
+        }
+        
         return $this;
     }
     
