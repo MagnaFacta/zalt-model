@@ -440,7 +440,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         $stringlength = $this->_getStringLength($options);
 
         if ($stringlength) {
-            $this->model->set($name, 'validators[]', array('StringLength', true, $stringlength));
+            $this->metaModel->set($name, 'validators[]', array('StringLength', true, $stringlength));
         }
 
         return $this->_addToForm($name, 'Text', $options);
@@ -458,7 +458,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         unset($options['size'], $options['maxlength']);
 
         if ($stringlength) {
-            $this->model->set($name, 'validators[]', array('StringLength', true, $stringlength));
+            $this->metaModel->set($name, 'validators[]', array('StringLength', true, $stringlength));
         }
 
         return $this->_addToForm($name, 'Textarea', $options);
