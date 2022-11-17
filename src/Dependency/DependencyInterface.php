@@ -53,9 +53,9 @@ interface DependencyInterface
     /**
      * Use this function for a default application of this dependency to the model
      *
-     * @param \Zalt\Model\MetaModelInterface $model Try not to store the model as variabe in the dependency (keep it simple)
+     * @param \Zalt\Model\MetaModelInterface $metaModel Try not to store the model as variabe in the dependency (keep it simple)
      */
-    public function applyToModel(MetaModelInterface $model);
+    public function applyToModel(MetaModelInterface $metaModel);
 
     /**
      * Does this dependency depends on this field?
