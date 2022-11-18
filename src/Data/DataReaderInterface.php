@@ -24,27 +24,6 @@ use Zalt\Late\RepeatableInterface;
 interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
 {
     /**
-     * Merges this filter with the default filter.
-     *
-     * Filters having field names as key should intersect with any previously set values set on
-     * the same field.
-     *
-     * Filters with with a numerical index are just added to the filter.
-     *
-     * @param array $filter
-     * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
-     */
-    public function addFilter(array $value): DataReaderInterface;
-
-    /**
-     * Add's one or more sort fields to the standard sort.
-     *
-     * @param mixed $value Array of sortfield => SORT_ASC|SORT_DESC or single sortfield for ascending sort.
-     * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
-     */
-    public function addSort($value): DataReaderInterface;
-
-    /**
      * Get the current default filter for save/loade
      * @return array
      */
@@ -119,6 +98,13 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     public function loadFirst($filter = null, $sort = null): array;
 
     /**
+     * Creates new items - in memory only.
+     *
+     * @return array Nested when $count is not null, otherwise just a simple array
+     */
+    public function loadNew(): array;
+
+    /**
      * Returns a \MUtil\Lazy\RepeatableInterface for the items in the model
      *
      * @param mixed $filter True to use the stored filter, array to specify a different filter
@@ -126,13 +112,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return ?\Zalt\Late\RepeatableInterface
      */
     public function loadRepeatable($filter = true, $sort = true): ?RepeatableInterface;
-
-    /**
-     * Creates new items - in memory only.
-     *
-     * @return array Nested when $count is not null, otherwise just a simple array
-     */
-    public function loadNew(): array;
 
     /**
      * Sets a default filter to be used when no filter was passed to a load() or loadX() function.
