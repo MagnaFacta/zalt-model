@@ -153,10 +153,10 @@ interface MetaModelInterface
      * instabilities as bridge objects are shared without knowledge
      *
      * @param string $identifier
-     * @param mixed $arg1 Optional first of extra arguments
+     * @param array $args Optional first of extra arguments
      * @return \MUtil\Model\Bridge\BridgeAbstract
      */
-    public function getBridgeFor($identifier, $arg1 = null);
+    public function getBridgeFor($identifier, ...$args);
 
     /**
      * Get an array of field names with the value of a certain attribute if set.
