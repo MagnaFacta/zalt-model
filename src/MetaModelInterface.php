@@ -37,6 +37,13 @@ interface MetaModelInterface
     public function addDependency($dependency, $dependsOn = null, array $effects = null,  $key = null);
 
     /**
+     * @param string $alias Alternative to map to
+     * @param string $fieldName Existing field
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern) 
+     */
+    public function addMap(string $alias, string $fieldName): MetaModelInterface;
+    
+    /**
      * Add a 'submodel' field to the model.
      *
      * You get a nested join where a set of rows is placed in the $name field
@@ -269,6 +276,11 @@ interface MetaModelInterface
      */
     public function getKeys($reset = false);
 
+    /**
+     * @return array alternative id => field name
+     */
+    public function getMaps(): array;    
+    
     /**
      * Get a model level variable named $key
      *
@@ -652,6 +664,12 @@ interface MetaModelInterface
      * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setKeys(array $keys);
+
+    /**
+     * @param array $map alternative id => field name
+     * @return \Zalt\Model\MetaModelInterface  (continuation pattern)
+     */
+    public function setMaps(array $map): MetaModelInterface; 
 
     /**
      * Set a model level variable named $key to $value
