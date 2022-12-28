@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
+use Zalt\Late\Late;
+use Zalt\Late\LateInterface;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Dependency\DependencyInterface;
@@ -90,13 +92,6 @@ class MetaModel implements MetaModelInterface
     private $_model_dependencies = array();
 
     /**
-     * An identifying name for the model, used for joining models and sub forms, etc...
-     *
-     * @var string
-     */
-    private $_model_name;
-
-    /**
      * The order in which field names where ->set() since
      * the last ->resetOrder() - minus those not set.
      *
@@ -129,18 +124,19 @@ class MetaModel implements MetaModelInterface
      *
      * @param string $modelName Hopefully unique model name, used for joining models and sub forms, etc...
      */
-    public function __construct($modelName)
-    {
-        $this->_model_name = $modelName;
-    }
+    public function __construct(
+        private string $modelName, 
+        protected MetaModelLoader $modelLoader,
+    )
+    { }
 
     protected function _getKeyValue($name, $key)
     {
         if (isset($this->_model[$name][$key])) {
             $value = $this->_model[$name][$key];
 
-            if ($value instanceof \MUtil\Lazy\LazyInterface) {
-                $value = \MUtil\Lazy::rise($value);
+            if ($value instanceof LateInterface) {
+                $value = Late::rise($value);
             }
 
             return $value;
@@ -150,22 +146,6 @@ class MetaModel implements MetaModelInterface
         }
 
         return null;
-    }
-
-    /**
-     * @param $fieldName
-     * @param $fromData
-     * @return void|\Zalt\Late\LateInterface
-     * /
-    protected static function _getValueFrom($fieldName, $fromData)
-    {
-        if ($fromData instanceof \MUtil\Lazy\RepeatableInterface) {
-            return $fromData->$fieldName;
-        } else {
-            if (isset($fromData[$fieldName])) {
-                return $fromData[$fieldName];
-            }
-        }
     }
 
     /**
@@ -286,8 +266,7 @@ class MetaModel implements MetaModelInterface
         foreach ($changes as $name => $settings) {
             if (isset($settings['model'])) {
                 $submodel = $model->get($name, 'model');
-                // \MUtil\EchoOut\EchoOut::track($name, $settings['model'], $data[$name]);
-                if ($submodel instanceof \MUtil\Model\ModelAbstract) {
+                if ($submodel instanceof DataReaderInterface) {
                     if (! isset($data[$name])) {
                         $data[$name] = array();
                     }
@@ -304,7 +283,6 @@ class MetaModel implements MetaModelInterface
 
             // Change the actual value
             If (isset($settings['value'])) {
-                // \MUtil\EchoOut\EchoOut::track($name, $settings['value']);
                 $data[$name] = $settings['value'];
             }
         }
@@ -340,29 +318,12 @@ class MetaModel implements MetaModelInterface
 
         // Cascade
         foreach ($this->getCol('model') as $subModel) {
-            if ($subModel instanceof \MUtil\Model\ModelAbstract) {
+            if ($subModel instanceof DataReaderInterface) {
                 $subModel->clearElementClasses();
             }
         }
 
         return $this;
-    }
-
-    /**
-     * Creates a validator that checks that this value is used in no other
-     * row in the table of the $name field, except that row itself.
-     *
-     * If $excludes is specified it is used to create db_fieldname => $_POST mappings.
-     * When db_fieldname is numeric it is assumed both should be the same.
-     *
-     * If no $excludes the model creates a filter using the primary key of the table.
-     *
-     * @param string|array $name The name of a model field in the model or an array of them.
-     * @return \MUtil\Validate\Model\UniqueValue A validator.
-     * /
-    public function createUniqueValidator($name)
-    {
-        return new \MUtil\Validate\Model\UniqueValue($this, $name);
     }
 
     /**
@@ -454,8 +415,8 @@ class MetaModel implements MetaModelInterface
         switch (count($args)) {
             case 0:
                 if (isset($this->_model[$name])) {
-                    if ($this->_model[$name] instanceof \MUtil\Lazy\LazyInterface) {
-                        $result = \MUtil\Lazy::rise($this->_model[$name]);
+                    if ($this->_model[$name] instanceof LateInterface) {
+                        $result = Late::rise($this->_model[$name]);
                     } else {
                         $result = $this->_model[$name];
                     }
@@ -502,9 +463,10 @@ class MetaModel implements MetaModelInterface
      * This will always be a new bridge because otherwise you get
      * instabilities as bridge objects are shared without knowledge
      *
+     * @param DataReaderInterface $dataModel
      * @param string $identifier
      * @param array $args Optional extra arguments
-     * @return \MUtil\Model\Bridge\BridgeAbstract
+     * @return \Zalt\Model\Bridge\BridgeInterface
      */
     public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$args): BridgeInterface
     {
@@ -597,7 +559,6 @@ class MetaModel implements MetaModelInterface
                 foreach ($names as $name) {
                     $settings = $dependency->getEffected($name);
 
-                    // \MUtil\EchoOut\EchoOut::track($name, $settings, get_class($dependency));
                     if ($settings) {
                         if ((null === $setting) or isset($settings[$setting])) {
                             $results[$key] = $dependency;
@@ -797,7 +758,7 @@ class MetaModel implements MetaModelInterface
      */
     public function getName()
     {
-        return $this->_model_name;
+        return $this->modelName;
     }
 
     /**
@@ -1079,8 +1040,6 @@ class MetaModel implements MetaModelInterface
     /**
      * Helper function that procesess the raw data after a load.
      *
-     * @see \MUtil\Model\SelectModelPaginator
-     *
      * @param mixed $data Nested array or \Traversable containing rows or iterator
      * @param boolean $new True when it is a new item
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
@@ -1163,8 +1122,6 @@ class MetaModel implements MetaModelInterface
 
                 $dependsOn = $dependency->getDependsOn();
                 $context   = array_intersect_key($data, $dependsOn);
-
-                // \MUtil\EchoOut\EchoOut::track($context, $dependsOn, get_class($dependency));
 
                 // If there are required fields and all required fields are there
                 if ($dependsOn && (count($context) === count($dependsOn))) {
@@ -1252,7 +1209,7 @@ class MetaModel implements MetaModelInterface
      *
      * @param string $name The fieldname
      * @param string $key The name of the key
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function remove($name, $key = null)
     {
@@ -1278,7 +1235,7 @@ class MetaModel implements MetaModelInterface
      *
      * @see getItemsOrdered()
      *
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function resetOrder()
     {
@@ -1320,17 +1277,17 @@ class MetaModel implements MetaModelInterface
      * Both set the attribute 'save' to true for 'field_x'.
      *
      * @param string $name        The fieldname
-     * @param mixed  $arrayOrKey1 A key => value array or the name of the first key, see \MUtil_Args::pairs()
+     * @param mixed  $arrayOrKey1 A key => value array or the name of the first key, see Ra::Args::pairs()
      * @param mixed  $value1      The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2        Optional second key when $arrayOrKey1 is a string
      * @param mixed  $value2      Optional second value when $arrayOrKey1 is a string,
      *                            an unlimited number of $key values pairs can be given.
-     * @return \MUtil\Model\ModelAbstract
+     * @return \Zalt\Model\MetaModelInterface
      */
     public function set($name, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null)
     {
         $args = func_get_args();
-        $args = \MUtil\Ra::pairs($args, 1);
+        $args = Ra::pairs($args, 1);
 
         if ($args) {
             foreach ($args as $key => $value) {
@@ -1389,8 +1346,8 @@ class MetaModel implements MetaModelInterface
      *
      * @param string $name
      * @param string $aliasOf
-     * @return \MUtil\Model\ModelAbstract
-     * @throws \MUtil\Model\ModelException
+     * @return \Zalt\Model\MetaModelInterface
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     public function setAlias($name, $aliasOf)
     {
@@ -1398,7 +1355,7 @@ class MetaModel implements MetaModelInterface
             $this->set($name, self::ALIAS_OF, $aliasOf);
             return $this;
         }
-        throw new \MUtil\Model\ModelException("Alias for '$name' set to non existing field '$aliasOf'");
+        throw new MetaModelException("Alias for '$name' set to non existing field '$aliasOf'");
     }
 
     /**
@@ -1407,7 +1364,7 @@ class MetaModel implements MetaModelInterface
      *
      * @param string $name  The name of a field
      * @param boolean $value
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setAutoSave($name, $value = true)
     {
@@ -1416,33 +1373,10 @@ class MetaModel implements MetaModelInterface
     }
 
     /**
-     * Set the bridge class for the specific identifier
-     *
-     * @param string $identifier
-     * @param string $bridge Class name for a \MUtil\Model\Bridge\BridgeInterface, optioanlly loaded using *_Model_Bridge_*
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
-     */
-    public function setBridgeFor($identifier, $bridge)
-    {
-        if (! is_string($bridge)) {
-            throw new \MUtil\Model\ModelException("Non string bridge class specified for $identifier.");
-        }
-
-        $bridges = $this->getMeta(\MUtil\Model::META_BRIDGES);
-
-        if (! $bridges) {
-            $bridges = \MUtil\Model::getDefaultBridges();
-        }
-
-        $bridges[$identifier] = $bridge;
-        $this->setMeta(\MUtil\Model::META_BRIDGES, $bridges);
-    }
-
-    /**
      * Update the number of rows changed.
      *
      * @param int $changed
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     protected function setChanged($changed = 0)
     {
@@ -1473,7 +1407,7 @@ class MetaModel implements MetaModelInterface
      * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2 Optional second key when $arrayOrKey1 is a string
      * @param mixed $value2 Optional second value when $arrayOrKey1 is a string, an unlimited number of $key values pairs can be given.
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setCol($namesOrKeyArray, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null)
     {
@@ -1516,7 +1450,7 @@ class MetaModel implements MetaModelInterface
      * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2 Optional second key when $arrayOrKey1 is a string
      * @param mixed $value2 Optional second value when $arrayOrKey1 is a string, an unlimited number of $key values pairs can be given.
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setDefault($namesOrKeyArray, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null)
     {
@@ -1538,26 +1472,6 @@ class MetaModel implements MetaModelInterface
             }
         }
 
-        return $this;
-    }
-
-    /**
-     * Sets a default filter to be used when no filter was passed to a load() or loadX() function.
-     *
-     * Standard filters are arrays containing field names as key and a single value or an array
-     * of values and load only those rows that have the same value or is that are contained in
-     * the value arrays.
-     *
-     * Filters with with a numerical index should be child model specific filters. E.g. database
-     * based models may allow SQL expressions while array based models may use callable functions
-     * with the whole row as the parameter value.
-     *
-     * @param array $filter
-     * @return DataReaderInterface (continuation pattern)
-     */
-    public function setFilter(array $filter):DataReaderInterface
-    {
-        $this->setMeta('filter', $filter);
         return $this;
     }
 
@@ -1586,7 +1500,7 @@ class MetaModel implements MetaModelInterface
     {
         if ($this->has($name)) {
             $args = func_get_args();
-            $args = \MUtil\Ra::pairs($args, 1);
+            $args = Ra::pairs($args, 1);
 
             $this->set($name, $args);
 
@@ -1606,7 +1520,7 @@ class MetaModel implements MetaModelInterface
      * String key names are left as is.
      *
      * @param array $keys [alternative_]name or number => name
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setKeys(array $keys)
     {
@@ -1652,7 +1566,7 @@ class MetaModel implements MetaModelInterface
      *
      * @param string $key
      * @param mixed $value
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setMeta($key, $value)
     {
@@ -1675,7 +1589,7 @@ class MetaModel implements MetaModelInterface
      * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2 Optional second key when $arrayOrKey1 is a string
      * @param mixed $value2 Optional second value when $arrayOrKey1 is a string, an unlimited number of $key values pairs can be given.
-     * @return \MUtil\Model\ModelAbstract (continuation pattern)
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setMulti(array $names, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null)
     {

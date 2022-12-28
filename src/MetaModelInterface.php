@@ -570,15 +570,6 @@ interface MetaModelInterface
     public function setAutoSave($name, $value = true);
 
     /**
-     * Set the bridge class for the specific identifier
-     *
-     * @param string $identifier
-     * @param string $bridge Class name for a \MUtil\Model\Bridge\BridgeInterface, optioanlly loaded using *_Model_Bridge_*
-     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
-     */
-    public function setBridgeFor($identifier, $bridge);
-
-    /**
      * Set attributes for all or some fields in the model.
      *
      * Example 1, all fields:
