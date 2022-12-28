@@ -87,7 +87,7 @@ interface BridgeInterface
      *
      * @param string $name The field name or key name
      * @return mixed Lazy unless in single row mode
-     * @throws \Zalt\Model\Exceptions\MetaModelException
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     public function getFormatted(string $name): mixed;
 
@@ -147,7 +147,7 @@ interface BridgeInterface
      *
      * @param int $mode On of the MODE_ constants
      * @return \Zalt\Model\Bridge\BridgeInterface (continuation pattern)
-     * @throws \Zalt\Model\Exceptions\MetaModelException The mode can only be set once
+     * @throws \Zalt\Model\Exception\MetaModelException The mode can only be set once
      */
     public function setMode(int $mode): BridgeInterface;
     

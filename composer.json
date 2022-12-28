@@ -8,6 +8,7 @@
         "magnafacta/zalt-loader": "dev-psr-11"
     },
     "require-dev": {
+        "laminas/laminas-db": "^2.15.0",
         "phpunit/phpunit": "9.*"
     },
     "authors": [

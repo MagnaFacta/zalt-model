@@ -12,6 +12,7 @@
 namespace Zalt\Model\Data;
 
 use Zalt\Late\RepeatableInterface;
+use Zalt\Model\Bridge\BridgeInterface;
 
 /**
  *
@@ -23,6 +24,18 @@ use Zalt\Late\RepeatableInterface;
  */
 interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
 {
+    /**
+     * Create the bridge for the specific idenitifier
+     *
+     * This will always be a new bridge because otherwise you get
+     * instabilities as bridge objects are shared without knowledge
+     *
+     * @param string $identifier
+     * @param array $args Optional first of extra arguments
+     * @return \Zalt\Model\Bridge\BridgeInterface
+     */
+    public function getBridgeFor($identifier, ...$args): BridgeInterface;
+
     /**
      * Get the current default filter for save/loade
      * @return array
@@ -38,7 +51,7 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     /**
      * @return string The parameter used to store the text search value in
      */
-    public function getTextFilter(): string;
+    public function getTextFilter(): ?string;
 
     /**
      * Creates a filter for this model for the given wildcard search text.
@@ -135,11 +148,11 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @param $value
      * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
      */
-    public function setSort($value): DataReaderInterface;
+    public function setSort(array $sort): DataReaderInterface;
 
     /**
      * @param string $value The parameter used to store the text search value in
      * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
      */
-    public function setTextFilter(string $value): DataReaderInterface;
+    public function setTextFilter(?string $text): DataReaderInterface;
 }

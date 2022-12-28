@@ -35,7 +35,7 @@ class MetaModelConfigProvider
 //                \MUtil\Snippets\SnippetLoaderInterface::class => SnippetLoader::class,
 //            ],
             'invokables' => [
-                MetaModelItemFactory::class => MetaModelItemFactory::class,
+                MetaModelLoader::class => MetaModelLoader::class,
             ],
         ];
     }

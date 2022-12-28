@@ -17,7 +17,7 @@ use Zalt\Late\Repeatable;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Late\Stack\RepeatableStack;
 use Zalt\Model\Data\DataReaderInterface;
-use Zalt\Model\Exceptions\MetaModelException;
+use Zalt\Model\Exception\MetaModelException;
 
 /**
  *
@@ -106,7 +106,7 @@ abstract class BridgeAbstract implements BridgeInterface
      * @param string $name The field name or key name
      * @param boolean $throwError By default we throw an error until rendering
      * @return string The real name and not e.g. the key id
-     * @throws \Zalt\Model\Exceptions\MetaModelException
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     protected function _checkName(string $name, $throwError = true): string
     {
@@ -189,7 +189,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param string $name The field name or key name
      * @return mixed Lazy unless in single row mode
-     * @throws \Zalt\Model\Exceptions\MetaModelException
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     public function getFormatted(string $name): mixed
     {
@@ -318,7 +318,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param int $mode On of the MODE_ constants
      * @return \Zalt\Model\Bridge\BridgeInterface (continuation pattern)
-     * @throws \Zalt\Model\Exceptions\MetaModelException The mode can only be set once
+     * @throws \Zalt\Model\Exception\MetaModelException The mode can only be set once
      */
     public function setMode(int $mode): BridgeInterface
     {

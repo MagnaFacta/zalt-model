@@ -11,30 +11,28 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
+use Psr\Container\ContainerInterface;
+use Zalt\Loader\ProjectOverloader;
+
 /**
  *
  * @package    Zalt
  * @subpackage Model
  * @since      Class available since version 1.0
  */
-class MetaModelItemFactory
+class MetaModelLoaderFactory
 {
-    public function __invoke(ContainerInterface $container): SnippetLoader
+    public function __invoke(ContainerInterface $container): MetaModelLoader
     {
-        $config = $container->get('config');
-        if (isset($config['overLoaderPaths'])) {
-            $dirs = (array) $config['overLoaderPaths'];
-        } else {
-            $dirs = ['Zalt'];
-        }
+        $overloader = $container->get(ProjectOverloader::class);
 
-        $output = new SnippetLoader($container, $dirs);
+        $output = new MetaModelLoader($overloader->createSubFolderOverloader('Model'));
 
+        // Preparing the other parts
 //        if (! Html::hasSnippetLoader()) {
 //            Html::setSnippetLoader($output);
 //        }
 
         return $output;
     }
-
 }

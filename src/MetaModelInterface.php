@@ -11,6 +11,7 @@
 
 namespace Zalt\Model;
 
+use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Transformer\ModelTransformerInterface;
 
@@ -84,7 +85,7 @@ interface MetaModelInterface
      *
      * @param string|array $name The name of a model field in the model or an array of them.
      * @return \MUtil\Validate\Model\UniqueValue A validator.
-     */
+     * /
     public function createUniqueValidator($name);
 
     /**
@@ -159,11 +160,12 @@ interface MetaModelInterface
      * This will always be a new bridge because otherwise you get
      * instabilities as bridge objects are shared without knowledge
      *
+     * @param DataReaderInterface $dataModel
      * @param string $identifier
      * @param array $args Optional first of extra arguments
-     * @return \MUtil\Model\Bridge\BridgeAbstract
+     * @return \Zalt\Model\Bridge\BridgeInterface
      */
-    public function getBridgeFor($identifier, ...$args);
+    public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$args): BridgeInterface;
 
     /**
      * Get an array of field names with the value of a certain attribute if set.

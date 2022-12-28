@@ -16,7 +16,7 @@ use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\FullDataInterface;
-use Zalt\Model\Exceptions\MetaModelException;
+use Zalt\Model\Exception\MetaModelException;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Ra\Ra;
 
