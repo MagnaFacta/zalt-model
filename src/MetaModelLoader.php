@@ -29,6 +29,11 @@ class MetaModelLoader
         $this->loader->setDependencyResolver(new ConstructorDependencyParametersResolver());
     }
     
+    protected function createMetaModel($metaModelName)
+    {
+        return new MetaModel($metaModelName, $this);
+    }
+    
     public function createModel(string $className, mixed $metaModelName, mixed ...$parameters): DataReaderInterface|DataWriterInterface
     {
         if (! is_string($metaModelName)) {
@@ -42,7 +47,7 @@ class MetaModelLoader
             }
         }
         if (null === $metaModel) {
-            $metaModel = new MetaModel($metaModelName);
+            $metaModel = $this->createMetaModel($metaModelName);
             array_unshift($parameters, $metaModel);
         }
         
