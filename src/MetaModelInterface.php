@@ -24,6 +24,56 @@ use Zalt\Model\Transformer\ModelTransformerInterface;
 interface MetaModelInterface
 {
     /**
+     * FIlter constant for like statements
+     */
+    const FILTER_BETWEEN_MAX = 'max';
+
+    /**
+     * FIlter constant for like statements
+     */
+    const FILTER_BETWEEN_MIN = 'min';
+
+    /**
+     * FIlter constant for like statements
+     */
+    const FILTER_CONTAINS = 'like';
+
+    /**
+     * Type identifiers for calculated fields
+     */
+    const TYPE_NOVALUE      = 0;
+
+    /**
+     * Type identifiers for string fields, default type
+     */
+    const TYPE_STRING       = 1;
+
+    /**
+     * Type identifiers for numeric fields
+     */
+    const TYPE_NUMERIC      = 2;
+
+    /**
+     * Type identifiers for date fields
+     */
+    const TYPE_DATE         = 3;
+
+    /**
+     * Type identifiers for date time fields
+     */
+    const TYPE_DATETIME     = 4;
+
+    /**
+     * Type identifiers for time fields
+     */
+    const TYPE_TIME         = 5;
+
+    /**
+     * Type identifiers for sub models that can return multiple row per item
+     */
+    const TYPE_CHILD_MODEL  = 6;
+
+    /**
      * Add a dependency where the value in one field can change settings for the other field
      *
      * Dependencies are processed in the order they are added

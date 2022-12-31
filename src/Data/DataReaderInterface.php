@@ -49,19 +49,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     public function getSort(): array;
 
     /**
-     * @return string The parameter used to store the text search value in
-     */
-    public function getTextFilter(): ?string;
-
-    /**
-     * Creates a filter for this model for the given wildcard search text.
-     *
-     * @param string $searchText
-     * @return array An array of filter statements for wildcard text searching for this model type
-     */
-    public function getTextSearchFilter($searchText);
-
-    /**
      * Does the model have a filter?
      *
      * @return boolean
@@ -81,16 +68,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return boolean
      */
     public function hasSort(): bool;
-
-    /**
-     * True when the model supports general text filtering on all
-     * labelled fields.
-     *
-     * This must be implemented by each sub model on it's own.
-     *
-     * @return boolean
-     */
-    public function hasTextSearchFilter(): bool;
 
     /**
      * Returns a nested array containing the items requested.
@@ -149,10 +126,4 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
      */
     public function setSort(array $sort): DataReaderInterface;
-
-    /**
-     * @param string $value The parameter used to store the text search value in
-     * @return \Zalt\Model\Data\DataReaderInterface (continuation pattern)
-     */
-    public function setTextFilter(?string $text): DataReaderInterface;
 }

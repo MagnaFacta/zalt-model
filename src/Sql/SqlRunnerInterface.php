@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
+use Zalt\Model\MetaModelInterface;
+
 /**
  *
  * @package    Zalt
@@ -24,6 +26,15 @@ interface SqlRunnerInterface
      * @return bool
      */
     public function checkSelect(mixed $select): bool;
+
+    /**
+     * Check a filter and make sure it works for the SQL version
+     * @param MetaModelInterface $metaModel
+     * @param mixed $where
+     * @return mixed
+     */
+    public function createWhere(MetaModelInterface $metaModel, mixed $where): mixed;
+    
     
     /**
      * @param string $tableName

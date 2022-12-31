@@ -30,8 +30,11 @@ class LaminasSelectModel implements DataReaderInterface
 
     protected array $sort = [];
 
-    protected ?string $text = null;
-    
+    /**
+     * @param \Laminas\Db\Sql\Select                $select
+     * @param \Zalt\Model\MetaModelInterface        $metaModel
+     * @param \Zalt\Model\Sql\Laminas\LaminasRunner $laminasRunner
+     */
     public function __construct(
         protected Select $select,
         protected MetaModelInterface $metaModel,
@@ -66,29 +69,45 @@ class LaminasSelectModel implements DataReaderInterface
     {
         return $this->metaModel;
     }
+    
+    protected function getSelectFor($filter, $sort)
+    {
+        $select = clone $this->select;
+        
+        if (null === $filter) {
+            $filter = $this->getFilter();
+        }
+        if ($filter) {
+            // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
+            $select->where($this->laminasRunner->createWhere($this->metaModel, $filter));
+        }
 
+        if (null === $sort) {
+            $sort = $this->getSort();
+        }
+        $sorts = [];
+        foreach ($sort as $field => $value) {
+            if (SORT_ASC === $value) {
+                $sorts[] = $field;
+            } elseif (SORT_DESC === $value) {
+                $sorts[] = $field . ' DESC';
+            } else {
+                $sorts[] = $value;
+            }
+        }
+        if ($sorts) {
+            $select->order($sorts);
+        }
+        
+        return $select;
+    }
+    
     /**
      * @inheritDoc
      */
     public function getSort(): array
     {
         return $this->sort;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTextFilter(): ?string
-    {
-        return $this->text;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getTextSearchFilter($searchText)
-    {
-        // TODO: Implement getTextSearchFilter() method.
     }
 
     /**
@@ -118,17 +137,10 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function hasTextSearchFilter() : bool
-    {
-        return (bool) $this->text; 
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function load($filter = null, $sort = null) : array
     {
-        return $this->laminasRunner->fetchRowsFromSelect($this->select);
+        $select = $this->getSelectFor($filter, $sort);
+        return $this->laminasRunner->fetchRowsFromSelect($select);
     }
 
     /**
@@ -144,7 +156,7 @@ class LaminasSelectModel implements DataReaderInterface
      */
     public function loadNew() : array
     {
-        // TODO: Implement loadNew() method.
+        return [];
     }
 
     /**
@@ -154,7 +166,7 @@ class LaminasSelectModel implements DataReaderInterface
     {
         // TODO: Implement loadRepeatable() method.
     }
-
+    
     /**
      * @inheritDoc
      */
@@ -170,15 +182,6 @@ class LaminasSelectModel implements DataReaderInterface
     public function setSort(array $sort) : DataReaderInterface
     {
         $this->sort = $sort;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setTextFilter(?string $text) : DataReaderInterface
-    {
-        $this->text = $text;
         return $this;
     }
 }
