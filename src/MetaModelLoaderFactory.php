@@ -24,9 +24,14 @@ class MetaModelLoaderFactory
 {
     public function __invoke(ContainerInterface $container): MetaModelLoader
     {
+        $config     = $container->get('config');
         $overloader = $container->get(ProjectOverloader::class);
 
-        $output = new MetaModelLoader($overloader->createSubFolderOverloader('Model'));
+        if (! isset($config['model']['bridges'])) {
+            $config['model']['bridges'] = MetaModelConfigProvider::getBridges();
+        }
+
+        $output = new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
 
         // Preparing the other parts
 //        if (! Html::hasSnippetLoader()) {

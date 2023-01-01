@@ -80,10 +80,8 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                         if (1 == count($value)) {
                             if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
                                 $output->like($name, '%' . $value['like'] . '%');
-                            } else {
-                                $output->equalTo($name, reset($value));
+                                continue;
                             }
-                            continue;
                         }
                         if (2 == count($value)) {
                             if (isset($value[MetaModelInterface::FILTER_BETWEEN_MAX], $value[MetaModelInterface::FILTER_BETWEEN_MIN])) {

@@ -341,7 +341,7 @@ interface MetaModelInterface
      * @return mixed
      */
     public function getMeta($key, $default = null);
-
+    
     /**
      * The internal name of the model, used for joining models and sub forms, etc...
      *

@@ -468,26 +468,9 @@ class MetaModel implements MetaModelInterface
      * @param array $args Optional extra arguments
      * @return \Zalt\Model\Bridge\BridgeInterface
      */
-    public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$args): BridgeInterface
+    public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$parameters): BridgeInterface
     {
-        $bridges = $this->getMeta(\MUtil\Model::META_BRIDGES);
-
-        if (! $bridges) {
-            $bridges = \MUtil\Model::getDefaultBridges();
-            $this->setMeta(\MUtil\Model::META_BRIDGES, $bridges);
-        }
-
-        if (! isset($bridges[$identifier])) {
-            // We cannot create when noting is specified
-            throw new MetaModelException("Request for unknown bridge type $identifier.");
-        }
-
-        $loader = \MUtil\Model::getBridgeLoader();
-
-        // First parameter is always the model
-        $bridge = $loader->create($bridges[$identifier], $dataModel, ...$args);
-
-        return $bridge;
+        return $this->modelLoader->createBridge($identifier, $dataModel, ...$parameters);
     }
 
     /**

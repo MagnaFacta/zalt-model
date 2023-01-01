@@ -31,10 +31,10 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * instabilities as bridge objects are shared without knowledge
      *
      * @param string $identifier
-     * @param array $args Optional first of extra arguments
+     * @param array $parameters Optional first of extra arguments
      * @return \Zalt\Model\Bridge\BridgeInterface
      */
-    public function getBridgeFor($identifier, ...$args): BridgeInterface;
+    public function getBridgeFor($identifier, ...$parameters): BridgeInterface;
 
     /**
      * Get the current default filter for save/loade

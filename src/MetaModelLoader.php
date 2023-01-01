@@ -13,6 +13,7 @@ namespace Zalt\Model;
 
 use Zalt\Loader\DependencyResolver\ConstructorDependencyParametersResolver;
 use Zalt\Loader\ProjectOverloader;
+use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
 
@@ -24,9 +25,21 @@ use Zalt\Model\Data\DataWriterInterface;
  */
 class MetaModelLoader 
 {
-    public function __construct(protected ProjectOverloader $loader)
+    public function __construct(
+        protected ProjectOverloader $loader, 
+        protected array $modelConfig,
+    )
     {
         $this->loader->setDependencyResolver(new ConstructorDependencyParametersResolver());
+    }
+    
+    public function createBridge($class, DataReaderInterface $dataModel, ...$parameters): BridgeInterface
+    {
+        if (isset($this->modelConfig['bridges'][$class])) {
+            $class = $this->modelConfig['bridges'][$class];
+        }
+
+        return $this->loader->create($class, $dataModel, ...$parameters);
     }
     
     protected function createMetaModel($metaModelName)

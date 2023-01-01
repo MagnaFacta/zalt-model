@@ -11,6 +11,11 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
+use Zalt\Model\Bridge\DisplayBridge;
+use Zalt\Snippets\ModelBridge\DetailTableBridge;
+use Zalt\Snippets\ModelBridge\TableBridge;
+use Zalt\Snippets\ModelBridge\ZendFormBridge;
+
 /**
  *
  * @package    Zalt
@@ -22,20 +27,33 @@ class MetaModelConfigProvider
     public function __invoke(): array
     {
         return [
-            'dependencies' => $this->getDependencies(),
-            'snippetLoader' => ['directories' => ['Zalt']],
+            'config'       => self::getConfig(),
+            'dependencies' => self::getDependencies(),
         ];
     }
-
-    public function getDependencies(): array
+    
+    public static function getBridges(): array
     {
         return [
-            // Legacy MUtil Framework aliases
-//            'aliases'    => [
-//                \MUtil\Snippets\SnippetLoaderInterface::class => SnippetLoader::class,
-//            ],
-            'invokables' => [
-                MetaModelLoader::class => MetaModelLoader::class,
+            'display'   => DisplayBridge::class,
+            'form'      => ZendFormBridge::class,
+            'itemTable' => DetailTableBridge::class,
+            'table'     => TableBridge::class,
+        ]; 
+    }
+
+    public static function getConfig(): array
+    {
+        return ['model' => [
+            'bridges' => self::getBridges(),
+        ]];
+    }
+    
+    public static function getDependencies(): array
+    {
+        return [
+            'factories'  => [
+                MetaModelLoader::class => MetaModelLoaderFactory::class,
             ],
         ];
     }
