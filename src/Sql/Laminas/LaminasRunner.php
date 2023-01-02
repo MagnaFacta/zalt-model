@@ -12,7 +12,9 @@ declare(strict_types=1);
 namespace Zalt\Model\Sql\Laminas;
 
 use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Metadata\Source\Factory;
 use Laminas\Db\ResultSet\ResultSet;
+use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Predicate\Literal;
 use Laminas\Db\Sql\Predicate\Predicate;
 use Laminas\Db\Sql\Predicate\PredicateSet;
@@ -44,8 +46,30 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         // TODO: Implement checkSelect() method.
     }
 
+    public function createSort(MetaModelInterface $metaModel, array $sort): mixed
+    {
+        $output = [];
+        foreach ($sort as $field => $type) {
+            if (is_string($field) && (str_ends_with(strtoupper($field), ' ASC') || str_ends_with(strtoupper($field), ' DESC'))) {
+                // Ignore stated sort if sort is stated in fieldname
+                $output[] = $field;
+            } else {
+                if ($metaModel->has($field)) {
+                    if (SORT_DESC === $type) {
+                        $output[] = $field . ' DESC';
+                    } else {
+                        $output[] = $field;
+                    }
+                }
+            }
+        }
+
+        return $output;
+    }
+
     public function createWhere(MetaModelInterface $metaModel, mixed $where, $and = true): mixed
     {
+        file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($where, true) . "\n", FILE_APPEND);
         if ($where instanceof Predicate) {
             return $where;
         }
@@ -113,9 +137,14 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $table->delete($where);
     }
 
-    public function fetchRowFromTable(string $tableName, mixed $where) : array
+    public function fetchRowFromTable(string $tableName, mixed $where, mixed $sort) : array
     {
-        // TODO: Implement fetchRowFromTable() method.
+        $select = $this->sql->select($tableName);
+        $select->where($where);
+        $select->order($sort);
+        $select->limit(1);
+
+        return $this->fetchRowsFromSelect($select);
     }
 
     public function fetchRowsFromSelect(Select $select) : array
@@ -127,10 +156,115 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $resultSet->toArray() ?: [];
     }
 
-    public function fetchRowsFromTable(string $tableName, mixed $where) : array
+    public function fetchRowsFromTable(string $tableName, mixed $where, mixed $sort) : array
     {
-        // TODO: Implement fetchRowsFromTable() method.
+        $select = $this->sql->select($tableName);
+        $select->where($where);
+        $select->order($sort);
+        
+        return $this->fetchRowsFromSelect($select); 
     }
+
+    /**
+     * @param string      $tableName
+     * @param string|null $alias
+     * @return array name => settings for metamodel
+     */
+    public function getTableMetaData(string $tableName, string $alias = null): array
+    {
+        $metaData = Factory::createSourceFromAdapter($this->db);
+
+        if ((null === $alias) || ($alias == $tableName)) {
+            $aliasPrefix = '';
+            $alias       = $tableName;
+        } else {
+            $aliasPrefix = $alias . '.';
+        }
+        
+        $fieldData  = [];
+        $fieldOrder = [];
+        foreach ($metaData->getColumns($tableName) as $column) {
+            $name = $aliasPrefix . $column->getName();
+            $type = match ($column->getDataType()) {
+                'date' => MetaModelInterface::TYPE_DATE,
+                'datetime', 'timestamp' => MetaModelInterface::TYPE_DATETIME,
+                'time' => MetaModelInterface::TYPE_TIME,
+                'int', 'integer', 'mediumint', 'smallint', 'tinyint', 'bigint', 'serial', 'dec', 'decimal', 'double', 'double precision', 'fixed', 'float' => MetaModelInterface::TYPE_NUMERIC,
+                default => MetaModelInterface::TYPE_STRING,
+            };
+            $fieldOrder[$column->getOrdinalPosition()] = $name;
+
+            $fieldData[$name] = [
+                'required' => ! $column->isNullable(),
+                'table' => $alias,
+                'type' => $type,
+            ];
+
+            $length = $column->getCharacterMaximumLength();
+            if ($length) {
+                $fieldData[$name]['maxlength'] = $length;
+            } else {
+                $decimals = $column->getNumericScale();
+                if ($decimals) {
+                    $fieldData[$name]['decimals'] = $decimals;
+                }
+                $unsigned = $column->getNumericUnsigned();
+                if ($unsigned) {
+                    $fieldData[$name]['unsigned'] = $unsigned;
+                }
+                $precision = $column->getNumericPrecision();
+                if ($precision) {
+                    if (! $unsigned) {
+                        $precision++;
+                    }
+                    if ($decimals) {
+                        $precision++;
+                    }
+                    $fieldData[$name]['maxlength'] = $precision;
+                }
+            }
+            $default = $column->getColumnDefault();
+            if ($default) {
+                switch (strtoupper($default)) {
+                    case 'CURRENT_DATE':
+                    case 'CURRENT_TIME':
+                    case 'CURRENT_TIMESTAMP':
+                        $fieldData[$name]['default'] = new Expression($default);
+                        break;
+                    case 'NULL':
+                        break;
+
+                    default:
+                        $fieldData[$name]['default'] = $default;
+                }
+            }
+        }
+        foreach ($metaData->getConstraints($tableName) as $constraint) {
+            if ($constraint->isPrimaryKey()) {
+                foreach ($constraint->getColumns() as $colName) {
+                    $name = $aliasPrefix . $colName;
+                    $fieldData[$name]['key'] = true;
+                }
+            }
+//            if ($constraint->isUnique()) {
+//            
+//            }
+//            if ($constraint->isForeignKey()) {
+//                
+//            }
+        }
+        
+        // Supply the data sorted on ordinal position
+        ksort($fieldOrder);
+        $output = [];
+        foreach ($fieldOrder as $name) {
+            $output[$name] = $fieldData[$name];
+        }
+        
+        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($output, true) . "\n", FILE_APPEND);
+        
+        return $output;
+    }    
 
     public function insertInTable(string $tableName, array $values) : ?int
     {

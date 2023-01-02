@@ -126,6 +126,7 @@ class MetaModel implements MetaModelInterface
      */
     public function __construct(
         private string $modelName, 
+        protected array $linkedDefaults,
         protected MetaModelLoader $modelLoader,
     )
     { }
@@ -231,7 +232,7 @@ class MetaModel implements MetaModelInterface
         $this->set($name,
                    'model', $model,
                    'elementClass', 'FormTable',
-                   'type', \MUtil\Model::TYPE_CHILD_MODEL
+                   'type', MetaModelInterface::TYPE_CHILD_MODEL
         );
 
         return $trans;
@@ -663,7 +664,7 @@ class MetaModel implements MetaModelInterface
      *
      * basically transforms the fieldnames ointo oan IDn => value array
      *
-     * @param mixed $forData Array value to vilter on
+     * @param mixed $forData Array value to filter on
      * @param array $href Or \ArrayObject
      * @return array That can by used as href
      */
@@ -732,6 +733,11 @@ class MetaModel implements MetaModelInterface
             return $this->_model_meta[$key];
         }
         return $default;
+    }
+
+    public function getMetaModelLoader(): MetaModelLoader
+    {
+        return $this->modelLoader;
     }
 
     /**
@@ -803,23 +809,6 @@ class MetaModel implements MetaModelInterface
         if (isset($this->_model_order[$name])) {
             return $this->_model_order[$name];
         }
-    }
-
-    public function getTextFilter(): string
-    {
-        return $this->getMeta('textFilter', \MUtil\Model::TEXT_FILTER);
-    }
-
-    /**
-     * Splits a wildcard search text into its constituent parts.
-     *
-     * @param string $searchText
-     * @return array
-     */
-    public function getTextSearches($searchText)
-    {
-        // Replace -/ with space, trim & remove all double spaces
-        return explode(' ', str_replace('  ', ' ', trim(strtr($searchText, '-+/\\',  '    '))));
     }
 
     /**
@@ -1014,7 +1003,7 @@ class MetaModel implements MetaModelInterface
     public function isString($name)
     {
         if ($type = $this->get($name, 'type')) {
-            return \MUtil\Model::TYPE_STRING == $type;
+            return MetaModelInterface::TYPE_STRING == $type;
         }
 
         return true;
@@ -1290,12 +1279,11 @@ class MetaModel implements MetaModelInterface
                     }
                 } else {
                     $this->_model[$name][$key] = $value;
-                    if ('type' == $key) {
-                        $defaults = Model::getTypeDefaults($value);
-                        if ($defaults) {
-                            foreach ($defaults as $dKey => $value) {
+                    foreach ($this->linkedDefaults as $defaultkey => $defaultValues) {
+                        if (($defaultkey == $key) && (isset($defaultValues[$value]) && is_array($defaultValues[$value]))) {
+                            foreach ($defaultValues[$value] as $dKey => $dVal) {
                                 if (! array_key_exists($dKey, $this->_model[$name])) {
-                                    $this->_model[$name][$dKey] = $value;
+                                    $this->_model[$name][$dKey] = $dVal;
                                 }
                             }
                         }

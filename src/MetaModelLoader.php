@@ -44,7 +44,7 @@ class MetaModelLoader
     
     protected function createMetaModel($metaModelName)
     {
-        return new MetaModel($metaModelName, $this);
+        return new MetaModel($metaModelName, $this->modelConfig['linkedDefaults'], $this);
     }
     
     public function createModel(string $className, mixed $metaModelName, mixed ...$parameters): DataReaderInterface|DataWriterInterface

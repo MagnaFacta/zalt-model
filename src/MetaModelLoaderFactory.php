@@ -30,14 +30,12 @@ class MetaModelLoaderFactory
         if (! isset($config['model']['bridges'])) {
             $config['model']['bridges'] = MetaModelConfigProvider::getBridges();
         }
-
-        $output = new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
-
-        // Preparing the other parts
-//        if (! Html::hasSnippetLoader()) {
-//            Html::setSnippetLoader($output);
-//        }
-
-        return $output;
+        if (! isset($config['model']['linkedDefaults'])) {
+            $config['model']['linkedDefaults'] = []; 
+        }
+        if (! isset($config['model']['linkedDefaults']['type'])) {
+            $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'];
+        }
+        return new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
     }
 }

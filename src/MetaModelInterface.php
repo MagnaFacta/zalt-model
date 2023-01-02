@@ -205,19 +205,6 @@ interface MetaModelInterface
     public function getAlias($name);
 
     /**
-     * Create the bridge for the specific idenitifier
-     *
-     * This will always be a new bridge because otherwise you get
-     * instabilities as bridge objects are shared without knowledge
-     *
-     * @param DataReaderInterface $dataModel
-     * @param string $identifier
-     * @param array $args Optional first of extra arguments
-     * @return \Zalt\Model\Bridge\BridgeInterface
-     */
-    public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$args): BridgeInterface;
-
-    /**
      * Get an array of field names with the value of a certain attribute if set.
      *
      * Example:
@@ -342,6 +329,8 @@ interface MetaModelInterface
      */
     public function getMeta($key, $default = null);
     
+    public function getMetaModelLoader(): MetaModelLoader;
+    
     /**
      * The internal name of the model, used for joining models and sub forms, etc...
      *
@@ -381,14 +370,6 @@ interface MetaModelInterface
      * @return int|null The order value of the requeste item or null if not defined
      */
     public function getOrder($name);
-
-    /**
-     * Splits a wildcard search text into the constituent parts that are each searched on.
-     *
-     * @param string $searchText
-     * @return array
-     */
-    public function getTextSearches($searchText);
 
     /**
      * Get the model transformers

@@ -12,10 +12,8 @@ declare(strict_types=1);
 namespace Zalt\Model\Sql\Laminas;
 
 use Laminas\Db\Sql\Select;
-use Zalt\Late\RepeatableInterface;
-use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
-use Zalt\Model\MetaModel;
+use Zalt\Model\Data\DataReaderTrait;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -26,10 +24,8 @@ use Zalt\Model\MetaModelInterface;
  */
 class LaminasSelectModel implements DataReaderInterface
 {
-    protected array $filter = [];
-
-    protected array $sort = [];
-
+    use DataReaderTrait;
+    
     /**
      * @param \Laminas\Db\Sql\Select                $select
      * @param \Zalt\Model\MetaModelInterface        $metaModel
@@ -42,82 +38,17 @@ class LaminasSelectModel implements DataReaderInterface
     )
     { }
 
-    /**
-     * Create the bridge for the specific idenitifier
-     *
-     * This will always be a new bridge because otherwise you get
-     * instabilities as bridge objects are shared without knowledge
-     *
-     * @param string $identifier
-     * @param array $args Optional first of extra arguments
-     * @return \Zalt\Model\Bridge\BridgeInterface
-     */
-    public function getBridgeFor($identifier, ...$args): BridgeInterface
-    {
-        return $this->metaModel->getBridgeForModel($this, $identifier, ...$args);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getFilter(): array
-    {
-        return $this->filter;
-    }
-
-    public function getMetaModel(): MetaModelInterface
-    {
-        return $this->metaModel;
-    }
-    
     protected function getSelectFor($filter, $sort)
     {
         $select = clone $this->select;
         
-        if (null === $filter) {
-            $filter = $this->getFilter();
-        }
-        if ($filter) {
-            // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
-            $select->where($this->laminasRunner->createWhere($this->metaModel, $filter));
-        }
-
-        if (null === $sort) {
-            $sort = $this->getSort();
-        }
-        $sorts = [];
-        foreach ($sort as $field => $value) {
-            if (SORT_ASC === $value) {
-                $sorts[] = $field;
-            } elseif (SORT_DESC === $value) {
-                $sorts[] = $field . ' DESC';
-            } else {
-                $sorts[] = $value;
-            }
-        }
-        if ($sorts) {
-            $select->order($sorts);
-        }
+        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
+        $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
+        $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
         
         return $select;
     }
     
-    /**
-     * @inheritDoc
-     */
-    public function getSort(): array
-    {
-        return $this->sort;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function hasFilter() : bool
-    {
-        return (bool) $this->filter;
-    }
-
     /**
      * @inheritDoc
      */
@@ -129,59 +60,29 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function hasSort() : bool
-    {
-        return (bool) $this->sort;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function load($filter = null, $sort = null) : array
     {
         $select = $this->getSelectFor($filter, $sort);
         return $this->laminasRunner->fetchRowsFromSelect($select);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function loadFirst($filter = null, $sort = null) : array
     {
-        // TODO: Implement loadFirst() method.
+        $select = $this->getSelectFor($filter, $sort);
+        $select->limit(1);
+        $rows = $this->laminasRunner->fetchRowsFromSelect($select);
+        if ($rows) {
+            return reset($row);
+        }
+        
+        return [];
     }
-
+    
     /**
      * @inheritDoc
      */
     public function loadNew() : array
     {
         return [];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function loadRepeatable($filter = true, $sort = true) : ?RepeatableInterface
-    {
-        // TODO: Implement loadRepeatable() method.
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function setFilter(array $filter) : DataReaderInterface
-    {
-        $this->filter = $filter;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setSort(array $sort) : DataReaderInterface
-    {
-        $this->sort = $sort;
-        return $this;
     }
 }

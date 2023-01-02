@@ -97,11 +97,11 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     /**
      * Returns a \MUtil\Lazy\RepeatableInterface for the items in the model
      *
-     * @param mixed $filter True to use the stored filter, array to specify a different filter
-     * @param mixed $sort True to use the stored sort, array to specify a different sort
+     * @param mixed $filter Null to use the stored filter, array to specify a different filter
+     * @param mixed $sort Null to use the stored sort, array to specify a different sort
      * @return ?\Zalt\Late\RepeatableInterface
      */
-    public function loadRepeatable($filter = true, $sort = true): ?RepeatableInterface;
+    public function loadRepeatable($filter = null, $sort = null): ?RepeatableInterface;
 
     /**
      * Sets a default filter to be used when no filter was passed to a load() or loadX() function.
