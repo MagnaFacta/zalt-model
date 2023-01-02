@@ -30,11 +30,9 @@ trait DataReaderTrait
     
     protected function checkFilter(mixed $filter): array
     {
-        file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($this->getFilter(), true) . "\n", FILE_APPEND);
         if (null === $filter) {
             return $this->getFilter();
         }
-        file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
         if (is_array($filter)) {
             return $filter;
         }        

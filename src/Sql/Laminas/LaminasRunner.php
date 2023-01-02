@@ -69,7 +69,6 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 
     public function createWhere(MetaModelInterface $metaModel, mixed $where, $and = true): mixed
     {
-        file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($where, true) . "\n", FILE_APPEND);
         if ($where instanceof Predicate) {
             return $where;
         }
