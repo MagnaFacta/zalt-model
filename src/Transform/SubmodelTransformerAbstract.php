@@ -9,9 +9,10 @@ declare(strict_types=1);
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  */
 
-namespace Zalt\Model\Transformer;
+namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -37,7 +38,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
 
     /**
      *
-     * @var [\Zalt\Model\Data\DataReaderInterface]
+     * @var DataReaderInterface[]
      */
     protected array $_subModels = [];
 
@@ -61,7 +62,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     public function addModel(DataReaderInterface $subModel, array $joinFields, $name = null)
     {
         if (null === $name) {
-            $name = $subModel->getName();
+            $name = $subModel->getMetaModel()->getName();
         }
 
         $this->_subModels[$name] = $subModel;
@@ -83,7 +84,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     {
         $data = array();
         foreach ($this->_subModels as $sub) {
-            foreach ($sub->getItemNames() as $name) {
+            foreach ($sub->getMetaModel()->getItemNames() as $name) {
                 if (! $model->has($name)) {
                     $data[$name] = $sub->get($name);
                     $data[$name]['no_text_search'] = true;
@@ -156,7 +157,6 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
         foreach ($this->_subModels as $name => $sub) {
             $this->transformLoadSubModel($model, $sub, $data, $this->_joins[$name], $name, $new, $isPostData);
         }
-        // \MUtil\EchoOut\EchoOut::track($data);
 
         return $data;
     }
@@ -164,17 +164,15 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     /**
      * Function to allow overruling of transform for certain models
      *
-     * @param \MUtil\Model\ModelAbstract $model Parent model
-     * @param \MUtil\Model\ModelAbstract $sub Sub model
+     * @param MetaModelInterfacet $model Parent model
+     * @param DataReaderInterface $sub Sub model
      * @param array $data The nested data rows
      * @param array $join The join array
      * @param string $name Name of sub model
      * @param boolean $new True when loading a new item
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
      */
-    abstract protected function transformLoadSubModel(
-        \MUtil\Model\ModelAbstract $model, \MUtil\Model\ModelAbstract $sub, array &$data, array $join,
-                                   $name, $new, $isPostData);
+    abstract protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, $name, $new, $isPostData);
 
     /**
      * This transform function performs the actual save (if any) of the transformer data and is called after
@@ -203,7 +201,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * This transform function is called before the saving of the data in the source model and allows you to
      * change all data.
      *
-     * @param \MUtil\Model\ModelAbstract $model The parent model
+     * @param MetaModelInterface $model The parent model
      * @param array $row Array containing row
      * @return array Row array containing (optionally) transformed data
      */
@@ -217,12 +215,12 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * Function to allow overruling of transform for certain models
      *
      * @param MetaModelInterface $model
-     * @param DataReaderInterface $sub
+     * @param FullDataInterface $sub
      * @param array $data
      * @param array $join
      * @param string $name
      */
-    abstract protected function transformSaveSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$row, array $join, $name);
+    abstract protected function transformSaveSubModel(MetaModelInterface $model, FullDataInterface $sub, array &$row, array $join, $name);
 
     /**
      * This transform function checks the sort to

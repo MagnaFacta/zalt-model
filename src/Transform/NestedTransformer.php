@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  */
 
-namespace Zalt\Model\Transformer;
+namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\MetaModelInterface;

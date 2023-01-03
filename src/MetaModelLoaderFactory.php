@@ -24,21 +24,23 @@ class MetaModelLoaderFactory
 {
     public function __invoke(ContainerInterface $container): MetaModelLoader
     {
-        $config     = $container->get('config');
+        $config     = $this->checkConfig($container->get('config'));
         $overloader = $container->get(ProjectOverloader::class);
 
+        return new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
+    }
+    
+    public function checkConfig(array $config): array
+    {
         if (! isset($config['model']['bridges'])) {
             $config['model']['bridges'] = MetaModelConfigProvider::getBridges();
         }
         if (! isset($config['model']['linkedDefaults'])) {
-            $config['model']['linkedDefaults'] = []; 
+            $config['model']['linkedDefaults'] = [];
         }
         if (! isset($config['model']['linkedDefaults']['type'])) {
             $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'];
         }
-        if (! isset($config['model']['translateDatabaseFields'])) {
-            $config['model']['translateDatabaseFields'] = true;
-        }
-        return new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
+        return $config;
     }
 }

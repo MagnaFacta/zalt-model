@@ -9,7 +9,7 @@
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  */
 
-namespace Zalt\Model\Transformer;
+namespace Zalt\Model\Transform;
 
 use Zalt\Model\MetaModelInterface;
 

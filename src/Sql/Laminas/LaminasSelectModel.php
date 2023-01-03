@@ -43,7 +43,8 @@ class LaminasSelectModel implements DataReaderInterface
         $select = clone $this->select;
         
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
-        $select->columns($this->laminasRunner->createColumns($this->metaModel, null));
+        $columns = $select->getRawState(Select::COLUMNS);
+        $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns ?: null));
         $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
         $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
         

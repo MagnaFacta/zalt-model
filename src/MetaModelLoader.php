@@ -16,7 +16,7 @@ use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
-use Zalt\Model\Transformer\ModelTransformerInterface;
+use Zalt\Model\Transform\ModelTransformerInterface;
 
 /**
  *
@@ -32,32 +32,6 @@ class MetaModelLoader
     )
     {
         $this->loader->setDependencyResolver(new ConstructorDependencyParametersResolver());
-    }
-
-    /**
-     * Add database translation edit to model
-     *
-     * @param MetaModelInterface $model
-     */
-    public function addDatabaseTranslationEditFields(MetaModelInterface $metaModel): void
-    {
-        if ($this->modelConfig['translateDatabaseFields']) {
-            $transformer = $this->loader->create('Transform\\TranslateFieldEditor');
-            $metaModel->addTransformer($transformer);
-        }
-    }
-    
-    /**
-     * Add database translations to a model
-     *
-     * @param MetaModelInterface $model
-     */
-    public function addDatabaseTranslations(MetaModelInterface $metaModel): void
-    {
-        if ($this->modelConfig['translateDatabaseFields']) {
-            $transformer = $this->loader->create('Transform\\TranslateDatabaseFields');
-            $metaModel->addTransformer($transformer);
-        }
     }
 
     public function createBridge($class, DataReaderInterface $dataModel, ...$parameters): BridgeInterface
@@ -92,5 +66,15 @@ class MetaModelLoader
         }
         
         return $this->loader->create($className, ...$parameters);
+    }
+    
+    public function createTransformer($class, ...$parameters): ModelTransformerInterface
+    {
+        if (! (str_contains($class, '\\Transform\\') || str_starts_with($class, 'Transform\\'))) {
+            if (! class_exists($class)) {
+                $class = 'Transform\\' . $class;
+            }
+        }
+        return $this->loader->create($class, ...$parameters);
     }
 }

@@ -17,8 +17,8 @@ use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Dependency\DependencyInterface;
 use Zalt\Model\Exception\MetaModelException;
-use Zalt\Model\Transformer\ModelTransformerInterface;
-use Zalt\Model\Transformer\NestedTransformer;
+use Zalt\Model\Transform\ModelTransformerInterface;
+use Zalt\Model\Transform\NestedTransformer;
 use Zalt\Ra\Ra;
 
 /**

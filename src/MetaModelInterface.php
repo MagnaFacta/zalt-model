@@ -13,7 +13,7 @@ namespace Zalt\Model;
 
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
-use Zalt\Model\Transformer\ModelTransformerInterface;
+use Zalt\Model\Transform\ModelTransformerInterface;
 
 /**
  *
@@ -110,7 +110,7 @@ interface MetaModelInterface
     /**
      * Add a model transformer
      *
-     * @param \Zalt\Model\Transformer\ModelTransformerInterface $transformer
+     * @param \Zalt\Model\Transform\ModelTransformerInterface $transformer
      * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function addTransformer(ModelTransformerInterface $transformer);
@@ -371,7 +371,7 @@ interface MetaModelInterface
     /**
      * Get the model transformers
      *
-     * @return array of \Zalt\Model\Transformer\ModelTransformerInterface
+     * @return array of \Zalt\Model\Transform\ModelTransformerInterface
      */
     public function getTransformers();
 
@@ -783,7 +783,7 @@ interface MetaModelInterface
     /**
      * set the model transformers
      *
-     * @param array $transformers of \Zalt\Model\Transformer\ModelTransformerInterface
+     * @param array $transformers of \Zalt\Model\Transform\ModelTransformerInterface
      * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function setTransformers(array $transformers);
