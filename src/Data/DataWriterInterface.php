@@ -20,6 +20,13 @@ namespace Zalt\Model\Data;
 interface DataWriterInterface extends \Zalt\Model\MetaModellerInterface
 {
     /**
+     * The number of item rows changed since the last save or delete
+     *
+     * @return int
+     */
+    public function getChanged(): int;
+
+    /**
      * True if this model allows the creation of new model items.
      *
      * @return boolean

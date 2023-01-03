@@ -27,7 +27,7 @@ trait DataReaderTrait
     protected array $filter = [];
 
     protected array $sort = [];
-    
+
     protected function checkFilter(mixed $filter): array
     {
         if (null === $filter) {
@@ -100,6 +100,17 @@ trait DataReaderTrait
         return reset($rows);
     }
 
+    public function loadNew() : array
+    {
+        return $this->metaModel->processOneRowAfterLoad($this->loadNewRaw(), true, false);
+    }
+    
+    protected function loadNewRaw()
+    {
+        return $this->metaModel->getCol('default') +
+            array_fill_keys($this->metaModel->getItemNames(), null);
+    }    
+
     public function loadRepeatable($filter = null, $sort = null) : ?RepeatableInterface
     {
         $rows = $this->load($filter, $sort);
@@ -108,6 +119,7 @@ trait DataReaderTrait
         }
         return null;
     }
+    
     public function setFilter(array $filter) : DataReaderInterface
     {
         $this->filter = $filter;

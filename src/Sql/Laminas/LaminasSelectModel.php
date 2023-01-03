@@ -43,6 +43,7 @@ class LaminasSelectModel implements DataReaderInterface
         $select = clone $this->select;
         
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
+        $select->columns($this->laminasRunner->createColumns($this->metaModel, null));
         $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
         $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
         
@@ -63,7 +64,7 @@ class LaminasSelectModel implements DataReaderInterface
     public function load($filter = null, $sort = null) : array
     {
         $select = $this->getSelectFor($filter, $sort);
-        return $this->laminasRunner->fetchRowsFromSelect($select);
+        return $this->metaModel->processAfterLoad($this->laminasRunner->fetchRowsFromSelect($select));
     }
 
     public function loadFirst($filter = null, $sort = null) : array
@@ -72,17 +73,9 @@ class LaminasSelectModel implements DataReaderInterface
         $select->limit(1);
         $rows = $this->laminasRunner->fetchRowsFromSelect($select);
         if ($rows) {
-            return reset($row);
+            return $this->metaModel->processOneRowAfterLoad(reset($rows));
         }
         
-        return [];
-    }
-    
-    /**
-     * @inheritDoc
-     */
-    public function loadNew() : array
-    {
         return [];
     }
 }

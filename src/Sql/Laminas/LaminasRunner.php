@@ -40,12 +40,37 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         $this->sql = new Sql($this->db);
     }
 
-
-    public function checkSelect(mixed $select) : bool
+    /**
+     * @inheritDoc
+     */
+    public function createColumns(MetaModelInterface $metaModel, mixed $columns): mixed
     {
-        // TODO: Implement checkSelect() method.
+        if (null === $columns) {
+            $output = [];
+            if ($metaModel->hasItemsUsed()) {
+                $output = $metaModel->getItemsUsed();               
+            } else {
+                $output[] = Select::SQL_STAR;
+            }
+        } elseif (is_array($columns)) {
+            $output = $columns;
+        } elseif (true == $columns) {
+            $output[] = Select::SQL_STAR;
+        } else {
+            $output = [$columns];
+        }
+        $expressions = $metaModel->getCol('column_expression');
+        foreach ($expressions as $name => $expression) {
+            $output[$name] = new Expression($expression);
+        }
+        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r(array_keys($output), true) . "\n", FILE_APPEND);
+        
+        return $output;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function createSort(MetaModelInterface $metaModel, array $sort): mixed
     {
         $output = [];
@@ -55,10 +80,16 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 $output[] = $field;
             } else {
                 if ($metaModel->has($field)) {
-                    if (SORT_DESC === $type) {
-                        $output[] = $field . ' DESC';
+                    $expression = $metaModel->get($field, 'column_expression');
+                    if ($expression) {
+                        $name = new Expression('(' . $expression . ')');
                     } else {
-                        $output[] = $field;
+                        $name = $field;
+                    }
+                    if (SORT_DESC === $type) {
+                        $output[] = $name . ' DESC';
+                    } else {
+                        $output[] = $name;
                     }
                 }
             }
@@ -67,6 +98,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $output;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function createWhere(MetaModelInterface $metaModel, mixed $where, $and = true): mixed
     {
         if ($where instanceof Predicate) {
@@ -95,7 +129,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 } else {
                     $expression = $metaModel->get($field, 'column_expression');
                     if ($expression) {
-                        $name = '(' . $expression . ')';
+                        $name = new Expression('(' . $expression . ')');
                     } else {
                         $name = $field;
                     }
@@ -130,22 +164,42 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return new Literal($where);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function deleteFromTable(string $tableName, mixed $where) : int
     {
         $table = new TableGateway($tableName, $this->db);
         return $table->delete($where);
     }
 
-    public function fetchRowFromTable(string $tableName, mixed $where, mixed $sort) : array
+    /**
+     * @inheritDoc
+     */
+    public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort) : array
     {
         $select = $this->sql->select($tableName);
-        $select->where($where);
-        $select->order($sort);
+        if ($columns) {
+            $select->columns($columns);
+        } else {
+            $select->columns([Select::SQL_STAR]);
+        }
+        if ($where) {
+            $select->where($where);
+        }
+        if ($sort) {
+            $select->order($sort);
+        }
         $select->limit(1);
 
-        return $this->fetchRowsFromSelect($select);
+        $rows = $this->fetchRowsFromSelect($select);
+        
+        return reset($rows) ?: [];
     }
 
+    /**
+     * @inheritDoc
+     */
     public function fetchRowsFromSelect(Select $select) : array
     {
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
@@ -155,19 +209,29 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $resultSet->toArray() ?: [];
     }
 
-    public function fetchRowsFromTable(string $tableName, mixed $where, mixed $sort) : array
+    /**
+     * @inheritDoc
+     */
+    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort) : array
     {
         $select = $this->sql->select($tableName);
-        $select->where($where);
-        $select->order($sort);
+        if ($columns) {
+            $select->columns($columns);
+        } else {
+            $select->columns([Select::SQL_STAR]);
+        }
+        if ($where) {
+            $select->where($where);
+        }
+        if ($sort) {
+            $select->order($sort);
+        }
         
         return $this->fetchRowsFromSelect($select); 
     }
 
     /**
-     * @param string      $tableName
-     * @param string|null $alias
-     * @return array name => settings for metamodel
+     * @inheritDoc
      */
     public function getTableMetaData(string $tableName, string $alias = null): array
     {
@@ -199,19 +263,19 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 'type' => $type,
             ];
 
-            $length = $column->getCharacterMaximumLength();
+            $length = intval($column->getCharacterMaximumLength());
             if ($length) {
                 $fieldData[$name]['maxlength'] = $length;
             } else {
-                $decimals = $column->getNumericScale();
+                $decimals = intval($column->getNumericScale());
                 if ($decimals) {
                     $fieldData[$name]['decimals'] = $decimals;
                 }
-                $unsigned = $column->getNumericUnsigned();
+                $unsigned = intval($column->getNumericUnsigned());
                 if ($unsigned) {
                     $fieldData[$name]['unsigned'] = $unsigned;
                 }
-                $precision = $column->getNumericPrecision();
+                $precision = intval($column->getNumericPrecision());
                 if ($precision) {
                     if (! $unsigned) {
                         $precision++;
@@ -263,8 +327,11 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($output, true) . "\n", FILE_APPEND);
         
         return $output;
-    }    
+    }
 
+    /**
+     * @inheritDoc
+     */
     public function insertInTable(string $tableName, array $values) : ?int
     {
         $table = new TableGateway($tableName, $this->db);
@@ -274,10 +341,13 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $table->getLastInsertValue();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function updateInTable(string $tableName, array $values, mixed $where) : int
     {
         $table = new TableGateway($tableName, $this->db);
         
-        $table->update($values, $where);
+        return $table->update($values, $where);
     }
 }

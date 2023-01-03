@@ -214,7 +214,7 @@ interface MetaModelInterface
      * returns an array of labels set with the field name as key.
      *
      * @param string $columnName Name of the attribute
-     * @return array
+     * @return array name => value
      */
     public function getCol($columnName);
 
@@ -230,7 +230,7 @@ interface MetaModelInterface
      * This is a more efficient function than using array_keys($tmoel->getCol())
      *
      * @param string $column_name Name of the attribute
-     * @return array
+     * @return array [names]
      */
     public function getColNames($columnName);
 
@@ -263,13 +263,10 @@ interface MetaModelInterface
     /**
      * Returns all the field names that have the properties passed in the parameters
      *
-     * @param string|array $arrayOrKey1 A key => value array or the name of the first key
-     * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
-     * @param string $key2 Optional second key when $arrayOrKey1 is a string
-     * @param mixed $value2 Optional second value when $arrayOrKey1 is a string, an unlimited number of $key values pairs can be given.
+     * @param array ...$args A single key value array or a sequence of items made into an array using Ra::pairs() 
      * @return array Of names
      */
-    public function getItemsFor($arrayOrKey1, $value1 = null, $key2 = null, $value2 = null);
+    public function getItemsFor(...$args);
 
     /**
      * Get an array of items using a previously set custom ordering
@@ -531,6 +528,13 @@ interface MetaModelInterface
      */
     public function processOneRowAfterLoad(array $row, $new = false, $isPostData = false);
 
+    /**
+     * @param array $row
+     * @param bool $isNew 
+     * @return array
+     */
+    public function processRowBeforeSave(array $row, bool $new = false): array;
+    
     /**
      * Remove one attribute for a field name in the model.
      *

@@ -20,6 +20,11 @@ namespace Zalt\Model\Sql;
 trait SqlModelTrait
 {
     /**
+     * @var int The number of changed rows
+     */
+    protected int $changed = 0;
+    
+    /**
      * A standard rename scaffold for hidden kopies of primary key fields.
      *
      * As this is the name a hidden \Zend_Element we can use only letters and the underscore for
@@ -31,6 +36,12 @@ trait SqlModelTrait
      * @var string $keyKopier String into which the original keyname is sprintf()-ed.
      */
     protected $keyCopier = '__c_1_3_copy__%s__key_k_0_p_1__';
+
+    protected function addChanged()
+    {
+        $this->changed++;
+    }
+
 
     /**
      * Adds a column to the model
@@ -67,9 +78,49 @@ trait SqlModelTrait
     public function copyKeys($reset = false)
     {
         foreach ($this->metaModel->getKeys($reset) as $name) {
-            $this->addColumn($name, $this->getKeyCopyName($name));
+            $this->addColumn($name, $this->getKeyCopyName($name), $name);
         }
         return $this;
+    }
+
+    /**
+     * Filters the list of values and returns only those that should be used for this table.
+     *
+     * @param string $tableName The current table
+     * @param array $data All the data, including those for other tables
+     * @param boolean $isNew True when creating
+     * @return array An array containting the values that should be saved for this table.
+     */
+    protected function filterDataForTable($tableName, array $data, $isNew)
+    {
+        $output = [];
+
+        // First find the correct fields to save
+        foreach ($this->metaModel->getItemsFor(['table' => $tableName]) as $name) {
+            if (array_key_exists($name, $data)) {
+                $len = intval($this->metaModel->get($name, 'maxlength'));
+                if ($len && $data[$name] && (! is_array($data[$name]))) {
+                    $output[$name] = substr($data[$name], 0, $len);
+                } else {
+                    $output[$name] = $data[$name];
+                }
+
+            } elseif ($this->metaModel->isAutoSave($name)) {
+                // Add a value for on auto save values
+                $output[$name] = null;
+            }
+        }
+        return $this->metaModel->processRowBeforeSave($output, $isNew);
+    }
+
+    /**
+     * The number of item rows changed since the last save or delete
+     *
+     * @return int
+     */
+    public function getChanged(): int
+    {
+        return $this->changed;
     }
 
     /**
@@ -82,6 +133,177 @@ trait SqlModelTrait
     {
         return sprintf($this->keyCopier, $name);
     }
+    
+    /**
+     * @param string $tableName  Does not test for existence
+     * @return array array int => name  containing the key field names.
+     */
+    protected function getKeysForTable($tableName)
+    {
+        return $this->metaModel->getItemsFor(['table' => $tableName, 'key' => true]);
+    }
 
 
+    /**
+     * General utility function for saving a row in a table.
+     *
+     * This functions checks for prior existence of the row and switches
+     * between insert and update as needed. Key updates can be handled through
+     * passing the $oldKeys or by using copyKeys().
+     *
+     * @see copyKeys()
+     *
+     * @param $string $table The table to save
+     * @param array   $newValues The values to save, including those for other tables
+     * @param ?array  $oldKeys The original keys as they where before the changes
+     * @param int     $saveMode Should updates / inserts occur
+     * @return array The values for this table as they were updated
+     */
+    protected function saveTableData(string $tableName, array $newValues, array $oldKeys = null, int $saveMode = SqlRunnerInterface::SAVE_MODE_ALL)
+    {
+        if (! $newValues) {
+            return [];
+        }
+
+        $primaryKeys  = $this->getKeysForTable($tableName);
+        $primaryCount = count($primaryKeys);
+        $filter       = [];
+        $update       = true;
+
+        // \MUtil\EchoOut\EchoOut::r($newValues, $tableName);
+        foreach ($primaryKeys as $key) {
+            if (array_key_exists($key, $newValues) && (0 == strlen((string) $newValues[$key]))) {
+                // Never include null key values, except when we have a save transformer
+                if (! $this->metaModel->has($key, MetaModel::SAVE_TRANSFORMER)) {
+                    unset($newValues[$key]);
+//                    \MUtil\EchoOut\EchoOut::r('Null key value: ' . $key, 'INSERT!!');
+                }
+                // Now we know we are not updating
+                $update = false;
+
+            } elseif (isset($oldKeys[$key])) {
+//                \MUtil\EchoOut\EchoOut::r($key . ' => ' . $oldKeys[$key], 'Old key');
+                $filter[$key] = $oldKeys[$key];
+                // Key values left in $returnValues in case of partial key insert
+
+            } else {
+                // Check for old key values being stored using copyKeys()
+                $copyKey = $this->getKeyCopyName($key);
+
+                if (isset($newValues[$copyKey])) {
+                    $filter[$key] = $newValues[$copyKey];
+//                    \MUtil\EchoOut\EchoOut::r($key . ' => ' . $newValues[$copyKey], 'Copy key');
+
+                } elseif (isset($newValues[$key])) {
+                    $filter[$key] = $newValues[$key];
+                }
+            }
+        }
+        if (! $filter) {
+            $update = false;
+        }
+
+        // Check for actual values for this table to save.
+        // \MUtil\EchoOut\EchoOut::track($newValues);
+        $saveValues = $this->filterDataForTable($tableName, $newValues, ! $update);
+        if ($saveValues) {
+//            \MUtil\EchoOut\EchoOut::r($saveValues, 'Return');
+            if ($update) {
+                // \MUtil\EchoOut\EchoOut::r($filter, 'Filter');
+                // Retrieve the record from the database
+                $oldValues = $this->sqlRunner->fetchRowFromTable(
+                    $tableName, 
+                    false, 
+                    $this->sqlRunner->createWhere($this->metaModel, $filter), 
+                    []);
+            } else {
+                $oldValues = false;
+            }
+
+            if ($oldValues) {
+                // \MUtil\EchoOut\EchoOut::r($filter);
+                $save = false;
+
+                // Check for actual changes
+                foreach ($oldValues as $name => $value) {
+                    // The name is in the set being stored
+                    if (array_key_exists($name, $saveValues)) {
+                        if ($this->metaModel->isAutoSave($name)) {
+                            continue;
+                        }
+
+                        if (is_object($saveValues[$name]) || is_object($value)) {
+                            $noChange = $saveValues[$name] == $value;
+                        } else {
+                            // Make sure differences such as extra start zero's on text fields do
+                            // not disappear, while preventing a difference between an integer
+                            // and string input of triggering a false change
+                            $noChange = ($saveValues[$name] == $value) &&
+                                (strlen((string)$saveValues[$name]) == strlen((string)$value));
+                        }
+
+                        // Detect change that is not auto update
+                        if ($noChange) {
+                            unset($saveValues[$name]);
+                        } else {
+                            $save = true;
+                        }
+                    }
+                }
+                // Update the row, if the saveMode allows it
+                if ($save && ($saveMode & SqlRunnerInterface::SAVE_MODE_UPDATE)) {
+                    $changed = $this->sqlRunner->updateInTable($tableName, $saveValues, $filter);
+                    file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  'changed update ' . $changed . "\n", FILE_APPEND);
+                    if ($changed) {
+                        $this->addChanged();
+                        // Add the old values as we have them and they may be of use later on.
+                        $output = $saveValues + $oldValues;
+
+                        // Make sure the copy keys (if any) have the new values as well
+                        $output = $this->updateCopyKeys($primaryKeys, $output);
+                    }
+
+                    return $output;
+                }
+                // Add the old values as we have them and they may be of use later on.
+                return $saveValues + $oldValues;
+
+            } elseif ($saveMode & SqlRunnerInterface::SAVE_MODE_INSERT) {
+                // Perform insert
+                // \MUtil\EchoOut\EchoOut::r($returnValues);
+                $newKeyValues = $this->sqlRunner->insertInTable($tableName, $saveValues);
+                $this->addChanged();
+                // \MUtil\EchoOut\EchoOut::rs($newKeyValues, $primaryKeys);
+
+                // Composite key returned.
+                if (is_array($newKeyValues)) {
+                    foreach ($newKeyValues as $key => $value) {
+                        $saveValues[$key] = $value;
+                    }
+                    return $this->updateCopyKeys($primaryKeys, $saveValues);
+                }
+                // Single key returned
+                foreach ($primaryKeys as $key) {
+                    // Fill the first empty value
+                    if (! isset($saveValues[$key])) {
+                        $saveValues[$key] = $newKeyValues;
+                        return $this->updateCopyKeys($primaryKeys, $saveValues);
+                    }
+                }
+                // But if all the key values were already filled, make sure the new values are returned.
+                return $this->updateCopyKeys($primaryKeys, $saveValues);
+            }
+        }
+        return [];
+    }
+
+    protected function updateCopyKeys(array $primaryKeys, array $returnValues)
+    {
+        foreach ($primaryKeys as $name) {
+            $copyKey = $this->getKeyCopyName($name);
+            $returnValues[$copyKey] = $returnValues[$name];
+        }
+
+        return $returnValues;
+    }
 }

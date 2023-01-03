@@ -36,6 +36,9 @@ class MetaModelLoaderFactory
         if (! isset($config['model']['linkedDefaults']['type'])) {
             $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'];
         }
+        if (! isset($config['model']['translateDatabaseFields'])) {
+            $config['model']['translateDatabaseFields'] = true;
+        }
         return new MetaModelLoader($overloader->createSubFolderOverloader('Model'), $config['model']);
     }
 }

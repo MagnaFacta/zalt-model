@@ -483,16 +483,16 @@ class MetaModel implements MetaModelInterface
      * </code>
      * returns an array of labels set with the field name as key.
      *
-     * @param string $column_name Name of the attribute
-     * @return array
+     * @param string $columnName Name of the attribute
+     * @return array name -> value
      */
-    public function getCol($column_name)
+    public function getCol($columnName)
     {
         $results = array();
 
         foreach ($this->_model as $name => $row) {
-            if ($this->has($name, $column_name)) {
-                $results[$name] = $this->get($name, $column_name);
+            if ($this->has($name, $columnName)) {
+                $results[$name] = $this->get($name, $columnName);
             }
         }
 
@@ -511,14 +511,14 @@ class MetaModel implements MetaModelInterface
      * This is a more efficient function than using array_keys($tmoel->getCol())
      *
      * @param string $column_name Name of the attribute
-     * @return array
+     * @return array [names]
      */
-    public function getColNames($column_name)
+    public function getColNames($columnName)
     {
         $results = array();
 
         foreach ($this->_model as $name => $row) {
-            if ($this->has($name, $column_name)) {
+            if ($this->has($name, $columnName)) {
                 $results[] = $name;
             }
         }
@@ -591,16 +591,18 @@ class MetaModel implements MetaModelInterface
     /**
      * Returns all the field names that have the properties passed in the parameters
      *
+     * @param array ...$args A single key value array or a sequence of items made into an array using Ra::pairs()
      * @return array Of names
      */
     public function getItemsFor(...$args)
     {
         $results = [];
+        $pairs = Ra::pairs($args);
 
         foreach ($this->_model as $itemName => $row) {
             $found = true;
 
-            foreach ($args as $paramName => $value) {
+            foreach ($pairs as $paramName => $value) {
                 if (! $this->is($itemName, $paramName, $value)) {
                     $found = false;
                     break;
@@ -701,13 +703,7 @@ class MetaModel implements MetaModelInterface
     public function getKeys($reset = false)
     {
         if ((! $this->_keys) || $reset) {
-            $keys = array();
-            foreach ($this->_model as $name => $info) {
-                if (isset($info['key']) && $info['key']) {
-                    $keys[] = $name;
-                }
-            }
-            $this->setKeys($keys);
+            $this->setKeys($this->getItemsFor(['key' => true]));
         }
         return $this->_keys;
     }
@@ -1055,11 +1051,10 @@ class MetaModel implements MetaModelInterface
     {
         foreach ($this->_transformers as $transformer) {
             if ($transformer->triggerOnSaves()) {
-                $row = $transformer->transformRowAfterSave($this, $this->_filterDataForSave($row));
+                $row = $transformer->transformRowAfterSave($this, $this->processRowBeforeSave($row));
             } else {
                 $row = $transformer->transformRowAfterSave($this, $row);
             }
-            $this->addChanged($transformer->getChanged());
         }
 
         return $row;
@@ -1170,6 +1165,26 @@ class MetaModel implements MetaModelInterface
         return $newRow + $this->getCol('value');
     }
 
+    /**
+     * @inheritdoc 
+     */
+    public function processRowBeforeSave(array $row, bool $new = false): array
+    {
+        $output = [];
+        foreach ($row as $name => $value) {
+            if ('' === $value) {
+                // Remove default empty string values.
+                $value = null;
+            }
+
+            if ($this->isSaveable($value, $new, $name, $row)) {
+                $output[$name] = $this->getOnSave($value, $new, $name, $row);
+            }
+        }
+        
+        return $output;        
+    }
+    
     /**
      * Remove one attribute for a field name in the model.
      *

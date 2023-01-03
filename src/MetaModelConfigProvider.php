@@ -46,6 +46,7 @@ class MetaModelConfigProvider
     {
         return ['model' => [
             'bridges' => self::getBridges(),
+            'translateDatabaseFields' => true,
         ]];
     }
     

@@ -22,21 +22,51 @@ use Zalt\Model\MetaModelInterface;
 interface SqlRunnerInterface
 {
     /**
-     * @param mixed $select Something that should be a select statement for this SQL runner
-     * @return bool
+     * Default save mode: execute all saves
      */
-    public function checkSelect(mixed $select): bool;
+    const SAVE_MODE_ALL    = 7;
 
+    /**
+     * Allow deletes to be executed
+     */
+    const SAVE_MODE_DELETE = 4;
+
+    /**
+     * Allow inserts to be executed
+     */
+    const SAVE_MODE_INSERT = 2;
+
+    /**
+     * Allow updates to be executed
+     */
+    const SAVE_MODE_UPDATE = 1;
+
+    /**
+     * Do nothing
+     */
+    const SAVE_MODE_NONE   = 0;
+
+    /**
+     * @param \Zalt\Model\MetaModelInterface $metaModel
+     * @param array                          $sort
+     * @return mixed Something to be used as a sort
+     */
+    public function createColumns(MetaModelInterface $metaModel, mixed $columns): mixed;
+
+    /**
+     * @param \Zalt\Model\MetaModelInterface $metaModel
+     * @param array                          $sort
+     * @return mixed Something to be used as a sort
+     */
     public function createSort(MetaModelInterface $metaModel, array $sort): mixed;
     
     /**
      * Check a filter and make sure it works for the SQL version
      * @param MetaModelInterface $metaModel
      * @param mixed $where
-     * @return mixed
+     * @return mixed Something to be used as a where
      */
     public function createWhere(MetaModelInterface $metaModel, mixed $where): mixed;
-    
     
     /**
      * @param string $tableName
@@ -50,14 +80,14 @@ interface SqlRunnerInterface
      * @param mixed  $where
      * @return array One row of data
      */
-    public function fetchRowFromTable(string $tableName, mixed $where, mixed $sort): array;
+    public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort): array;
 
     /**
      * @param string $tableName
      * @param mixed  $where
      * @return array Nested rows of data
      */
-    public function fetchRowsFromTable(string $tableName, mixed $where, mixed $sort): array;
+    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort): array;
 
     /**
      * @param string      $tableName
