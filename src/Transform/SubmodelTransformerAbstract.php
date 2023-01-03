@@ -84,9 +84,10 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     {
         $data = array();
         foreach ($this->_subModels as $sub) {
-            foreach ($sub->getMetaModel()->getItemNames() as $name) {
+            $subMetaModel = $sub->getMetaModel();
+            foreach ($subMetaModel->getItemNames() as $name) {
                 if (! $model->has($name)) {
-                    $data[$name] = $sub->get($name);
+                    $data[$name] = $subMetaModel->get($name);
                     $data[$name]['no_text_search'] = true;
 
                     // Remove unsuited data
