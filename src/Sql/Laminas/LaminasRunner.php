@@ -136,7 +136,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     if (is_array($value)) {
                         if (1 == count($value)) {
                             if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
-                                $output->like($name, '%' . $value['like'] . '%');
+                                $output->like($name, '%' . $value[MetaModelInterface::FILTER_CONTAINS] . '%');
                                 continue;
                             }
                         }
