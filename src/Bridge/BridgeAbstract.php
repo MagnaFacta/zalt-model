@@ -295,7 +295,7 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     public function getRow(): mixed
     {
-        if (null !== $this->_data) {
+        if (null === $this->_data) {
             $this->setRow();
         }
 
@@ -373,8 +373,8 @@ abstract class BridgeAbstract implements BridgeInterface
         if (null === $row) {
             // Stop tracking usage, in row mode it is unlikely
             // all fields have been set.
-            $this->model->trackUsage(false);
-            $row = $this->model->loadFirst();
+            $this->metaModel->trackUsage(false);
+            $row = $this->dataModel->loadFirst();
 
             if (! $row) {
                 $row = array();
