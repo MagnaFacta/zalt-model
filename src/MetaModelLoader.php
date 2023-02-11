@@ -77,4 +77,9 @@ class MetaModelLoader
         }
         return $this->loader->create($class, ...$parameters);
     }
+    
+    public function getModelLinkedDefaults(string $key, mixed $value): array
+    {
+        return $this->modelConfig['linkedDefaults'][$key][$value] ?? [];
+    }
 }

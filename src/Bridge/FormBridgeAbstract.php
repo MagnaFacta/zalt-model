@@ -49,7 +49,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
     private $_allowedOptions = [
         self::AUTO_OPTIONS       => ['elementClass', 'multiOptions'],
         self::CHECK_OPTIONS      => ['checkedValue', 'uncheckedValue'],
-        self::DATE_OPTIONS       => ['dateFormat', 'storageFormat'],
+        self::DATE_OPTIONS       => ['dateFormat', 'datePickerSettings', 'storageFormat'],
         self::DISPLAY_OPTIONS    => ['accesskey', 'addDecorators', 'autoInsertNoTagsValidator', 'autoInsertNotEmptyValidator', 'class', 'decorators', 'disabled', 'disableTranslator', 'description', 'escape', 'escapeDescription', 'label', 'labelplacement', 'onclick', 'placeholder', 'readonly', 'required', 'tabindex', 'value', 'showLabels'],
         self::EXHIBIT_OPTIONS    => ['formatFunction', 'itemDisplay', 'nohidden'],
         self::FAKESUBMIT_OPTIONS => ['label', 'tabindex', 'disabled'],
@@ -64,6 +64,8 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::TEXTAREA_OPTIONS   => ['cols', 'decorators', 'rows', 'wrap'],
         self::TOGGLE_OPTIONS     => ['selector', 'selectorName'],
     ];
+    
+    protected string $dateTimeClass = "DateTimeInput";
 
     /**
      * When no size is set for a text-element, the size will be set to the minimum of the
@@ -176,6 +178,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             // Merge them: first use supplied $options, and add missing values from model
             return (array) $options + (array) $modelOptions;
         }
+        
         return $options;
     }
 
@@ -268,7 +271,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             $this->metaModel->set($name, 'dateFormat', $options['dateFormat']);
         }
 
-        return $this->_addToForm($name, 'DatePicker', $options);
+        return $this->_addToForm($name, $this->dateTimeClass, $options);
     }
 
     /**
