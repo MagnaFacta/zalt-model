@@ -236,7 +236,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     {
         foreach ($this->_subModels as $sub) {
             foreach ($sort as $key => $value) {
-                if ($sub->has($key)) {
+                if ($sub->getMetaModel()->has($key)) {
                     // Remove all sorts on columns from the submodel
                     unset($sort[$key]);
                 }
