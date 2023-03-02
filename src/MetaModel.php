@@ -1178,7 +1178,6 @@ class MetaModel implements MetaModelInterface
 
             if ($this->isSaveable($value, $new, $name, $row)) {
                 $output[$name] = $this->getOnSave($value, $new, $name, $row);
-                file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $name . ' ' . $output[$name] . ' ' . ($new ? 'new' : 'old') . "\n", FILE_APPEND);
             }
         }
         
