@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
+use Zalt\Model\MetaModel;
+
 /**
  *
  * @package    Zalt
@@ -168,7 +170,6 @@ trait SqlModelTrait
         $primaryKeys  = $this->getKeysForTable($tableName);
         $primaryCount = count($primaryKeys);
         $filter       = [];
-        $update       = true;
 
         // \MUtil\EchoOut\EchoOut::r($newValues, $tableName);
         foreach ($primaryKeys as $key) {
@@ -178,8 +179,6 @@ trait SqlModelTrait
                     unset($newValues[$key]);
 //                    \MUtil\EchoOut\EchoOut::r('Null key value: ' . $key, 'INSERT!!');
                 }
-                // Now we know we are not updating
-                $update = false;
 
             } elseif (isset($oldKeys[$key])) {
 //                \MUtil\EchoOut\EchoOut::r($key . ' => ' . $oldKeys[$key], 'Old key');
@@ -199,27 +198,22 @@ trait SqlModelTrait
                 }
             }
         }
-        if (! $filter) {
-            $update = false;
+        if ($filter) {
+            $oldValues = $this->sqlRunner->fetchRowFromTable(
+                $tableName,
+                false,
+                $this->sqlRunner->createWhere($this->metaModel, $filter),
+                []);
+        } else {
+            $oldValues = false;
         }
+
 
         // Check for actual values for this table to save.
         // \MUtil\EchoOut\EchoOut::track($newValues);
-        $saveValues = $this->filterDataForTable($tableName, $newValues, ! $update);
+        $saveValues = $this->filterDataForTable($tableName, $newValues, ! $oldValues);
         if ($saveValues) {
 //            \MUtil\EchoOut\EchoOut::r($saveValues, 'Return');
-            if ($update) {
-                // \MUtil\EchoOut\EchoOut::r($filter, 'Filter');
-                // Retrieve the record from the database
-                $oldValues = $this->sqlRunner->fetchRowFromTable(
-                    $tableName, 
-                    false, 
-                    $this->sqlRunner->createWhere($this->metaModel, $filter), 
-                    []);
-            } else {
-                $oldValues = false;
-            }
-
             if ($oldValues) {
                 // \MUtil\EchoOut\EchoOut::r($filter);
                 $save = false;

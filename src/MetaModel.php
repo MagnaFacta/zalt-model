@@ -985,7 +985,6 @@ class MetaModel implements MetaModelInterface
     public function isSaveable($value, $new, $name, array $context = array())
     {
         if ($test = $this->get($name, self::SAVE_WHEN_TEST)) {
-
             if (is_callable($test)) {
                 return call_user_func($test, $value, $new, $name, $context);
             }
@@ -1179,6 +1178,7 @@ class MetaModel implements MetaModelInterface
 
             if ($this->isSaveable($value, $new, $name, $row)) {
                 $output[$name] = $this->getOnSave($value, $new, $name, $row);
+                file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $name . ' ' . $output[$name] . ' ' . ($new ? 'new' : 'old') . "\n", FILE_APPEND);
             }
         }
         
