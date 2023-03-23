@@ -1167,7 +1167,7 @@ class MetaModel implements MetaModelInterface
     /**
      * @inheritdoc 
      */
-    public function processRowBeforeSave(array $row, bool $new = false): array
+    public function processRowBeforeSave(array $row, bool $new = false, array $fullRow = []): array
     {
         $output = [];
         foreach ($row as $name => $value) {
@@ -1177,7 +1177,7 @@ class MetaModel implements MetaModelInterface
             }
 
             if ($this->isSaveable($value, $new, $name, $row)) {
-                $output[$name] = $this->getOnSave($value, $new, $name, $row);
+                $output[$name] = $this->getOnSave($value, $new, $name, $fullRow ?: $row);
             }
         }
         

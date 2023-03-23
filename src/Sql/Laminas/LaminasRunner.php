@@ -23,6 +23,7 @@ use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 use Zalt\Model\MetaModelInterface;
+use Zalt\Model\Sql\SqlRunnerInterface;
 
 /**
  *
@@ -48,7 +49,12 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         if (null === $columns) {
             $output = [];
             if ($metaModel->hasItemsUsed()) {
-                $output = $metaModel->getItemsUsed();               
+                $output = $metaModel->getItemsUsed();
+                foreach ($metaModel->getCol(SqlRunnerInterface::NO_SQL) as $name => $value) {
+                    if ($value) {
+                        unset($output[$name]);
+                    }
+                }
             } else {
                 $output[] = Select::SQL_STAR;
             }

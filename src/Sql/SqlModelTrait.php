@@ -112,7 +112,7 @@ trait SqlModelTrait
                 $output[$name] = null;
             }
         }
-        return $this->metaModel->processRowBeforeSave($output, $isNew);
+        return $this->metaModel->processRowBeforeSave($output, $isNew, $data);
     }
 
     /**
@@ -247,7 +247,7 @@ trait SqlModelTrait
                 // Update the row, if the saveMode allows it
                 if ($save && ($saveMode & SqlRunnerInterface::SAVE_MODE_UPDATE)) {
                     $changed = $this->sqlRunner->updateInTable($tableName, $saveValues, $filter);
-                    file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  'changed update ' . $changed . "\n", FILE_APPEND);
+                    // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  'changed update ' . $changed . "\n", FILE_APPEND);
                     if ($changed) {
                         $this->addChanged();
                         // Add the old values as we have them and they may be of use later on.

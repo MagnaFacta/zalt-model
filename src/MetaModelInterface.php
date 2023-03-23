@@ -530,10 +530,11 @@ interface MetaModelInterface
 
     /**
      * @param array $row
-     * @param bool $isNew 
+     * @param bool $isNew
+     * @param array $fullRow Optional full dataset for save context
      * @return array
      */
-    public function processRowBeforeSave(array $row, bool $new = false): array;
+    public function processRowBeforeSave(array $row, bool $new = false, array $fullRow = []): array;
     
     /**
      * Remove one attribute for a field name in the model.

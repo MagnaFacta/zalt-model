@@ -22,6 +22,11 @@ use Zalt\Model\MetaModelInterface;
 interface SqlRunnerInterface
 {
     /**
+     * Constant for nat an SQL columns
+     */
+    const NO_SQL = 'noSql';
+
+    /**
      * Default save mode: execute all saves
      */
     const SAVE_MODE_ALL    = 7;
