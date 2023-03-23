@@ -19,6 +19,7 @@ use Zalt\Model\Dependency\DependencyInterface;
 use Zalt\Model\Exception\MetaModelException;
 use Zalt\Model\Transform\ModelTransformerInterface;
 use Zalt\Model\Transform\NestedTransformer;
+use Zalt\Model\Type\ModelTypeInterface;
 use Zalt\Ra\Ra;
 
 /**
@@ -1292,7 +1293,12 @@ class MetaModel implements MetaModelInterface
                         $this->_model[$name][$key][$subkey] = $value;
                     }
                 } else {
+                    if (($key == 'type') && ($value instanceof ModelTypeInterface)) {
+                        $value->apply($this, $name);
+                        $value = $value->getBaseType();
+                    }
                     $this->_model[$name][$key] = $value;
+
                     foreach ($this->linkedDefaults as $defaultkey => $defaultValues) {
                         if (($defaultkey == $key) && (isset($defaultValues[$value]) && is_array($defaultValues[$value]))) {
                             foreach ($defaultValues[$value] as $dKey => $dVal) {
@@ -1306,7 +1312,7 @@ class MetaModel implements MetaModelInterface
             }
         } elseif (!array_key_exists($name, $this->_model)) {
             // Make sure this key occurs
-            $this->_model[$name] = array();
+            $this->_model[$name] = [];
         }
 
         // Now set the order (repeat always, because order can be changed later on)
