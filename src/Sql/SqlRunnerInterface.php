@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
+use Laminas\Db\Adapter\Adapter;
+use Laminas\Db\Adapter\AdapterInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -83,16 +85,28 @@ interface SqlRunnerInterface
     /**
      * @param string $tableName
      * @param mixed  $where
+     * @param mixed  $sort
+     * @return array One row of data
+     */
+    public function fetchCountFromTable(string $tableName, mixed $where): int;
+
+    /**
+     * @param string $tableName
+     * @param mixed  $columns
+     * @param mixed  $where
+     * @param mixed  $sort
      * @return array One row of data
      */
     public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort): array;
 
     /**
      * @param string $tableName
+     * @param mixed  $columns
      * @param mixed  $where
+     * @param mixed  $sort
      * @return array Nested rows of data
      */
-    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort): array;
+    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null): array;
 
     /**
      * @param string      $tableName

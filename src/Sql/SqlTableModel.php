@@ -82,6 +82,17 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
         ));
     }
 
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    {
+        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
+        $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
+
+        $total = $this->sqlRunner->fetchCountFromTable($this->tableName, $where);
+
+        return $this->sqlRunner->fetchRowsFromTable($this->tableName, $columns, $where, $sort, ($page - 1) * $items, $items);
+    }
+
     public function loadPostData(array $postData, $create = false, $filter = true, $sort = true)
     {
         if ($create) {

@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql\Laminas;
 
+use function intval;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Metadata\Source\Factory;
 use Laminas\Db\ResultSet\ResultSet;
@@ -182,6 +183,31 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
+    public function fetchCountFromTable(string $tableName, mixed $where): int
+    {
+        $select = $this->sql->select($tableName);
+        $select->columns(['count' => new Expression("COUNT(*)")]);
+        if ($where) {
+            $select->where($where);
+        }
+        $select->limit(1);
+
+        // dump($select->getSqlString($this->db->getPlatform()));
+        $rows = $this->fetchRowsFromSelect($select);
+
+        if ($rows) {
+            $row = reset($rows);
+            if (isset($row['count'])) {
+                return intval($row['count']);
+            }
+        }
+
+        return 0;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort) : array
     {
         $select = $this->sql->select($tableName);
@@ -206,8 +232,15 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRowsFromSelect(Select $select) : array
+    public function fetchRowsFromSelect(Select $select, int $offset = null, int $limit = null) : array
     {
+        if (null !== $offset) {
+            $select->offset($offset);
+        }
+        if (null !== $limit) {
+            $select->limit($limit);
+        }
+
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result    = $statement->execute([]);
@@ -218,7 +251,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort) : array
+    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null) : array
     {
         $select = $this->sql->select($tableName);
         if ($columns) {
@@ -232,8 +265,8 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         if ($sort) {
             $select->order($sort);
         }
-        
-        return $this->fetchRowsFromSelect($select); 
+
+        return $this->fetchRowsFromSelect($select, $offset, $limit);
     }
 
     /**

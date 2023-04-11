@@ -74,7 +74,7 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @param mixed $filter Array to use as filter
      * @param mixed $sort Array to use for sort
-     * @return array Nested array or false
+     * @return array Nested array or empty
      */
     public function load($filter = null, $sort = null): array;
 
@@ -93,6 +93,19 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @return array Nested when $count is not null, otherwise just a simple array
      */
     public function loadNew(): array;
+
+    /**
+     * Returns the numbers of rows with the items requested
+     *
+     *
+     * @param int|null $total
+     * @param int $page The page number starting with the offset number ONE, not zero
+     * @param int $items The number of items per page (and thus the number of items returned)
+     * @param mixed $filter Array to use as filter
+     * @param mixed $sort Array to use for sort
+     * @return array Nested array or empty
+     */
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array;
 
     /**
      * Returns a \MUtil\Lazy\RepeatableInterface for the items in the model

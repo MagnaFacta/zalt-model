@@ -11,6 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql\Laminas;
 
+use Laminas\Db\Sql\Expression;
+use Laminas\Db\Sql\Platform\Mysql\Mysql;
 use Laminas\Db\Sql\Select;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataReaderTrait;
@@ -34,7 +36,7 @@ class LaminasSelectModel implements DataReaderInterface
     public function __construct(
         protected Select $select,
         protected MetaModelInterface $metaModel,
-        protected LaminasRunner $laminasRunner,
+        protected LaminasRunner $laminasRunner
     )
     { }
 
@@ -68,6 +70,9 @@ class LaminasSelectModel implements DataReaderInterface
         return $this->metaModel->processAfterLoad($this->laminasRunner->fetchRowsFromSelect($select));
     }
 
+    /**
+     * @inheritDoc
+     */
     public function loadFirst($filter = null, $sort = null) : array
     {
         $select = $this->getSelectFor($filter, $sort);
@@ -78,5 +83,38 @@ class LaminasSelectModel implements DataReaderInterface
         }
         
         return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    {
+        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
+        $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
+
+        $selectCount = clone $this->select;
+        $selectCount->columns(['count' => new Expression("COUNT(*)")]);
+        $selectCount->where($where);
+
+        $total = 0;
+        $rows = $this->sqlRunner->fetchRowsFromSelect($selectCount);
+        if ($rows) {
+            $row = reset($rows);
+            if (isset($row['count'])) {
+                $total = intval($row['count']);
+            }
+        }
+
+        $selectRows  = clone $this->select;
+        $selectRows->columns($columns);
+        $selectRows->where($where);
+        $selectRows->order($order);
+        $selectRows->offset(($page - 1) * $items);
+        $selectRows->limit($items);
+        $output = $this->laminasRunner->fetchRowsFromSelect($selectRows);
+
+        return $this->metaModel->processAfterLoad($output);
     }
 }
