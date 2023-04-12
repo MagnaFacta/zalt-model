@@ -53,9 +53,9 @@ abstract class BridgeAbstract implements BridgeInterface
     protected $_repeater = null;
 
     /**
-     * @var string Optional current url start for links on the page
+     * @var array Optional current url array for links on the page (usable by Zalt/Html/UrlArrayAttribute
      */
-    public string $currentUrl = '';
+    public array $currentUrl = [];
 
     /**
      * @var \Zalt\Model\MetaModelInterface
@@ -300,6 +300,11 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         return $this->_data;
+    }
+
+    protected function getUrl(array $params = [])
+    {
+        return array_merge($this->currentUrl, $params);
     }
     
     /**
