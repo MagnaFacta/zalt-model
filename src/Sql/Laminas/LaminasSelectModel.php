@@ -111,9 +111,7 @@ class LaminasSelectModel implements DataReaderInterface
         $selectRows->columns($columns);
         $selectRows->where($where);
         $selectRows->order($order);
-        $selectRows->offset(($page - 1) * $items);
-        $selectRows->limit($items);
-        $output = $this->laminasRunner->fetchRowsFromSelect($selectRows);
+        $output = $this->laminasRunner->fetchRowsFromSelect($selectRows, ($page - 1) * $items, $items);
 
         return $this->metaModel->processAfterLoad($output);
     }

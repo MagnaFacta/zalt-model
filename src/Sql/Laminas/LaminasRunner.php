@@ -241,6 +241,8 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
             $select->limit($limit);
         }
 
+        // dump($select->getSqlString($this->db->getPlatform()));
+
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result    = $statement->execute([]);

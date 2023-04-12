@@ -90,7 +90,7 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
 
         $total = $this->sqlRunner->fetchCountFromTable($this->tableName, $where);
 
-        return $this->sqlRunner->fetchRowsFromTable($this->tableName, $columns, $where, $sort, ($page - 1) * $items, $items);
+        return $this->sqlRunner->fetchRowsFromTable($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items);
     }
 
     public function loadPostData(array $postData, $create = false, $filter = true, $sort = true)
