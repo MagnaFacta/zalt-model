@@ -19,5 +19,7 @@ namespace Zalt\Model;
  */
 interface MetaModellerInterface
 {
+    public function getName(): string;
+
     public function getMetaModel(): MetaModelInterface;
 }

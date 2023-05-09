@@ -57,6 +57,11 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
         return $this->sqlRunner->deleteFromTable($this->tableName, $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
     }
 
+    public function getName(): string
+    {
+        return $this->tableName;
+    }
+
     public function hasNew() : bool
     {
         return true;
