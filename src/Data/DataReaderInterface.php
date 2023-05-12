@@ -79,6 +79,15 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
     public function load($filter = null, $sort = null): array;
 
     /**
+     * Returns the numbers of rows with the items requested
+     *
+     * @param mixed $filter Array to use as filter
+     * @param mixed $sort Array to use for sort
+     * @return int number of rows
+     */
+    public function loadCount($filter = null, $sort = null): int;
+
+    /**
      * Returns an array containing the first requested item.
      *
      * @param mixed $filter Array to use as filter
@@ -96,7 +105,6 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
 
     /**
      * Returns the numbers of rows with the items requested
-     *
      *
      * @param int|null $total
      * @param int $page The page number starting with the offset number ONE, not zero

@@ -77,6 +77,12 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
         ));
     }
 
+    public function loadCount($filter = null, $sort = null): int
+    {
+        $where = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        return $this->sqlRunner->fetchCountFromTable($this->tableName, $where);
+    }
+
     public function loadFirst($filter = null, $sort = null) : array
     {
         return $this->metaModel->processOneRowAfterLoad($this->sqlRunner->fetchRowFromTable(
