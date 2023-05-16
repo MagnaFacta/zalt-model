@@ -61,6 +61,11 @@ class LaminasSelectModel implements DataReaderInterface
         return false;
     }
 
+    public function getName(): string
+    {
+        return $this->metaModel->getName();
+    }
+
     /**
      * @inheritDoc
      */
