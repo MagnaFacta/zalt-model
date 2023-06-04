@@ -1292,7 +1292,7 @@ class MetaModel implements MetaModelInterface
 
                         $this->_model[$name][$key][$subkey] = $value;
                     }
-                } else {
+                } elseif ($value !== null) {
                     if (($key == 'type') && ($value instanceof ModelTypeInterface)) {
                         $value->apply($this, $name);
                         $value = $value->getBaseType();

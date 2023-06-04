@@ -77,13 +77,13 @@ class LaminasSelectModel implements DataReaderInterface
 
     public function loadCount($filter = null, $sort = null): int
     {
-        $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
 
         $selectCount = clone $this->select;
         $selectCount->columns(['count' => new Expression("COUNT(*)")]);
         $selectCount->where($where);
 
-        $rows = $this->sqlRunner->fetchRowsFromSelect($selectCount);
+        $rows = $this->laminasRunner->fetchRowsFromSelect($selectCount);
         if ($rows) {
             $row = reset($rows);
             if (isset($row['count'])) {
