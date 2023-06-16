@@ -362,9 +362,13 @@ abstract class ArrayModelAbstract implements DataReaderInterface
 
         $beforeValues = $this->metaModel->processBeforeSave($newValues);
         if (null !== $key) {
-            $data[$key] = $beforeValues;
+            if ($beforeValues != $data[$key]) {
+                $data[$key] = $beforeValues;
+                $this->_changed++;
+            }
         } else {
             $data[] = $beforeValues;
+            $this->_changed++;
         }
         $this->_saveAll($data);
         $afterValues  = $this->metaModel->processAfterSave($beforeValues);

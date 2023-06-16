@@ -115,6 +115,32 @@ class PhpArrayTest extends TestCase
         $this->assertEquals($output, $model->load(['c' => [MetaModelInterface::FILTER_BETWEEN_MIN => 20, MetaModelInterface::FILTER_BETWEEN_MAX => 30]]));
     }
 
+    public function testLoadFilterCallable(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $output = [
+            $rows[1],
+            $rows[3],
+        ];
+        $this->assertEquals($output, $model->load(['c' => function ($value) { return $value > 20; }], 'a'));
+    }
+
+    public function testLoadFilterCallArray(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $output = [
+            $rows[1],
+            $rows[3],
+        ];
+        $this->assertEquals($output, $model->load([function ($row) { return $row['c'] > 20; }], 'a'));
+    }
+
     public function testLoadFilterIn(): void
     {
         $rows  = $this->getRows();
@@ -205,6 +231,7 @@ class PhpArrayTest extends TestCase
         $output = $model->save($input);
         $this->assertEquals($output, $input);
         $this->assertCount(5, $model->load());
+        $this->assertEquals(1, $model->getChanged());
     }
 
     public function testSaveKeyChange(): void
@@ -218,6 +245,7 @@ class PhpArrayTest extends TestCase
         $output = $model->save($input, ['a' => 'A1']);
         $this->assertEquals($output, $input);
         $this->assertCount(4, $model->load());
+        $this->assertEquals(1, $model->getChanged());
     }
 
     public function testSaveKnown(): void
@@ -225,12 +253,13 @@ class PhpArrayTest extends TestCase
         $rows  = $this->getRows();
         $model = $this->getModelLoaded($rows);
 
-        $input = ['a' => 'A1', 'b' => 'D5', 'c' => 5];
+        $input = ['a' => 'A2', 'b' => 'D5', 'c' => 5];
         $model->getMetaModel()->setKeys(['a']);
 
         $output = $model->save($input);
         $this->assertEquals($output, $input);
         $this->assertCount(4, $model->load());
+        $this->assertEquals(1, $model->getChanged());
     }
 
     public function testSaveKnownPartial(): void
@@ -244,6 +273,21 @@ class PhpArrayTest extends TestCase
         $output = $model->save($input);
         $this->assertEquals($output, $input + ['c' => 20]);
         $this->assertCount(4, $model->load());
+        $this->assertEquals(1, $model->getChanged());
+    }
+
+    public function testSaveNoChange(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $input = $rows[1];
+        $model->getMetaModel()->setKeys(['a']);
+
+        $output = $model->save($input);
+        $this->assertEquals($output, $input);
+        $this->assertCount(4, $model->load());
+        $this->assertEquals(0, $model->getChanged());
     }
 
     public function testSaveNoKey(): void
@@ -256,5 +300,6 @@ class PhpArrayTest extends TestCase
         $output = $model->save($input);
         $this->assertEquals($output, $input);
         $this->assertCount(5, $model->load());
+        $this->assertEquals(1, $model->getChanged());
     }
 }
