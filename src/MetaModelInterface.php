@@ -39,6 +39,32 @@ interface MetaModelInterface
     const FILTER_CONTAINS = 'like';
 
     /**
+     * In order to keep the url's short and to hide any field names from
+     * the user, model identifies key values by using 'id' for a single
+     * key value and id1, id2, etc... for multiple keys.
+     */
+    const REQUEST_ID = 'id';
+
+    /**
+     * Helper constant for first key value in multi value key.
+     */
+    const REQUEST_ID1 = 'id1';
+
+    /**
+     * Helper constant for second key value in multi value key.
+     */
+    const REQUEST_ID2 = 'id2';
+
+    /**
+     * Helper constant for third key value in multi value key.
+     */
+    const REQUEST_ID3 = 'id3';
+
+    /**
+     * Helper constant for forth key value in multi value key.
+     */
+    const REQUEST_ID4 = 'id4';
+    /**
      * Type identifiers for calculated fields
      */
     const TYPE_NOVALUE      = 0;
@@ -683,9 +709,9 @@ interface MetaModelInterface
     /**
      * Sets the keys, processing the array key.
      *
-     * When an array key is numeric \MUtil\Model::REQUEST_ID is used.
+     * When an array key is numeric MetaModelInterface::REQUEST_ID is used.
      * When there is more than one key a increasing number is added to
-     * \MUtil\Model::REQUEST_ID starting with 1.
+     * MetaModelInterface::REQUEST_ID starting with 1.
      *
      * String key names are left as is.
      *

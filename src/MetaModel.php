@@ -60,7 +60,7 @@ class MetaModel implements MetaModelInterface
      *
      * @var array int => name
      */
-    private $_keys;
+    private $_keys = [];
 
     private array $_maps = [];
 
@@ -678,13 +678,13 @@ class MetaModel implements MetaModelInterface
         if (count($keys) == 1) {
             $key = reset($keys);
             if ($value = self::_getValueFrom($key, $forData)) {
-                $href[\MUtil\Model::REQUEST_ID] = $value;
+                $href[MetaModelInterface::REQUEST_ID] = $value;
             }
         } else {
             $i = 1;
             foreach ($keys as $key) {
                 if ($value = self::_getValueFrom($key, $forData)) {
-                    $href[\MUtil\Model::REQUEST_ID . $i] = $value;
+                    $href[MetaModelInterface::REQUEST_ID . $i] = $value;
                 }
             }
         }
@@ -1504,9 +1504,9 @@ class MetaModel implements MetaModelInterface
     /**
      * Sets the keys, processing the array key.
      *
-     * When an array key is numeric \MUtil\Model::REQUEST_ID is used.
+     * When an array key is numeric MetaModelInterface::REQUEST_ID is used.
      * When there is more than one key a increasing number is added to
-     * \MUtil\Model::REQUEST_ID starting with 1.
+     * MetaModelInterface::REQUEST_ID starting with 1.
      *
      * String key names are left as is.
      *
@@ -1520,7 +1520,7 @@ class MetaModel implements MetaModelInterface
         if (count($keys) == 1) {
             $name = reset($keys);
             if (is_numeric(key($keys))) {
-                $this->_keys[\MUtil\Model::REQUEST_ID] = $name;
+                $this->_keys[MetaModelInterface::REQUEST_ID] = $name;
             } else {
                 $this->_keys[key($keys)] = $name;
             }
@@ -1528,7 +1528,7 @@ class MetaModel implements MetaModelInterface
             $i = 1;
             foreach ($keys as $idx => $name) {
                 if (is_numeric($idx)) {
-                    $this->_keys[\MUtil\Model::REQUEST_ID . $i] = $name;
+                    $this->_keys[MetaModelInterface::REQUEST_ID . $i] = $name;
                     $i++;
                 } else {
                     $this->_keys[$idx] = $name;

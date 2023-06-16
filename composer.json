@@ -9,7 +9,7 @@
     },
     "require-dev": {
         "laminas/laminas-db": "^2.15.0",
-        "phpunit/phpunit": "9.*"
+        "phpunit/phpunit": "10.*"
     },
     "authors": [
         {

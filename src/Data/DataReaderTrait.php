@@ -47,7 +47,7 @@ trait DataReaderTrait
         if (null === $sort) {
             $sort = $this->getSort();
         } elseif (! is_array($sort)) {
-            $sort = [];
+            $sort = [$sort => SORT_ASC];
         } 
         $output = [];
         foreach ($sort as $field => $value) {

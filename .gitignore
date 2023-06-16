@@ -3,3 +3,4 @@ composer.phar
 /nbproject/
 /composer.lock
 /.idea
+phpunit.cache

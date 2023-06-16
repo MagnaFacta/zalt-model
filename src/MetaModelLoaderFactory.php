@@ -39,7 +39,7 @@ class MetaModelLoaderFactory
             $config['model']['linkedDefaults'] = [];
         }
         if (! isset($config['model']['linkedDefaults']['type'])) {
-            $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'];
+            $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'] ?? [];
         }
         return $config;
     }
