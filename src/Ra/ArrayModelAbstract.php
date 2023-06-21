@@ -276,6 +276,34 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     }
 
     /**
+     * Delete items from the model
+     *
+     * @param mixed $filter Null to use the stored filter, array to specify a different filter
+     * @return int The number of items deleted
+     */
+    public function delete($filter = null): int
+    {
+        if (! $this instanceof FullDataInterface) {
+            throw new ModelException(
+                sprintf('Function "%s" may not be used for class "%s" as it does not implement "%s".', __FUNCTION__, get_class($this), FullDataInterface::class)
+            );
+        }
+
+        $data = $this->_loadAll();
+
+        $deleting = $this->_filterData($data, $this->checkFilter($filter));
+
+        foreach ($deleting as $row) {
+            $key = $this->_findCurrentRow($row, $data, null);
+            unset($data[$key]);
+        }
+
+        $this->_saveAll($data);
+
+        return count($deleting);
+    }
+
+    /**
      * The number of item rows changed since the last save or delete
      *
      * @return int

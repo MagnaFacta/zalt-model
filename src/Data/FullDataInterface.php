@@ -36,5 +36,5 @@ interface FullDataInterface extends DataReaderInterface, DataWriterInterface
      * @param mixed $sort Null to use the stored sort, array to specify a different sort
      * @return array
      */
-    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null);
+    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null): array;
 }

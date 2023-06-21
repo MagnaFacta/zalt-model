@@ -14,6 +14,7 @@ namespace Zalt\Model\Data;
 use Zalt\Late\Late;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Bridge\BridgeInterface;
+use Zalt\Model\Exception\ModelException;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -109,7 +110,45 @@ trait DataReaderTrait
     {
         return $this->metaModel->getCol('default') +
             array_fill_keys($this->metaModel->getItemNames(), null);
-    }    
+    }
+
+    /**
+     * Processes and returns an array of post data
+     *
+     * @param array $postData
+     * @param boolean $create
+     * @param mixed $filter Null to use the stored filter, array to specify a different filter
+     * @param mixed $sort Null to use the stored sort, array to specify a different sort
+     * @return array
+     */
+    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null): array
+    {
+        if (! $this instanceof FullDataInterface) {
+            throw new ModelException(
+                sprintf('Function "%s" may not be used for class "%s" as it does not implement "%s".', __FUNCTION__, get_class($this), FullDataInterface::class)
+            );
+        }
+
+        if ($create) {
+            $modelData = $this->loadNewRaw();
+        } else {
+            $modelData = $this->loadFirst($filter, $sort);
+        }
+        if ($postData && $modelData) {
+            // Elements that do not occur in post data when empty
+            // while they should contain an empty array
+            $excludes = array_fill_keys(array_merge(
+                $this->metaModel->getItemsFor('elementClass', 'MultiCheckbox'),
+                $this->metaModel->getItemsFor('elementClass', 'MultiSelect')
+            ), []);
+        } else {
+            $excludes = [];
+        }
+
+        // 1 - When posting, posted data is used as a value first
+        // 2 - Then we use any values already set
+        return $this->metaModel->processOneRowAfterLoad($postData + $modelData + $excludes, $create, true);
+    }
 
     public function loadRepeatable($filter = null, $sort = null) : ?RepeatableInterface
     {

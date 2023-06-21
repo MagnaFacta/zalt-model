@@ -75,6 +75,20 @@ class PhpArrayTest extends TestCase
         $this->assertInstanceOf(PhpArrayModel::class, $model);
     }
 
+    public function testDelete()
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+        $model->getMetaModel()->setKeys(['a']);
+
+        $model->getMetaModel()->setKeys(['a']);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $this->assertEquals(count($rows), $model->loadCount());
+        $this->assertEquals(1, $model->delete(['a' => 'A2']));
+        $this->assertEquals(count($rows) - 1, $model->loadCount());
+    }
+
     public function testLoad(): void
     {
         $loader = $this->getModelLoader();

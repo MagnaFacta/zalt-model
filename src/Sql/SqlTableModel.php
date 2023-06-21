@@ -104,34 +104,6 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
         return $this->sqlRunner->fetchRowsFromTable($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items);
     }
 
-    public function loadPostData(array $postData, $create = false, $filter = true, $sort = true)
-    {
-        if ($create) {
-            $modelData = $this->loadNewRaw();
-        } else {
-            $modelData = $this->sqlRunner->fetchRowFromTable(
-                $this->tableName,
-                $this->sqlRunner->createColumns($this->metaModel, true),
-                $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
-                $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
-            );
-        }
-        if ($postData && $modelData) {
-            // Elements that do not occur in post data when empty
-            // while they should contain an empty array
-            $excludes = array_fill_keys(array_merge(
-                $this->metaModel->getItemsFor('elementClass', 'MultiCheckbox'),
-                $this->metaModel->getItemsFor('elementClass', 'MultiSelect')
-            ), []);
-        } else {
-            $excludes = [];   
-        }
-
-        // 1 - When posting, posted data is used as a value first
-        // 2 - Then we use any values already set
-        return $this->metaModel->processOneRowAfterLoad($postData + $excludes + $modelData, $create, true);
-    }
-
     public function save(array $newValues, array $filter = null) : array
     {
         $beforeValues = $this->metaModel->processBeforeSave($newValues);

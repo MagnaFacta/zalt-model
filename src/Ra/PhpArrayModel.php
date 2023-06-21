@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Ra;
 
-use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -18,7 +18,7 @@ use Zalt\Model\MetaModelInterface;
  * @subpackage Model\Ra
  * @since      Class available since version 1.0
  */
-class PhpArrayModel extends ArrayModelAbstract implements DataWriterInterface
+class PhpArrayModel extends ArrayModelAbstract implements FullDataInterface
 {
     protected array $data;
 

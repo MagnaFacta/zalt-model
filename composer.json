@@ -5,7 +5,8 @@
     "require": {
         "php": ">=8.1.0",
         "magnafacta/zalt-late": "dev-main",
-        "magnafacta/zalt-loader": "dev-psr-11"
+        "magnafacta/zalt-loader": "dev-psr-11",
+        "mezzio/mezzio-session": "^1.4"
     },
     "require-dev": {
         "laminas/laminas-db": "^2.15.0",
