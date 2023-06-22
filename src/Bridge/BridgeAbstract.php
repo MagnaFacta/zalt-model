@@ -58,6 +58,11 @@ abstract class BridgeAbstract implements BridgeInterface
     public array $currentUrl = [];
 
     /**
+     * @var string Name use for late stack
+     */
+    public string $lateStackName = 'bridge';
+
+    /**
      * @var \Zalt\Model\MetaModelInterface
      */
     protected $metaModel;
@@ -359,7 +364,7 @@ abstract class BridgeAbstract implements BridgeInterface
             $this->_chainedBridge->_repeater = $repeater;
         }
         if ($this->useAsLateStack) {
-            Late::addStack('bridge', new BridgeStack($this));
+            Late::addStack($this->lateStackName, new BridgeStack($this));
         }
         
         return $this;
