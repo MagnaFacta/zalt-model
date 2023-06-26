@@ -151,20 +151,6 @@ interface MetaModelInterface
     public function clearElementClasses();
 
     /**
-     * Creates a validator that checks that this value is used in no other
-     * row in the table of the $name field, except that row itself.
-     *
-     * If $excludes is specified it is used to create db_fieldname => $_POST mappings.
-     * When db_fieldname is numeric it is assumed both should be the same.
-     *
-     * If no $excludes the model creates a filter using the primary key of the table.
-     *
-     * @param string|array $name The name of a model field in the model or an array of them.
-     * @return \MUtil\Validate\Model\UniqueValue A validator.
-     * /
-    public function createUniqueValidator($name);
-
-    /**
      * Delete all, one or some values for a certain field name.
      *
      * @param string $name Field name
