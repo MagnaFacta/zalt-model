@@ -177,6 +177,24 @@ class PhpArrayTest extends TestCase
         $this->assertEquals([$rows[2]], $model->load(['b' => [MetaModelInterface::FILTER_CONTAINS => 'C']]));
     }
 
+    public function testLoadFilterLikeNot(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $this->assertEquals([$rows[2], $rows[3]], $model->load(['b' => [MetaModelInterface::FILTER_CONTAINS_NOT => 'B']]));
+    }
+
+    public function testLoadFilterNot(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $this->assertEquals([$rows[0], $rows[2], $rows[3]], $model->load([MetaModelInterface::FILTER_NOT => ['a' => 'A2']]));
+    }
+
     public function testLoadPage1(): void
     {
         $rows  = $this->getRows();

@@ -71,6 +71,9 @@ abstract class ArrayModelAbstract implements DataReaderInterface
                     if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
                         $result = str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS]);
                         $subFilter = false;
+                    } elseif (isset($value[MetaModelInterface::FILTER_CONTAINS_NOT])) {
+                        $result = ! str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS_NOT]);
+                        $subFilter = false;
                     }
                 } elseif (2 == count($value)) {
                     if (isset($value[MetaModelInterface::FILTER_BETWEEN_MAX], $value[MetaModelInterface::FILTER_BETWEEN_MIN])) {
@@ -80,7 +83,10 @@ abstract class ArrayModelAbstract implements DataReaderInterface
                 }
                 if ($subFilter) {
                     if (is_numeric($name)) {
-                        $result = $this->_applyFiltersToRow($row, $value, ! $logicalAnd);
+                        $result = $this->_applyFiltersToRow($row, $value, !$logicalAnd);
+                    } elseif (MetaModelInterface::FILTER_NOT == $name) {
+                        // Check here as NOT can be part of the main filter
+                        $result = ! $this->_applyFiltersToRow($row, $value, ! $logicalAnd);
                     } else {
                         $rowVal = $row[$name] ?? null;
                         $result = false;
