@@ -104,8 +104,13 @@ abstract class ArrayModelAbstract implements DataReaderInterface
                     // Allow literal value interpretation
                     $result = (boolean) $value;
                 } else {
-                    $val    = isset($row[$name]) ? $row[$name] : null;
-                    $result = ($val === $value) || (0 === strcasecmp($value, $val));
+                    $val = isset($row[$name]) ? $row[$name] : null;
+
+                    if (is_string($value) || is_string($val)) {
+                        $result = ($val === $value) || (0 === strcasecmp((string) $value, (string) $val));
+                    } else {
+                        $result = ($val === $value);
+                    }
                 }
                 // \MUtil\EchoOut\EchoOut::r($value . '===' . $value . '=' . $result);
             }
