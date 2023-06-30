@@ -102,7 +102,7 @@ trait SqlModelTrait
             if (array_key_exists($name, $data)) {
                 $len = intval($this->metaModel->get($name, 'maxlength'));
                 if ($len && $data[$name] && (! is_array($data[$name]))) {
-                    $output[$name] = substr($data[$name], 0, $len);
+                    $output[$name] = substr((string) $data[$name], 0, $len);
                 } else {
                     $output[$name] = $data[$name];
                 }
