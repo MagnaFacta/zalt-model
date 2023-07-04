@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Bridge;
 
+use Laminas\Validator\StringLength;
 use Zalt\Late\Late;
 use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
@@ -76,6 +77,8 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
     public $defaultSize = 40;
 
     public MetaModelInterface $metaModel;
+
+    public ValidatorBridgeInterface $validatorBridge;
     
     /**
      * @inheritDoc
@@ -86,6 +89,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             throw new MetaModelException("Only FullDataInterface objects are allowed as input for a FormBridge");
         }
         $this->metaModel = $this->dataModel->getMetaModel();
+        $this->validatorBridge = $this->getValidatorBridge();
     }
 
     /**
@@ -440,12 +444,6 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             self::TEXT_OPTIONS
         );
 
-        $stringlength = $this->_getStringLength($options);
-
-        if ($stringlength) {
-            $this->metaModel->set($name, 'validators[]', array('StringLength', true, $stringlength));
-        }
-
         return $this->_addToForm($name, 'Text', $options);
     }
 
@@ -455,14 +453,6 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         $options = Ra::pairs($options, 1);
 
         $options = $this->_mergeOptions($name, $options,self::DISPLAY_OPTIONS, self::TEXT_OPTIONS, self::TEXTAREA_OPTIONS);
-
-        $stringlength = $this->_getStringLength($options);
-        // Remove as size and maxlength are not used for textarea's
-        unset($options['size'], $options['maxlength']);
-
-        if ($stringlength) {
-            $this->metaModel->set($name, 'validators[]', array('StringLength', true, $stringlength));
-        }
 
         return $this->_addToForm($name, 'Textarea', $options);
     }
@@ -536,6 +526,8 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
     {
         return $this->dataModel->loadFirst();
     }
+
+    abstract public function getValidatorBridge(): ValidatorBridgeInterface;
 
     /**
      * @inheritDoc

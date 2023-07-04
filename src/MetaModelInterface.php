@@ -39,6 +39,16 @@ interface MetaModelInterface
     const FILTER_CONTAINS = 'like';
 
     /**
+     * FIlter constant for not like statements
+     */
+    const FILTER_CONTAINS_NOT = 'not like';
+
+    /**
+     * FIlter constant for not statements
+     */
+    const FILTER_NOT = 'not';
+
+    /**
      * In order to keep the url's short and to hide any field names from
      * the user, model identifies key values by using 'id' for a single
      * key value and id1, id2, etc... for multiple keys.

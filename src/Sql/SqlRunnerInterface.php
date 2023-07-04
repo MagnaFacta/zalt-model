@@ -11,8 +11,6 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
-use Laminas\Db\Adapter\Adapter;
-use Laminas\Db\Adapter\AdapterInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**

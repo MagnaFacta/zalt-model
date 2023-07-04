@@ -146,6 +146,10 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                                 $output->like($name, '%' . $value[MetaModelInterface::FILTER_CONTAINS] . '%');
                                 continue;
                             }
+                            if (isset($value[MetaModelInterface::FILTER_CONTAINS_NOT])) {
+                                $output->notLike($name, '%' . $value[MetaModelInterface::FILTER_CONTAINS_NOT] . '%');
+                                continue;
+                            }
                         }
                         if (2 == count($value)) {
                             if (isset($value[MetaModelInterface::FILTER_BETWEEN_MAX], $value[MetaModelInterface::FILTER_BETWEEN_MIN])) {
@@ -153,7 +157,12 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                                 continue;
                             }
                         }
-                        if ($value) {
+                        if (MetaModelInterface::FILTER_NOT == $field) {
+                            // Check here as NOT can be part of the main filter
+                            $not = new NotPredicate([]);
+                            $not->andPredicate($this->createWhere($metaModel, $value, true));
+                            $output->addPredicate($not);
+                        } elseif ($value) {
                             $output->in($name, $value);
                         } else {
                             // Always false when no values
