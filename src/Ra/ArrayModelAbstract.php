@@ -97,6 +97,8 @@ abstract class ArrayModelAbstract implements DataReaderInterface
                             }
                         }
                     }
+                } elseif (! isset($result)) {
+                    $result = false;
                 }
 
             } else {

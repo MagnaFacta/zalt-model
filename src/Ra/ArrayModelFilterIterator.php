@@ -15,7 +15,7 @@ namespace Zalt\Model\Ra;
  * @subpackage Model\Iterator
  * @since      Class available since version 2.0
  */
-class ArrayModelFilterIterator
+class ArrayModelFilterIterator extends \FilterIterator
 {
     /**
      * The filter to apply
@@ -48,7 +48,7 @@ class ArrayModelFilterIterator
      *
      * @return boolean
      */
-    public function accept()
+    public function accept(): bool
     {
         return $this->_model->applyFiltersToRow($this->current(), $this->_filter);
     }

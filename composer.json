@@ -9,8 +9,13 @@
         "mezzio/mezzio-session": "^1.4"
     },
     "require-dev": {
-        "laminas/laminas-db": "^2.15.0",
-        "phpunit/phpunit": "10.*"
+        "ext-pdo_sqlite": "*",
+        "laminas/laminas-db": "2.*",
+        "laminas/laminas-validator": "^2.20",
+        "phpstan/phpstan": "1.10.22",
+        "phpunit/phpunit": "10.*",
+        "symfony/yaml": "^6.1",
+        "magnafacta/zalt-html": "dev-main"
     },
     "authors": [
         {
@@ -30,6 +35,10 @@
         }
     },
     "repositories": [
+        {
+            "type": "git",
+            "url": "https://github.com/MagnaFacta/zalt-html.git"
+        },
         {
             "type": "git",
             "url": "https://github.com/MagnaFacta/zalt-late.git"

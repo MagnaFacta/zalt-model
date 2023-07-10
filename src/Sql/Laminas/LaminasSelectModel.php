@@ -113,16 +113,16 @@ class LaminasSelectModel implements DataReaderInterface
      */
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
     {
-        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
-        $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
-        $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
+        $columns = $this->laminasRunner->createColumns($this->metaModel, true);
+        $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
 
         $selectCount = clone $this->select;
         $selectCount->columns(['count' => new Expression("COUNT(*)")]);
         $selectCount->where($where);
 
         $total = 0;
-        $rows = $this->sqlRunner->fetchRowsFromSelect($selectCount);
+        $rows = $this->laminasRunner->fetchRowsFromSelect($selectCount);
         if ($rows) {
             $row = reset($rows);
             if (isset($row['count'])) {

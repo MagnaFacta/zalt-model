@@ -222,9 +222,9 @@ interface MetaModelInterface
      * Returns the field that name is an Alias of
      *
      * @param string $name
-     * @return string
+     * @return ?string
      */
-    public function getAlias($name);
+    public function getAlias($name): ?string;
 
     /**
      * Get an array of field names with the value of a certain attribute if set.

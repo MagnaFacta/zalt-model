@@ -388,7 +388,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         
         $table->insert($values);
         
-        return $table->getLastInsertValue();
+        return intval($table->getLastInsertValue());
     }
 
     /**

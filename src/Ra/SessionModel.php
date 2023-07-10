@@ -37,7 +37,7 @@ class SessionModel extends ArrayModelAbstract implements \Zalt\Model\Data\FullDa
      */
     protected function _loadAll(): array
     {
-        $this->session->get($this->_sessionId, []);
+        return $this->session->get($this->_sessionId, []);
     }
 
     /**

@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
+use Zalt\Interator\ItemCallbackIterator;
 use Zalt\Late\Late;
 use Zalt\Late\LateInterface;
+use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Dependency\DependencyInterface;
@@ -148,6 +150,17 @@ class MetaModel implements MetaModelInterface
         }
 
         return null;
+    }
+
+    protected static function _getValueFrom($fieldName, $fromData)
+    {
+        if ($fromData instanceof RepeatableInterface) {
+            return $fromData->$fieldName;
+        } else {
+            if (isset($fromData[$fieldName])) {
+                return $fromData[$fieldName];
+            }
+        }
     }
 
     /**
@@ -450,13 +463,14 @@ class MetaModel implements MetaModelInterface
      * Returns the field that name is an Alias of
      *
      * @param string $name
-     * @return string
+     * @return ?string
      */
-    public function getAlias($name)
+    public function getAlias($name): ?string
     {
         if (isset($this->_model[$name][self::ALIAS_OF])) {
             return $this->_model[$name][self::ALIAS_OF];
         }
+        return null;
     }
 
     /**
@@ -1231,29 +1245,6 @@ class MetaModel implements MetaModelInterface
     }
 
     /**
-     * Save a single model item.
-     *
-     * @param array $newValues The values to store for a single model item.
-     * @param array $filter If the filter contains old key values these are used
-     * to decide on update versus insert.
-     * @return array The values as they are after saving (they may change).
-     */
-    public function save(array $newValues, array $filter = null): array
-    {
-        $beforeValues = $this->processBeforeSave($newValues);
-
-        $resultValues = $this->_save($beforeValues, $filter);
-
-        $afterValues  = $this->processAfterSave($resultValues);
-
-        if ($this->getMeta(self::LOAD_TRANSFORMER) || $this->hasDependencies()) {
-            return $this->processRowAfterLoad($afterValues, false);
-        } else {
-            return $afterValues;
-        }
-    }
-
-    /**
      * Set one or more attributes for a field names in the model.
      *
      * Example:
@@ -1360,19 +1351,6 @@ class MetaModel implements MetaModelInterface
     public function setAutoSave($name, $value = true)
     {
         $this->set($name, self::AUTO_SAVE, $value);
-        return $this;
-    }
-
-    /**
-     * Update the number of rows changed.
-     *
-     * @param int $changed
-     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
-     */
-    protected function setChanged($changed = 0)
-    {
-        $this->_changedCount = $changed;
-
         return $this;
     }
 

@@ -255,6 +255,8 @@ trait SqlModelTrait
 
                         // Make sure the copy keys (if any) have the new values as well
                         $output = $this->updateCopyKeys($primaryKeys, $output);
+                    } else {
+                        $output = $oldValues;
                     }
 
                     return $output;
