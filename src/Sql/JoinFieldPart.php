@@ -60,7 +60,10 @@ class JoinFieldPart
         return $this->tableName . '.' . $this->fieldName;
     }
 
-    public function getModelName(): ?string
+    /**
+     * @return string|null The name in the model
+     */
+    public function getNameInModel(): ?string
     {
         if ($this->expression) {
             return null;
@@ -70,6 +73,11 @@ class JoinFieldPart
             return $this->tableAliasName . '.' . $this->fieldName;
         }
         return $this->fieldName;
+    }
+
+    public function getTableName(): ?string
+    {
+        return $this->tableName;
     }
 
     public function hasTableName(): bool

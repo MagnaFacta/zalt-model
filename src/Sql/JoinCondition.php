@@ -36,6 +36,22 @@ class JoinCondition
         throw new ModelException("No join set for condition!");
     }
 
+    public function getFieldMappings(array &$currentTables, array &$output, string $currentTable, ?string $currentAlias): void
+    {
+        if (isset($this->leftField) && isset($this->rightField)) {
+            $leftTable = $this->leftField->getTableName();
+            $rightTable = $this->rightField->getTableName();
+
+            if ($leftTable && $rightTable && $leftTable != $rightTable) {
+                if ($rightTable == $currentTable) {
+                    $output[$this->rightField->getNameInModel()] = $this->leftField->getNameInModel();
+                } else {
+                    $output[$this->leftField->getNameInModel()] = $this->rightField->getNameInModel();
+                }
+            }
+        }
+    }
+
     /**
      * @param string $leftField
      */

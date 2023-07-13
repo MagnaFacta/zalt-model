@@ -201,63 +201,33 @@ class JoinModel implements FullDataInterface
 
     public function save(array $newValues, array $filter = null, array $saveTables = null): array
     {
-        $saveTables = $this->_checkSaveTables($saveTables);
+        $oldChanged    = $this->changed;
 
-        $oldValues = $newValues;
+        $saveTables    = $this->_checkSaveTables($saveTables);
+        $oldValues     = $newValues;
+        $resultValues  = $this->metaModel->processBeforeSave($newValues);
+        $fieldMappings = $this->joinStore->getFieldMappings();
+        print_r($fieldMappings);
         foreach ($saveTables as $tableAlias => $tableName) {
-            // Gotta repeat this every time, as keys may be set later
-//            foreach ($this->joinStore as $join) {
-//                // Use is_string as $target and $target can be e.g. a \Zend_Db_Expr() object
-//                // as $source is an index keys it must be a string
-//                if (is_string($target)) {
-//                    if (! (isset($newValues[$target]) && $newValues[$target])) {
-//                        if (! (isset($newValues[$source]) && $newValues[$source])) {
-//                            if (\MUtil\Model::$verbose) {
-//                                \MUtil\EchoOut\EchoOut::r('Missing: ' . $source . ' -> ' . $target, 'ERROR!');
-//                            }
-//                            continue;
-//                        }
-//                        $newValues[$target] = $newValues[$source];
-//
-//                    } elseif (! (isset($newValues[$source]) && $newValues[$source])) {
-//                        $newValues[$source] = $newValues[$target];
-//
-//                    } elseif ((strlen($newValues[$target]) > 0) &&
-//                        (strlen($newValues[$source]) > 0) &&
-//                        $newValues[$target] != $newValues[$source]) {
-//                        // Join key values changed.
-//                        //
-//                        // Set the old values as the filter
-//                        $filter[$target] = $newValues[$target];
-//                        $filter[$source] = $newValues[$source];
-//
-//                        // Switch the target value to the value in the source field.
-//                        //
-//                        // JOIN FIELD ORDER IS IMPORTANT!!!
-//                        // The changing field must be stated first in the join statement.
-//                        $newValues[$target] = $newValues[$source];
-//                    }
-//                } elseif ($target instanceof \Zend_Db_Expr &&
-//                    (! (isset($newValues[$source]) && $newValues[$source]))) {
-//                    $newValues[$source] = $target;
-//                }
-//            }
-//
-//            //$this->_saveTableData returns the new row values, including any automatic changes.
-//            $newValues = $this->_saveTableData($this->_tables[$tableName], $newValues, $filter, $saveMode)
-//                + $oldValues;
-//            // \MUtil\EchoOut\EchoOut::track($oldValues, $newValues, $filter);
-//            $oldValues = $newValues;
+            // First copy all required keys
+            foreach ($fieldMappings as $to => $source) {
+                if (isset($resultValues[$source])) {
+                    $resultValues[$to] = $resultValues[$source];
+                }
+            }
+
+            // This will not work with aliased values
+            $resultValues = $this->saveTableData($tableName, $resultValues, $newValues) + $resultValues;
+            $oldValues    = $resultValues;
         }
+        $afterValues  = $this->metaModel->processAfterSave($resultValues);
 
         // If anything has changed, it counts as only one item for the user.
-//        if ($this->getChanged() > $oldChanged) {
-//            $this->setChanged(++$oldChanged);
-//        }
-//
-//        return $newValues;
-        // TODO: Implement save() method.
-        return $newValues;
+        if ($this->changed > $oldChanged) {
+            $this->changed = $oldChanged + 1;
+        }
+
+        return $afterValues;
     }
 
     public function startJoin($startTableName, bool $saveable = true): JoinModel

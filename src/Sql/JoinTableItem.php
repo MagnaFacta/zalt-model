@@ -40,6 +40,21 @@ class JoinTableItem
         return $this->tableAlias;
     }
 
+    public function getFieldMappings(array &$currentTables, array &$output): void
+    {
+        foreach ($this->joinFields as $condition) {
+            /**
+             * @var JoinCondition $condition
+             */
+            $condition->getFieldMappings($currentTables, $output, $this->joinTable, $this->tableAlias);
+        }
+        if ($this->tableAlias) {
+            $currentTables[$this->tableAlias] = $this->tableAlias;
+        } else {
+            $currentTables[$this->joinTable] = $this->joinTable;
+        }
+    }
+
     public function getJoin(): array
     {
         return $this->joinFields;

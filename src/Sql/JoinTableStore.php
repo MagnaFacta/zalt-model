@@ -47,6 +47,23 @@ class JoinTableStore implements \IteratorAggregate
     }
 
     /**
+     * @return array Mapping field to copy value to => field to copy value from
+     */
+    public function getFieldMappings(): array
+    {
+        $output = [];
+
+        $currentTables[$this->startTableName] = $this->startTableName;
+        foreach ($this->joins as $join) {
+            /**
+             * @var JoinTableItem $join
+             */
+            $join->getFieldMappings($currentTables, $output);
+        }
+        return $output;
+    }
+
+    /**
      * @return array table alias => JoinTableItem
      */
     public function getJoins(): array

@@ -113,4 +113,25 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
 
         $this->assertEquals(4, $model->loadCount([['fparent1' => 301, 'fparent2' => 301]]));
     }
+
+    public function testSingleTable()
+    {
+        $model = $this->getModel('family');
+
+        $this->assertInstanceOf(JoinModel::class, $model);
+        $this->assertInstanceOf(FullDataInterface::class, $model);
+        $this->assertCount(10, $model->load());
+
+        $newChild = [
+            'fid' => 404,
+            'name' => "kid 5",
+            'fparent1' => 301,
+            'fparent2' => 300,
+        ];
+
+        $model->save($newChild);
+
+        $this->assertEquals(1, $model->getChanged());
+        $this->assertCount(11, $model->load());
+    }
 }
