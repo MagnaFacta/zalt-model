@@ -48,7 +48,7 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
     public function testLoadJoinedTablesWithExpression()
     {
         $model = $this->getModel('family');
-        $model->addTable('companies', ['cwork' => 'cid', 'companies.name' => '"Company 2"']);
+        $model->addTable('companies', ['cwork' => 'cid', 'companies.cname' => '"Company 2"']);
 
         $this->assertCount(3, $model->load());
     }
@@ -70,7 +70,7 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
     public function testLoadLeftJoinedTablesWithExpression()
     {
         $model = $this->getModel('family');
-        $model->addLeftTable('companies', ['cwork' => 'cid', 'companies.name' => '"Company 2"']);
+        $model->addLeftTable('companies', ['cwork' => 'cid', 'companies.cname' => '"Company 2"']);
 
         $this->assertCount(10, $model->load());
     }
@@ -98,7 +98,7 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
     public function testLoadSingleExpressionJoinedTables()
     {
         $model = $this->getModel('family');
-        $model->addTable('companies', ['cwork' => 'cid', 'companies.name LIKE "%2"']);
+        $model->addTable('companies', ['cwork' => 'cid', 'companies.cname LIKE "%2"']);
 
         $this->assertCount(3, $model->load());
     }
@@ -114,24 +114,65 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(4, $model->loadCount([['fparent1' => 301, 'fparent2' => 301]]));
     }
 
-    public function testSingleTable()
+    public function testSaveSingleTable()
     {
         $model = $this->getModel('family');
 
-        $this->assertInstanceOf(JoinModel::class, $model);
-        $this->assertInstanceOf(FullDataInterface::class, $model);
         $this->assertCount(10, $model->load());
 
-        $newChild = [
+        $data = [
             'fid' => 404,
             'name' => "kid 5",
             'fparent1' => 301,
             'fparent2' => 300,
         ];
 
-        $model->save($newChild);
+        $model->save($data);
 
         $this->assertEquals(1, $model->getChanged());
         $this->assertCount(11, $model->load());
+    }
+
+    public function testSaveTwoTable()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], true);
+
+        $this->assertCount(10, $model->load());
+
+        $data = [
+            'fid' => 403,
+            'name' => "kid 5",
+            'fparent1' => 300,
+            'fparent2' => 301,
+            'cname' => 'company 3',
+        ];
+
+        $model->save($data);
+
+        $this->assertEquals(1, $model->getChanged());
+        $this->assertCount(10, $model->load());
+
+        // print_r($model->load());
+    }
+
+
+    public function testUpdateSingleTable()
+    {
+        $model = $this->getModel('family');
+
+        $this->assertCount(10, $model->load());
+
+        $data = [
+            'fid' => 403,
+            'name' => "kid 4",
+            'fparent1' => 300,
+            'fparent2' => 301,
+        ];
+
+        $model->save($data);
+
+        $this->assertEquals(1, $model->getChanged());
+        $this->assertCount(10, $model->load());
     }
 }

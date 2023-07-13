@@ -1,7 +1,7 @@
 
 CREATE TABLE companies (
     cid INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(10)
+    cname VARCHAR(10)
 );
 
 CREATE TABLE family (

@@ -23,9 +23,9 @@ class JoinFieldPart
 
     protected readonly string $fieldName;
 
-    protected ?string $tableAliasName;
+    protected ?string $tableAliasName = null;
 
-    protected ?string $tableName;
+    protected ?string $tableName = null;
 
     public function __construct(string $fieldName)
     {

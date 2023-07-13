@@ -1,10 +1,10 @@
 companies:
   -
     cid: 1
-    name: "Company 1"
+    cname: "Company 1"
   -
     cid: 2
-    name: "Company 2"
+    cname: "Company 2"
 family:
   -
     fid: 100

@@ -207,7 +207,8 @@ class JoinModel implements FullDataInterface
         $oldValues     = $newValues;
         $resultValues  = $this->metaModel->processBeforeSave($newValues);
         $fieldMappings = $this->joinStore->getFieldMappings();
-        print_r($fieldMappings);
+
+        // print_r($fieldMappings);
         foreach ($saveTables as $tableAlias => $tableName) {
             // First copy all required keys
             foreach ($fieldMappings as $to => $source) {
