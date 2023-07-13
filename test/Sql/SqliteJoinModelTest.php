@@ -36,14 +36,6 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         return $modelLoader->createModel(JoinModel::class, $table);
     }
 
-//    public function testLoadExpressionJoinedTables()
-//    {
-//        $model = $this->getModel('family');
-//        $model->addTable('companies', ['cwork' => 'cid', 'companies.name LIKE "Company%"']);
-//
-//        $this->assertCount(3, $model->load());
-//    }
-
     public function testLoadInnerJoinedTables()
     {
         $model = $this->getModel('family');
@@ -51,6 +43,14 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(7, $model->load());
 
+    }
+
+    public function testLoadJoinedTablesWithExpression()
+    {
+        $model = $this->getModel('family');
+        $model->addTable('companies', ['cwork' => 'cid', 'companies.name' => '"Company 2"']);
+
+        $this->assertCount(3, $model->load());
     }
 
     public function testLoadLeftJoinedTables()
@@ -65,6 +65,14 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         $total = 0;
         $this->assertCount($items, $model->loadPageWithCount($total, 2, $items));
         $this->assertEquals(10, $total);
+    }
+
+    public function testLoadLeftJoinedTablesWithExpression()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid', 'companies.name' => '"Company 2"']);
+
+        $this->assertCount(10, $model->load());
     }
 
     public function testLoadSelfJoinedTables()
@@ -85,6 +93,14 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(12, $model->load());
         $this->assertCount(1, $model->load(['child1.fid' => 400]));
+    }
+
+    public function testLoadSingleExpressionJoinedTables()
+    {
+        $model = $this->getModel('family');
+        $model->addTable('companies', ['cwork' => 'cid', 'companies.name LIKE "%2"']);
+
+        $this->assertCount(3, $model->load());
     }
 
     public function testLoadSingleTable()

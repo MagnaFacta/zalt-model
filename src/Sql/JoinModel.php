@@ -265,7 +265,7 @@ class JoinModel implements FullDataInterface
         foreach ($this->sqlRunner->getTableMetaData($startTableName) as $name => $settings) {
             $this->metaModel->set($name, $settings);
         }
-        $this->joinStore = new JoinTableStore($startTableName);
+        $this->joinStore = new JoinTableStore($startTableName, $this->metaModel);
         if ($saveable) {
             $this->saveTables = [$startTableName => $startTableName];
         } else {

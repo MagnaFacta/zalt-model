@@ -37,6 +37,8 @@ use Zalt\Model\Sql\SqlRunnerInterface;
  */
 class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 {
+    protected string $lastSqlStatement = '';
+
     protected Sql $sql;
     
     public function __construct(
@@ -276,13 +278,19 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         }
 
         // dump($select->getSqlString($this->db->getPlatform()));
-        echo "SQL: " . $select->getSqlString($this->db->getPlatform()) . "\n";
+        // echo "SQL: " . $select->getSqlString($this->db->getPlatform()) . "\n";
+        $this->lastSqlStatement = $select->getSqlString($this->db->getPlatform());
 
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
         $statement = $this->sql->prepareStatementForSqlObject($select);
         $result    = $statement->execute([]);
         $resultSet->initialize($result);
         return $resultSet->toArray() ?: [];
+    }
+
+    public function getLastSqlStatement(): string
+    {
+        return $this->lastSqlStatement;
     }
 
     public function getSelect(string|JoinTableStore $tables): Select
@@ -302,13 +310,15 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                         $on[] = "$key = $value";
                     }
                 }
+                $where = $this->createWhere($tables->getMetaModel(), $on);
+
                 if ($join->hasAlias()) {
                     $table = [$join->getAlias() => $join->getTable()];
                 } else {
                     $table = $join->getTable();
                 }
 
-                $select->join($table, implode(" AND ", $on), [], $join->isInnerJoin() ? Select::JOIN_INNER : Select::JOIN_LEFT);
+                $select->join($table, $where, [], $join->isInnerJoin() ? Select::JOIN_INNER : Select::JOIN_LEFT);
             }
         }
         return $select;

@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Zalt\Model\Sql;
 
 use Traversable;
+use Zalt\Model\MetaModelInterface;
 
 /**
  * @package    Zalt
@@ -24,7 +25,10 @@ class JoinTableStore implements \IteratorAggregate
      */
     protected array $joins = [];
 
-    public function __construct(protected string $startTableName)
+    public function __construct(
+        protected string $startTableName,
+        protected MetaModelInterface $metaModel,
+    )
     { }
 
     /**
@@ -48,6 +52,11 @@ class JoinTableStore implements \IteratorAggregate
     public function getJoins(): array
     {
         return $this->joins;
+    }
+
+    public function getMetaModel(): MetaModelInterface
+    {
+        return $this->metaModel;
     }
 
 

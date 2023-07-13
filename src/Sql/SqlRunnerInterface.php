@@ -82,6 +82,13 @@ interface SqlRunnerInterface
     public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null): array;
 
     /**
+     * A debugging helper function
+     *
+     * @return string The last generated SQL statement (that could be saved
+     */
+    public function getLastSqlStatement(): string;
+
+    /**
      * @param string $tableName
      * @return array name => [settings] for metamodel
      */
