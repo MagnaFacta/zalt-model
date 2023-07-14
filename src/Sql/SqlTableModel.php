@@ -63,11 +63,11 @@ class SqlTableModel implements FullDataInterface
         return true;
     }
 
-    public function load($filter = null, $sort = null) : array
+    public function load($filter = null, $sort = null, $columns = null) : array
     {
         return $this->metaModel->processAfterLoad($this->sqlRunner->fetchRows(
             $this->tableName,
-            $this->sqlRunner->createColumns($this->metaModel, null),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
         ));
@@ -79,19 +79,19 @@ class SqlTableModel implements FullDataInterface
         return $this->sqlRunner->fetchCount($this->tableName, $where);
     }
 
-    public function loadFirst($filter = null, $sort = null) : array
+    public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
         return $this->metaModel->processOneRowAfterLoad($this->sqlRunner->fetchRow(
             $this->tableName,
-            $this->sqlRunner->createColumns($this->metaModel, true),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
         ));
     }
 
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
+        $columns = $this->sqlRunner->createColumns($this->metaModel, $columns);
         $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
 

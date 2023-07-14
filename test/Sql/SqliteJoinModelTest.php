@@ -11,6 +11,7 @@ declare(strict_types=1);
 namespace Zalt\Model\Sql;
 
 use Zalt\Model\Data\FullDataInterface;
+use Zalt\Model\Exception\ModelException;
 use Zalt\Model\MetaModelTestTrait;
 use Zalt\Model\Sql\Laminas\LaminasRunner;
 
@@ -43,6 +44,18 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
 
         $this->assertCount(7, $model->load());
 
+    }
+
+    public function testLoadJoinedTablesStrange()
+    {
+        $model = $this->getModel('family');
+        $model->addTable('companies', ['cwork' => 'cid', 'companies.cname LIKE "%2"' => null]);
+
+        $this->assertCount(2, $model->load(['fparent1' => [100, 301]]));
+
+        $model->addTable('companies', ['cwork' => 'cid', null], true, 'bla');
+        $this->expectException(ModelException::class);
+        $model->loadFirst();
     }
 
     public function testLoadJoinedTablesWithExpression()
@@ -133,7 +146,7 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(11, $model->load());
     }
 
-    public function testSaveTwoTable()
+    public function testSaveTwoTables1()
     {
         $model = $this->getModel('family');
         $model->addLeftTable('companies', ['cwork' => 'cid'], true);
@@ -156,6 +169,28 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         // print_r($model->load());
     }
 
+    public function testSaveTwoTables2()
+    {
+        $model = $this->getModel('companies');
+        $model->addLeftTable('family', ['cwork' => new JoinFieldPart('cid')], true);
+
+        $this->assertCount(7, $model->load());
+
+        $data = [
+            'fid' => 403,
+            'name' => "kid 5",
+            'fparent1' => 300,
+            'fparent2' => 301,
+            'cname' => 'company 3',
+        ];
+
+        $model->save($data);
+
+        $this->assertEquals(1, $model->getChanged());
+        $this->assertCount(7, $model->load());
+
+        // print_r($model->load());
+    }
 
     public function testUpdateSingleTable()
     {

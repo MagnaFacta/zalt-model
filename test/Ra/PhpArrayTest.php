@@ -11,6 +11,8 @@ declare(strict_types=1);
 namespace Zalt\Model\Ra;
 
 use PHPUnit\Framework\TestCase;
+use Zalt\Late\RepeatableInterface;
+use Zalt\Model\Bridge\DisplayBridge;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Model\MetaModelLoader;
 use Zalt\Model\MetaModelTestTrait;
@@ -51,6 +53,13 @@ class PhpArrayTest extends TestCase
         $model = $loader->createModel(PhpArrayModel::class, 'test', $data);
 
         $this->assertInstanceOf(PhpArrayModel::class, $model);
+
+        $bridge1 = $model->getBridgeFor(DisplayBridge::class);
+        $this->assertInstanceOf(DisplayBridge::class, $bridge1);
+
+        $bridge2 = $model->getBridgeFor(DisplayBridge::class);
+        $this->assertInstanceOf(DisplayBridge::class, $bridge2);
+        $this->assertNotSame($bridge1, $bridge2);
     }
 
     public function testDelete()
@@ -173,6 +182,20 @@ class PhpArrayTest extends TestCase
         $this->assertEquals([$rows[0], $rows[2], $rows[3]], $model->load([MetaModelInterface::FILTER_NOT => ['a' => 'A2']]));
     }
 
+    public function testLoadNew()
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $metaModel = $model->getMetaModel();
+        $metaModel->set('b', 'default', 'XX');
+        $metaModel->set('c', ['default' => 0]);
+
+        $newRow = ['b' => 'XX', 'c' => 0];
+
+        $this->assertEquals($newRow, $model->loadNew());
+    }
+
     public function testLoadPage1(): void
     {
         $rows  = $this->getRows();
@@ -207,6 +230,17 @@ class PhpArrayTest extends TestCase
         $this->assertEquals(4, $total);
     }
 
+    public function testLoadRepeater(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertNull($model->loadRepeatable(['c' => 100]));
+
+        $repeater = $model->loadRepeatable();
+        $this->assertInstanceOf(RepeatableInterface::class, $repeater);
+    }
+
     public function testLoadSort1(): void
     {
         $rows  = $this->getRows();
@@ -229,6 +263,31 @@ class PhpArrayTest extends TestCase
             $rows[1],
         ];
         $this->assertEquals($output, $model->load(null, ['c' => SORT_ASC]));
+    }
+
+    public function testLoadWithSettings(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $output = [
+            $rows[2],
+            $rows[0],
+        ];
+        $this->assertFalse($model->hasFilter());
+        $this->assertFalse($model->hasSort());
+
+        $model->setFilter(['a' => ['A1', 'A3']]);
+        $model->setSort(['c']);
+
+        $this->assertEquals($output, $model->load());
+
+        $this->assertEquals($rows[2], $model->loadFirst());
+        $this->assertEquals([], $model->loadFirst(['a' => 'XX']));
+
+        $this->assertTrue($model->hasFilter());
+        $this->assertTrue($model->hasSort());
     }
 
     public function testSaveNew(): void

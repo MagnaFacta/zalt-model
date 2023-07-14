@@ -62,12 +62,12 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     }
                 }
             } else {
-                $output = [];
+                $output = [Select::SQL_STAR];
             }
         } elseif (is_array($columns)) {
             $output = $columns;
         } elseif (true == $columns) {
-            $output = [];
+            $output = [Select::SQL_STAR];
         } else {
             $output = [$columns];
         }
@@ -94,7 +94,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 if ($metaModel->has($field)) {
                     $expression = $metaModel->get($field, 'column_expression');
                     if ($expression) {
-                        $name = new Expression('(' . $expression . ')');
+                        $name = '(' . $expression . ')';
                     } else {
                         $name = $field;
                     }
@@ -226,7 +226,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     {
         $select = $this->getSelect($tables);
         if ($columns) {
-            $select->columns($columns);
+            $select->columns($columns, false);
         } else {
             $select->columns([Select::SQL_STAR], false);
         }
@@ -251,7 +251,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         $select = $this->getSelect($tables);
 
         if ($columns) {
-            $select->columns($columns);
+            $select->columns($columns, false);
         } else {
             $select->columns([Select::SQL_STAR], false);
         }
@@ -277,9 +277,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
             $select->limit($limit);
         }
 
-        // dump($select->getSqlString($this->db->getPlatform()));
-        // echo "SQL: " . $select->getSqlString($this->db->getPlatform()) . "\n";
         $this->lastSqlStatement = $select->getSqlString($this->db->getPlatform());
+        // dump($this->lastSqlStatement);
+        // echo "SQL: " . $this->lastSqlStatement . "\n";
 
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
         $statement = $this->sql->prepareStatementForSqlObject($select);

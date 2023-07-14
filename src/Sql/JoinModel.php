@@ -111,6 +111,9 @@ class JoinModel implements FullDataInterface
             }
             if ($to) {
                 $field = $condition->setRightField($to);
+                if ($to instanceof JoinFieldPart) {
+                    $to = $field->getNameInModel();
+                }
                 if (! $field->isExpression()) {
                     if (isset($settings[$to])) {
                         if ($tableAlias) {
@@ -171,11 +174,11 @@ class JoinModel implements FullDataInterface
         return (bool) $this->saveTables;
     }
 
-    public function load($filter = null, $sort = null): array
+    public function load($filter = null, $sort = null, $columns = null): array
     {
         return $this->sqlRunner->fetchRows(
             $this->getJoinStore(),
-            $this->sqlRunner->createColumns($this->metaModel, true),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
         );
@@ -187,10 +190,10 @@ class JoinModel implements FullDataInterface
         return $this->sqlRunner->fetchCount($this->getJoinStore(), $where);
     }
 
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
         $joins   = $this->getJoinStore();
-        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
+        $columns = $this->sqlRunner->createColumns($this->metaModel, $columns);
         $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
 

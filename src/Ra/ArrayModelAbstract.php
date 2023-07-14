@@ -339,7 +339,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function load($filter = null, $sort = null): array
+    public function load($filter = null, $sort = null, $columns = null): array
     {
         $filter = $this->checkFilter($filter);
         $sort   = $this->checkSort($sort);
@@ -374,7 +374,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
         $output = $this->load($filter, $sort);
         $total  = count($output);
