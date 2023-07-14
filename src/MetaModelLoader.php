@@ -48,9 +48,12 @@ class MetaModelLoader
         return new MetaModel($metaModelName, $this->modelConfig['linkedDefaults'], $this);
     }
     
-    public function createModel(string $className, mixed $metaModelName, mixed ...$parameters): DataReaderInterface|DataWriterInterface
+    public function createModel(string $className, mixed $metaModelName = null, mixed ...$parameters): DataReaderInterface|DataWriterInterface
     {
-        if (! is_string($metaModelName)) {
+        if (null === $metaModelName) {
+            $metaModelName = isset($className::$modelName) ? $className::$modelName :$className;
+
+        } elseif (! is_string($metaModelName)) {
             array_unshift($parameters, $metaModelName);
             $metaModelName = $className;
         }
