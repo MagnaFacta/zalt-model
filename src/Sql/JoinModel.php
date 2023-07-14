@@ -142,16 +142,33 @@ class JoinModel implements FullDataInterface
 
         $joinStore->addJoin($tableName, $realJoins, $tableAlias, $joinInner);
         if ($saveable) {
-            $this->saveTables[$tableAlias] = $tableName;
+            $this->saveTables[$tableAlias ?? $tableName] = $tableName;
         }
 
         return $this;
     }
 
-    public function delete($filter = null): int
+    public function delete($filter = null, array $saveTables = null): int
     {
-        // TODO: Implement delete() method.
-        return 0;
+        $saveTables = $this->_checkSaveTables($saveTables);
+
+        $filter = $this->checkFilter($filter);
+        $execute = [];
+        foreach ($filter as $field => $value) {
+            $table = $this->metaModel->get($field, 'table');
+            if ($table && isset($saveTables[$table])) {
+                $execute[$table][$field] = $value;
+            }
+        }
+
+        $output = 0;
+        foreach ($execute as $table => $tableFilter) {
+            $output += $this->sqlRunner->deleteFromTable(
+                 $table,
+                 $this->sqlRunner->createWhere($this->metaModel, $tableFilter)
+             );
+        }
+        return $output;
     }
 
     public function getJoinStore(): JoinTableStore
@@ -207,7 +224,6 @@ class JoinModel implements FullDataInterface
         $oldChanged    = $this->changed;
 
         $saveTables    = $this->_checkSaveTables($saveTables);
-        $oldValues     = $newValues;
         $resultValues  = $this->metaModel->processBeforeSave($newValues);
         $fieldMappings = $this->joinStore->getFieldMappings();
 

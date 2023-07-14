@@ -37,13 +37,72 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         return $modelLoader->createModel(JoinModel::class, $table);
     }
 
+    public function testCreate()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], false);
+
+        $this->expectException(ModelException::class);
+        $model->addTable('companies', ['cwork' => 'cid'], true);
+    }
+
+    public function testCreateAlias()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], false);
+
+        $model->addTable('companies', ['cwork' => 'cid'], true, 'pop');
+
+        $joinStore = $model->getJoinStore();
+        $this->assertCount(2, $joinStore->getJoins());
+    }
+
+    public function testDelete()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], false);
+
+        $this->assertEquals(2, $model->delete(['fparent2' => 300, 'cid' => 2], ['family', 'companies']));
+        $this->assertCount(8, $model->load());
+    }
+
+    public function testDeleteJoined()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], true);
+
+        $this->assertEquals(3, $model->delete(['fparent2' => 300, 'cid' => 2]));
+        $this->assertCount(8, $model->load());
+    }
+
+    public function testDeleteSaveTable1()
+    {
+        $model = $this->getModel('family');
+        $model->addLeftTable('companies', ['cwork' => 'cid'], true);
+
+        $this->assertEquals(1, $model->delete(['fparent2' => 300, 'cid' => 2], ['companies']));
+        $this->assertCount(10, $model->load());
+    }
+
+    public function testDeleteSaveTable2()
+    {
+        $model = $this->getModel(null);
+        $model->startJoin('family', false);
+        $this->assertFalse($model->hasNew());
+
+        $model->addLeftTable('companies', ['cwork' => 'cid'], true);
+        $this->assertTrue($model->hasNew());
+
+        $this->assertEquals(1, $model->delete(['fparent2' => 300, 'cid' => 2]));
+        $this->assertCount(10, $model->load());
+    }
+
     public function testLoadInnerJoinedTables()
     {
         $model = $this->getModel('family');
         $model->addTable('companies', ['cwork' => 'cid']);
 
         $this->assertCount(7, $model->load());
-
     }
 
     public function testLoadJoinedTablesStrange()
