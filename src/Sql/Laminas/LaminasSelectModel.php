@@ -40,13 +40,12 @@ class LaminasSelectModel implements DataReaderInterface
     )
     { }
 
-    protected function getSelectFor($filter, $sort)
+    protected function getSelectFor($filter, $sort, $columns)
     {
         $select = clone $this->select;
         
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
-        $columns = $select->getRawState(Select::COLUMNS);
-        $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns ?: null));
+        $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns));
         $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
         $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
         
@@ -69,9 +68,9 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function load($filter = null, $sort = null) : array
+    public function load($filter = null, $sort = null, $columns = null) : array
     {
-        $select = $this->getSelectFor($filter, $sort);
+        $select = $this->getSelectFor($filter, $sort, $columns);
         return $this->metaModel->processAfterLoad($this->laminasRunner->fetchRowsFromSelect($select));
     }
 
@@ -96,9 +95,9 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function loadFirst($filter = null, $sort = null) : array
+    public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
-        $select = $this->getSelectFor($filter, $sort);
+        $select = $this->getSelectFor($filter, $sort, $columns);
         $select->limit(1);
         $rows = $this->laminasRunner->fetchRowsFromSelect($select);
         if ($rows) {
@@ -111,9 +110,9 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        $columns = $this->laminasRunner->createColumns($this->metaModel, true);
+        $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
         $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
 

@@ -81,7 +81,7 @@ class JoinModel implements FullDataInterface
 
     /**
      * Add a joined table
-     * 
+     *
      * @param string $tableName
      * @param array $joinFields Preferably in the form existing table field => new table field, though expression may also be used on the right side
      * @param bool $saveable When true data in the table may be updated or deleted
@@ -157,7 +157,7 @@ class JoinModel implements FullDataInterface
         }
 
         // Add settings to metamodel
-        $targetTable = $prefix ?? $tableName . '.';
+        $targetTable = strlen($prefix) ? $prefix : $tableName . '.';
         foreach ($settings as $name => $settings) {
             $settings['table'] = $prefix . $tableName;
             $this->metaModel->set($prefix . $name, $settings);

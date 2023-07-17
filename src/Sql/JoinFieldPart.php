@@ -21,7 +21,7 @@ class JoinFieldPart
 {
     protected bool $expression = false;
 
-    protected readonly string $fieldName;
+    protected string $fieldName;
 
     protected ?string $tableAliasName = null;
 
