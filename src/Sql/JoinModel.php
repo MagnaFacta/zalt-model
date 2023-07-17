@@ -64,11 +64,32 @@ class JoinModel implements FullDataInterface
         return $results;
     }
 
+    /**
+     * Add a laft join table
+     *
+     * @param string $tableName
+     * @param array $joinFields Preferably in the form existing table field => new table field, though expression may also be used on the right side
+     * @param bool $saveable When true data in the table may be updated or deleted
+     * @param string|null $tableAlias If a table alias exists you cannot save the table data
+     * @return $this
+     * @throws ModelException
+     */
     public function addLeftTable(string $tableName, array $joinFields, bool $saveable = true, ?string $tableAlias = null): JoinModel
     {
         return $this->addTable($tableName, $joinFields, $saveable, $tableAlias, false);
     }
 
+    /**
+     * Add a joined table
+     * 
+     * @param string $tableName
+     * @param array $joinFields Preferably in the form existing table field => new table field, though expression may also be used on the right side
+     * @param bool $saveable When true data in the table may be updated or deleted
+     * @param string|null $tableAlias If a table alias exists you cannot save the table data
+     * @param bool $joinInner When false, a left join is used (purposely we do not use right and full outer joins
+     * @return $this
+     * @throws ModelException
+     */
     public function addTable(string $tableName, array $joinFields, bool $saveable = true, ?string $tableAlias = null, bool $joinInner = true): JoinModel
     {
         $joinStore = $this->getJoinStore();
@@ -78,6 +99,8 @@ class JoinModel implements FullDataInterface
             if ($joinStore->hasTable($tableAlias)) {
                 throw new ModelException("Table alias $tableAlias already added to join.");
             }
+            // Saving currently does not work with table aliases
+            $saveable = false;
         } else {
             $prefix = '';
             if ($joinStore->hasTable($tableName)) {
