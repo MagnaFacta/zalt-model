@@ -12,6 +12,7 @@
         "ext-pdo_sqlite": "*",
         "laminas/laminas-db": "2.*",
         "laminas/laminas-validator": "^2.20",
+        "laminas/laminas-servicemanager": "^3.22.0",
         "phpstan/phpstan": "1.10.22",
         "phpunit/phpunit": "10.*",
         "symfony/yaml": "^6.1",
@@ -55,6 +56,9 @@
     "scripts": {
         "test": [
             "vendor/bin/phpunit --configuration test/phpunit.xml test"
+        ],
+        "stan": [
+            "vendor/bin/phpstan"
         ]
     }
 }
