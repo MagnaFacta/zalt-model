@@ -92,9 +92,9 @@ trait DataReaderTrait
         return (bool) $this->sort;
     }
     
-    public function loadFirst($filter = null, $sort = null) : array
+    public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
-        $rows = $this->load($filter, $sort);
+        $rows = $this->load($filter, $sort, $columns);
         if (! $rows) {
             return [];
         }
@@ -121,7 +121,7 @@ trait DataReaderTrait
      * @param mixed $sort Null to use the stored sort, array to specify a different sort
      * @return array
      */
-    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null): array
+    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null, $columns = null): array
     {
         if (! $this instanceof FullDataInterface) {
             throw new ModelException(
@@ -132,7 +132,7 @@ trait DataReaderTrait
         if ($create) {
             $modelData = $this->loadNewRaw();
         } else {
-            $modelData = $this->loadFirst($filter, $sort);
+            $modelData = $this->loadFirst($filter, $sort, $columns);
         }
         if ($postData && $modelData) {
             // Elements that do not occur in post data when empty
@@ -150,9 +150,9 @@ trait DataReaderTrait
         return $this->metaModel->processOneRowAfterLoad($postData + $modelData + $excludes, $create, true);
     }
 
-    public function loadRepeatable($filter = null, $sort = null) : ?RepeatableInterface
+    public function loadRepeatable($filter = null, $sort = null, $columns = null) : ?RepeatableInterface
     {
-        $rows = $this->load($filter, $sort);
+        $rows = $this->load($filter, $sort, $columns);
         if ($rows) {
             return Late::repeat($rows);
         }

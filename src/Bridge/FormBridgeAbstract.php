@@ -150,12 +150,6 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             }
         }
 
-        //If not explicitly set, use the form value for translatorDisabled, since we
-        //create the element outside the form scope and later add it
-        if (!isset($options['disableTranslator']) && array_search('disableTranslator', $allowedOptions) !== false) {
-            $options['disableTranslator'] = $this->form->translatorIsDisabled();
-        }
-
         // Move options to model.
         if (isset($options['validator'])) {
             $this->metaModel->set($name, 'validators[]', $options['validator']);

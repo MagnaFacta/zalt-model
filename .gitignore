@@ -3,4 +3,5 @@ composer.phar
 /nbproject/
 /composer.lock
 /.idea
-phpunit.cache
+.phpunit.cache
+test/html-coverage

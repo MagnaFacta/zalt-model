@@ -100,7 +100,7 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
      * Lazy-load a validator
      *
      * @param  array $validator Validator definition
-     * @return Zend_Validate_Interface
+     * @return ValidatorInterface
      */
     protected function _loadValidator(array $validator): ValidatorInterface
     {
@@ -214,11 +214,12 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                             break;
                         case (1 <= $argc):
                             $validator  = array_shift($validatorInfo);
-                        case (2 <= $argc):
-                            $breakChainOnFailure = array_shift($validatorInfo);
-                        case (3 <= $argc):
-                            $options = array_shift($validatorInfo);
-                        default:
+                            if (2 <= $argc) {
+                                $breakChainOnFailure = array_shift($validatorInfo);
+                            }
+                            if (3 <= $argc) {
+                                $options = array_shift($validatorInfo);
+                            }
                             $this->addValidator($validator, $breakChainOnFailure, $options);
                             break;
                     }

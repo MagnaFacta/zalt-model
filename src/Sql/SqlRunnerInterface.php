@@ -27,31 +27,6 @@ interface SqlRunnerInterface
     const NO_SQL = 'noSql';
 
     /**
-     * Default save mode: execute all saves
-     */
-    const SAVE_MODE_ALL    = 7;
-
-    /**
-     * Allow deletes to be executed
-     */
-    const SAVE_MODE_DELETE = 4;
-
-    /**
-     * Allow inserts to be executed
-     */
-    const SAVE_MODE_INSERT = 2;
-
-    /**
-     * Allow updates to be executed
-     */
-    const SAVE_MODE_UPDATE = 1;
-
-    /**
-     * Do nothing
-     */
-    const SAVE_MODE_NONE   = 0;
-
-    /**
      * @param \Zalt\Model\MetaModelInterface $metaModel
      * @param array                          $sort
      * @return mixed Something to be used as a sort
@@ -81,37 +56,43 @@ interface SqlRunnerInterface
     public function deleteFromTable(string $tableName, mixed $where): int;
 
     /**
-     * @param string $tableName
+     * @param string|JoinTableStore $tables
      * @param mixed  $where
      * @param mixed  $sort
      * @return array One row of data
      */
-    public function fetchCountFromTable(string $tableName, mixed $where): int;
+    public function fetchCount(string|JoinTableStore $tables, mixed $where): int;
 
     /**
-     * @param string $tableName
+     * @param string|JoinTableStore $tables
      * @param mixed  $columns
      * @param mixed  $where
      * @param mixed  $sort
      * @return array One row of data
      */
-    public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort): array;
+    public function fetchRow(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort): array;
 
     /**
-     * @param string $tableName
+     * @param string|JoinTableStore $tables
      * @param mixed  $columns
      * @param mixed  $where
      * @param mixed  $sort
      * @return array Nested rows of data
      */
-    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null): array;
+    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null): array;
 
     /**
-     * @param string      $tableName
-     * @param string|null $alias
+     * A debugging helper function
+     *
+     * @return string The last generated SQL statement (that could be saved
+     */
+    public function getLastSqlStatement(): string;
+
+    /**
+     * @param string $tableName
      * @return array name => [settings] for metamodel
      */
-    public function getTableMetaData(string $tableName, string $alias = null): array;
+    public function getTableMetaData(string $tableName): array;
  
      /**
      * @param string $tableName

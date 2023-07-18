@@ -11,6 +11,9 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql\Laminas;
 
+use Zalt\Model\Sql\JoinCondition;
+use Zalt\Model\Sql\JoinTableItem;
+use Zalt\Model\Sql\JoinTableStore;
 use function intval;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Metadata\Source\Factory;
@@ -34,6 +37,8 @@ use Zalt\Model\Sql\SqlRunnerInterface;
  */
 class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 {
+    protected string $lastSqlStatement = '';
+
     protected Sql $sql;
     
     public function __construct(
@@ -57,12 +62,12 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     }
                 }
             } else {
-                $output[] = Select::SQL_STAR;
+                $output = [Select::SQL_STAR];
             }
         } elseif (is_array($columns)) {
             $output = $columns;
         } elseif (true == $columns) {
-            $output[] = Select::SQL_STAR;
+            $output = [Select::SQL_STAR];
         } else {
             $output = [$columns];
         }
@@ -89,7 +94,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 if ($metaModel->has($field)) {
                     $expression = $metaModel->get($field, 'column_expression');
                     if ($expression) {
-                        $name = new Expression('(' . $expression . ')');
+                        $name = '(' . $expression . ')';
                     } else {
                         $name = $field;
                     }
@@ -192,9 +197,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchCountFromTable(string $tableName, mixed $where): int
+    public function fetchCount(string|JoinTableStore $tables, mixed $where): int
     {
-        $select = $this->sql->select($tableName);
+        $select = $this->getSelect($tables);
         $select->columns(['count' => new Expression("COUNT(*)")]);
         if ($where) {
             $select->where($where);
@@ -217,13 +222,13 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRowFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort) : array
+    public function fetchRow(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort) : array
     {
-        $select = $this->sql->select($tableName);
+        $select = $this->getSelect($tables);
         if ($columns) {
-            $select->columns($columns);
+            $select->columns($columns, false);
         } else {
-            $select->columns([Select::SQL_STAR]);
+            $select->columns([Select::SQL_STAR], false);
         }
         if ($where) {
             $select->where($where);
@@ -241,34 +246,14 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRowsFromSelect(Select $select, int $offset = null, int $limit = null) : array
+    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null) : array
     {
-        if (null !== $offset) {
-            $select->offset($offset);
-        }
-        if (null !== $limit) {
-            $select->limit($limit);
-        }
+        $select = $this->getSelect($tables);
 
-        // dump($select->getSqlString($this->db->getPlatform()));
-
-        $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
-        $statement = $this->sql->prepareStatementForSqlObject($select);
-        $result    = $statement->execute([]);
-        $resultSet->initialize($result);
-        return $resultSet->toArray() ?: [];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function fetchRowsFromTable(string $tableName, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null) : array
-    {
-        $select = $this->sql->select($tableName);
         if ($columns) {
-            $select->columns($columns);
+            $select->columns($columns, false);
         } else {
-            $select->columns([Select::SQL_STAR]);
+            $select->columns([Select::SQL_STAR], false);
         }
         if ($where) {
             $select->where($where);
@@ -283,21 +268,73 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function getTableMetaData(string $tableName, string $alias = null): array
+    public function fetchRowsFromSelect(Select $select, int $offset = null, int $limit = null) : array
+    {
+        if (null !== $offset) {
+            $select->offset($offset);
+        }
+        if (null !== $limit) {
+            $select->limit($limit);
+        }
+
+        $this->lastSqlStatement = $select->getSqlString($this->db->getPlatform());
+        // dump($this->lastSqlStatement);
+        // echo "SQL: " . $this->lastSqlStatement . "\n";
+
+        $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);
+        $statement = $this->sql->prepareStatementForSqlObject($select);
+        $result    = $statement->execute([]);
+        $resultSet->initialize($result);
+        return $resultSet->toArray() ?: [];
+    }
+
+    public function getLastSqlStatement(): string
+    {
+        return $this->lastSqlStatement;
+    }
+
+    public function getSelect(string|JoinTableStore $tables): Select
+    {
+        if (is_string($tables)) {
+            return $this->sql->select($tables);
+        }
+
+        $select = $this->sql->select($tables->getStartTableName());
+        foreach ($tables->getJoins() as $join) {
+            if ($join instanceof JoinTableItem) {
+                $on = [];
+                foreach ($join->getJoin() as $key => $value) {
+                    if ($value instanceof JoinCondition) {
+                        $on[] = $value->getCondition();
+                    } else {
+                        $on[] = "$key = $value";
+                    }
+                }
+                $where = $this->createWhere($tables->getMetaModel(), $on);
+
+                if ($join->hasAlias()) {
+                    $table = [$join->getAlias() => $join->getTable()];
+                } else {
+                    $table = $join->getTable();
+                }
+
+                $select->join($table, $where, [], $join->isInnerJoin() ? Select::JOIN_INNER : Select::JOIN_LEFT);
+            }
+        }
+        return $select;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTableMetaData(string $tableName): array
     {
         $metaData = Factory::createSourceFromAdapter($this->db);
 
-        if ((null === $alias) || ($alias == $tableName)) {
-            $aliasPrefix = '';
-            $alias       = $tableName;
-        } else {
-            $aliasPrefix = $alias . '.';
-        }
-        
         $fieldData  = [];
         $fieldOrder = [];
         foreach ($metaData->getColumns($tableName) as $column) {
-            $name = $aliasPrefix . $column->getName();
+            $name = $column->getName();
             $type = match ($column->getDataType()) {
                 'date' => MetaModelInterface::TYPE_DATE,
                 'datetime', 'timestamp' => MetaModelInterface::TYPE_DATETIME,
@@ -309,7 +346,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 
             $fieldData[$name] = [
                 'required' => ! $column->isNullable(),
-                'table' => $alias,
+                'table' => $tableName,
                 'type' => $type,
             ];
 
@@ -355,7 +392,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         foreach ($metaData->getConstraints($tableName) as $constraint) {
             if ($constraint->isPrimaryKey()) {
                 foreach ($constraint->getColumns() as $colName) {
-                    $name = $aliasPrefix . $colName;
+                    $name = $colName;
                     $fieldData[$name]['key'] = true;
                 }
             }
@@ -388,7 +425,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         
         $table->insert($values);
         
-        return $table->getLastInsertValue();
+        return intval($table->getLastInsertValue());
     }
 
     /**

@@ -74,15 +74,17 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @param mixed $filter Array to use as filter
      * @param mixed $sort Array to use for sort
+     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return array Nested array or empty
      */
-    public function load($filter = null, $sort = null): array;
+    public function load($filter = null, $sort = null, $columns = null): array;
 
     /**
      * Returns the numbers of rows with the items requested
      *
      * @param mixed $filter Array to use as filter
      * @param mixed $sort Array to use for sort
+     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return int number of rows
      */
     public function loadCount($filter = null, $sort = null): int;
@@ -92,9 +94,10 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      *
      * @param mixed $filter Array to use as filter
      * @param mixed $sort Array to use for sort
+     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return array An array or false
      */
-    public function loadFirst($filter = null, $sort = null): array;
+    public function loadFirst($filter = null, $sort = null, $columns = null): array;
 
     /**
      * Creates new items - in memory only.
@@ -111,18 +114,20 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @param int $items The number of items per page (and thus the number of items returned)
      * @param mixed $filter Array to use as filter
      * @param mixed $sort Array to use for sort
+     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return array Nested array or empty
      */
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array;
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array;
 
     /**
      * Returns a \MUtil\Lazy\RepeatableInterface for the items in the model
      *
      * @param mixed $filter Null to use the stored filter, array to specify a different filter
      * @param mixed $sort Null to use the stored sort, array to specify a different sort
+     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return ?\Zalt\Late\RepeatableInterface
      */
-    public function loadRepeatable($filter = null, $sort = null): ?RepeatableInterface;
+    public function loadRepeatable($filter = null, $sort = null, $columns = null): ?RepeatableInterface;
 
     /**
      * Sets a default filter to be used when no filter was passed to a load() or loadX() function.

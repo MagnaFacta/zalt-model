@@ -11,10 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
-use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataReaderTrait;
 use Zalt\Model\Data\FullDataInterface;
-use Zalt\Model\Exception\MetaModelException;
 use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 
@@ -24,12 +22,10 @@ use Zalt\Model\MetaModelInterface;
  * @subpackage Model\Sql
  * @since      Class available since version 1.0
  */
-class SqlTableModel implements DataReaderInterface, FullDataInterface
+class SqlTableModel implements FullDataInterface
 {
     use DataReaderTrait;
     use SqlModelTrait;
-    
-    protected int $saveMode = SqlRunnerInterface::SAVE_MODE_ALL;
     
     protected string $tableName;
     
@@ -67,11 +63,11 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
         return true;
     }
 
-    public function load($filter = null, $sort = null) : array
+    public function load($filter = null, $sort = null, $columns = null) : array
     {
-        return $this->metaModel->processAfterLoad($this->sqlRunner->fetchRowsFromTable(
+        return $this->metaModel->processAfterLoad($this->sqlRunner->fetchRows(
             $this->tableName,
-            $this->sqlRunner->createColumns($this->metaModel, null),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
         ));
@@ -80,34 +76,34 @@ class SqlTableModel implements DataReaderInterface, FullDataInterface
     public function loadCount($filter = null, $sort = null): int
     {
         $where = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
-        return $this->sqlRunner->fetchCountFromTable($this->tableName, $where);
+        return $this->sqlRunner->fetchCount($this->tableName, $where);
     }
 
-    public function loadFirst($filter = null, $sort = null) : array
+    public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
-        return $this->metaModel->processOneRowAfterLoad($this->sqlRunner->fetchRowFromTable(
+        return $this->metaModel->processOneRowAfterLoad($this->sqlRunner->fetchRow(
             $this->tableName,
-            $this->sqlRunner->createColumns($this->metaModel, true),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
         ));
     }
 
-    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null): array
+    public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        $columns = $this->sqlRunner->createColumns($this->metaModel, true);
+        $columns = $this->sqlRunner->createColumns($this->metaModel, $columns);
         $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
 
-        $total = $this->sqlRunner->fetchCountFromTable($this->tableName, $where);
+        $total = $this->sqlRunner->fetchCount($this->tableName, $where);
 
-        return $this->sqlRunner->fetchRowsFromTable($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items);
+        return $this->sqlRunner->fetchRows($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items);
     }
 
     public function save(array $newValues, array $filter = null) : array
     {
         $beforeValues = $this->metaModel->processBeforeSave($newValues);
-        $resultValues = $this->saveTableData($this->tableName, $beforeValues,$filter, $this->saveMode);
+        $resultValues = $this->saveTableData($this->tableName, $beforeValues, $filter);
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 
         if ($this->metaModel->getMeta(MetaModel::LOAD_TRANSFORMER) || $this->metaModel->hasDependencies()) {

@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -53,8 +54,8 @@ class NestedTransformer extends SubmodelTransformerAbstract
                     $data[$name]['elementClass'] = 'None';
 
                     // Remove the submodel's own transformers to prevent changed/created to show up in the data array instead of only in the nested info
-                    unset($data[$name][\MUtil\Model\ModelAbstract::LOAD_TRANSFORMER]);
-                    unset($data[$name][\MUtil\Model\ModelAbstract::SAVE_TRANSFORMER]);
+                    unset($data[$name][MetaModel::LOAD_TRANSFORMER]);
+                    unset($data[$name][MetaModel::SAVE_TRANSFORMER]);
                 }
             }
         }

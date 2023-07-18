@@ -73,7 +73,8 @@ class DisplayBridge extends BridgeAbstract
             if (is_callable($format)) {
                 $output['numberFormat'] = $format;
             } else {
-                $output['numberFormat'] = function ($value) use ($format) {
+                $output['numberFormat'] = function ($value) {
+                    // use($format)
                     // return \Zend_Locale_Format::toNumber($value, array('number_format' => $format));
                     // TODO: how are we going to format numbers from now on?
                     $locale = localeconv();

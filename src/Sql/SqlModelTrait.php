@@ -158,10 +158,9 @@ trait SqlModelTrait
      * @param $string $table The table to save
      * @param array   $newValues The values to save, including those for other tables
      * @param ?array  $oldKeys The original keys as they where before the changes
-     * @param int     $saveMode Should updates / inserts occur
      * @return array The values for this table as they were updated
      */
-    protected function saveTableData(string $tableName, array $newValues, array $oldKeys = null, int $saveMode = SqlRunnerInterface::SAVE_MODE_ALL)
+    protected function saveTableData(string $tableName, array $newValues, array $oldKeys = null)
     {
         if (! $newValues) {
             return [];
@@ -199,7 +198,7 @@ trait SqlModelTrait
             }
         }
         if ($filter) {
-            $oldValues = $this->sqlRunner->fetchRowFromTable(
+            $oldValues = $this->sqlRunner->fetchRow(
                 $tableName,
                 false,
                 $this->sqlRunner->createWhere($this->metaModel, $filter),
@@ -245,7 +244,7 @@ trait SqlModelTrait
                     }
                 }
                 // Update the row, if the saveMode allows it
-                if ($save && ($saveMode & SqlRunnerInterface::SAVE_MODE_UPDATE)) {
+                if ($save) {
                     $changed = $this->sqlRunner->updateInTable($tableName, $saveValues, $filter);
                     // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  'changed update ' . $changed . "\n", FILE_APPEND);
                     if ($changed) {
@@ -255,6 +254,8 @@ trait SqlModelTrait
 
                         // Make sure the copy keys (if any) have the new values as well
                         $output = $this->updateCopyKeys($primaryKeys, $output);
+                    } else {
+                        $output = $oldValues;
                     }
 
                     return $output;
@@ -262,7 +263,7 @@ trait SqlModelTrait
                 // Add the old values as we have them and they may be of use later on.
                 return $saveValues + $oldValues;
 
-            } elseif ($saveMode & SqlRunnerInterface::SAVE_MODE_INSERT) {
+            } else {
                 // Perform insert
                 // \MUtil\EchoOut\EchoOut::r($returnValues);
                 $newKeyValues = $this->sqlRunner->insertInTable($tableName, $saveValues);

@@ -14,6 +14,7 @@ namespace Zalt\Model\Transform;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
+use Zalt\Ra\Ra;
 
 /**
  *
@@ -30,18 +31,18 @@ class JoinTransformer extends SubmodelTransformerAbstract
             $mkey = key($join);
             $skey = reset($join);
 
-            $mfor = \MUtil\Ra::column($mkey, $data);
+            $mfor = array_column($data, $mkey);
 
-            // \MUtil\EchoOut\EchoOut::track($mfor);
+            // dump($mfor);
             if ($new) {
                 $sdata = $sub->loadNew(1);
             } else {
                 $sdata = $sub->load(array($skey => $mfor));
             }
-            // \MUtil\EchoOut\EchoOut::track($sdata);
+            // dump($sdata);
 
             if ($sdata) {
-                $skeys = array_flip(\MUtil\Ra::column($skey, $sdata));
+                $skeys = array_flip(array_column($sdata, $skey));
                 $empty = array_fill_keys(array_keys(reset($sdata)), null);
 
                 foreach ($data as &$mrow) {
@@ -60,7 +61,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
                     $mrow += $empty;
                 }
             }
-            // \MUtil\EchoOut\EchoOut::track($mrow);
+            // \dump($mrow);
         } else {
             // Multi column implementation
             $empty = array_fill_keys($sub->getItemNames(), null);
@@ -84,7 +85,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
                     $mrow += $empty;
                 }
 
-                // \MUtil\EchoOut\EchoOut::track($sdata, $mrow);
+                // \dump($sdata, $mrow);
             }
         }
     }
