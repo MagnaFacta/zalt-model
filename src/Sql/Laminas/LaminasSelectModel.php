@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql\Laminas;
 
+use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Platform\Mysql\Mysql;
 use Laminas\Db\Sql\Select;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataReaderTrait;
@@ -43,12 +43,17 @@ class LaminasSelectModel implements DataReaderInterface
     protected function getSelectFor($filter, $sort, $columns)
     {
         $select = clone $this->select;
-        
-        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($filter, true) . "\n", FILE_APPEND);
-        $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns));
+
+        // Different behaviour:
+        // - when no columns are specified we assume the columns are specified in the select itself.
+        // - this is because those columns are usually one of the reasons to use the select model.
+        // - but if columns are specified here, then we know those should be used
+        if ($columns) {
+            $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns));
+        }
         $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
         $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
-        
+
         return $select;
     }
     
