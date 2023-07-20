@@ -7,7 +7,7 @@ use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Ra\Ra;
 
-class ConcatenatedType implements ModelTypeInterface
+class ConcatenatedType extends AbstractModelType
 {
     /**
      * The character used to separate values when displaying.

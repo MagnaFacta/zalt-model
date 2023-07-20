@@ -74,6 +74,12 @@ interface MetaModelInterface
      * Helper constant for forth key value in multi value key.
      */
     const REQUEST_ID4 = 'id4';
+
+    /**
+     * Type identifiers for calculated fields
+     */
+    const TYPE_ID           = 'type';
+
     /**
      * Type identifiers for calculated fields
      */

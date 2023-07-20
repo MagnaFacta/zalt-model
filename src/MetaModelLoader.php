@@ -17,6 +17,7 @@ use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
 use Zalt\Model\Transform\ModelTransformerInterface;
+use Zalt\Model\Type\ModelTypeInterface;
 
 /**
  *
@@ -45,7 +46,7 @@ class MetaModelLoader
     
     protected function createMetaModel($metaModelName)
     {
-        return new MetaModel($metaModelName, $this->modelConfig['linkedDefaults'], $this);
+        return new MetaModel($metaModelName, $this);
     }
     
     public function createModel(string $className, mixed $metaModelName = null, mixed ...$parameters): DataReaderInterface|DataWriterInterface
@@ -71,18 +72,36 @@ class MetaModelLoader
         return $this->loader->create($className, ...$parameters);
     }
     
-    public function createTransformer($class, ...$parameters): ModelTransformerInterface
+    public function createTransformer(string $class, ...$parameters): ModelTransformerInterface
     {
-        if (! (str_contains($class, '\\Transform\\') || str_starts_with($class, 'Transform\\'))) {
+        return $this->loadSubType($class, 'Transform', ...$parameters);
+    }
+
+    public function createType(string $class, ...$parameters)
+    {
+        return $this->loadSubType($class, 'Tyoe', ...$parameters);
+    }
+
+    public function getDefaultTypeInterface(int $type): ?ModelTypeInterface
+    {
+        if (isset($this->modelConfig['modelTypes'][$type])) {
+            $class = $this->modelConfig['modelTypes'][$type];
+            if ($class instanceof ModelTypeInterface) {
+                return $class;
+            }
+            return $this->createType($class);
+        }
+
+        return null;
+    }
+    
+    protected function loadSubType(string $class, string $subType, ...$parameters)
+    {
+        if (! (str_contains($class, "\\$subType\\") || str_starts_with($class, $subType . '\\'))) {
             if (! class_exists($class)) {
-                $class = 'Transform\\' . $class;
+                $class = $subType . '\\' . $class;
             }
         }
         return $this->loader->create($class, ...$parameters);
-    }
-    
-    public function getModelLinkedDefaults(string $key, mixed $value): array
-    {
-        return $this->modelConfig['linkedDefaults'][$key][$value] ?? [];
     }
 }

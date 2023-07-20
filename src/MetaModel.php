@@ -124,12 +124,16 @@ class MetaModel implements MetaModelInterface
     public $orderIncrement = 10;
 
     /**
+     * @var bool When false ->set() does not override existing values
+     */
+    protected $overwriteOnSet = true;
+
+    /**
      *
      * @param string $modelName Hopefully unique model name, used for joining models and sub forms, etc...
      */
     public function __construct(
         private string $modelName, 
-        protected array $linkedDefaults,
         protected MetaModelLoader $modelLoader,
     )
     { }
@@ -246,7 +250,7 @@ class MetaModel implements MetaModelInterface
         $this->set($name,
                    'model', $model,
                    'elementClass', 'FormTable',
-                   'type', MetaModelInterface::TYPE_CHILD_MODEL
+                    MetaModelInterface::TYPE_ID, MetaModelInterface::TYPE_CHILD_MODEL
         );
 
         return $trans;
@@ -1012,7 +1016,7 @@ class MetaModel implements MetaModelInterface
 
     public function isString($name)
     {
-        if ($type = $this->get($name, 'type')) {
+        if ($type = $this->get($name, MetaModelInterface::TYPE_ID)) {
             return MetaModelInterface::TYPE_STRING == $type;
         }
 
@@ -1281,23 +1285,24 @@ class MetaModel implements MetaModelInterface
                         $subkey = substr($key, $pos + 1, -1);
                         $key    = substr($key, 0, $pos);
 
-                        $this->_model[$name][$key][$subkey] = $value;
+                        if ($this->overwriteOnSet || (! isset($this->_model[$name][$key][$subkey]))) {
+                            $this->_model[$name][$key][$subkey] = $value;
+                        }
                     }
                 } elseif ($value !== null) {
-                    if (($key == 'type') && ($value instanceof ModelTypeInterface)) {
-                        $value->apply($this, $name);
-                        $value = $value->getBaseType();
-                    }
-                    $this->_model[$name][$key] = $value;
-
-                    foreach ($this->linkedDefaults as $defaultkey => $defaultValues) {
-                        if (($defaultkey == $key) && (isset($defaultValues[$value]) && is_array($defaultValues[$value]))) {
-                            foreach ($defaultValues[$value] as $dKey => $dVal) {
-                                if (! array_key_exists($dKey, $this->_model[$name])) {
-                                    $this->_model[$name][$dKey] = $dVal;
-                                }
-                            }
+                    if ($key == MetaModelInterface::TYPE_ID) {
+                        if (is_int($value))  {
+                            $value = $this->modelLoader->getDefaultTypeInterface($value) ?? $value;
                         }
+                        if ($value instanceof ModelTypeInterface) {
+                            $this->overwriteOnSet = false;
+                            $value->apply($this, $name);
+                            $value = $value->getBaseType();
+                            $this->overwriteOnSet = true;
+                        }
+                    }
+                    if ($this->overwriteOnSet || (! isset($this->_model[$name][$key]))) {
+                        $this->_model[$name][$key] = $value;
                     }
                 }
             }

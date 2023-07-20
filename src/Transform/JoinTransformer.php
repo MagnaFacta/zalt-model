@@ -27,7 +27,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
     protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, $name, $new, $isPostData)
     {
         if (1 === count($join)) {
-            // Suimple implementation
+            // Simple implementation
             $mkey = key($join);
             $skey = reset($join);
 
@@ -42,7 +42,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
             // dump($sdata);
 
             if ($sdata) {
-                $skeys = array_flip(array_column($sdata, $skey));
+                $skeys = array_flip(array_column($sdata, $skey, $skey));
                 $empty = array_fill_keys(array_keys(reset($sdata)), null);
 
                 foreach ($data as &$mrow) {

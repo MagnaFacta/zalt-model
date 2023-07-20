@@ -4,7 +4,7 @@ namespace Zalt\Model\Type;
 
 use Zalt\Model\MetaModelInterface;
 
-class YesNoType implements ModelTypeInterface
+class YesNoType extends AbstractModelType
 {
     public function __construct(
         protected array $labels,

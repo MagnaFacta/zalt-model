@@ -358,7 +358,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
             $data = $this->_sortData($data, $sort);
         }
 
-        return $data;
+        return $this->metaModel->processAfterLoad($data);
 
     }
 

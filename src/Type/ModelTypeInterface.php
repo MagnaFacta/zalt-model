@@ -18,7 +18,15 @@ interface ModelTypeInterface
     public function getBaseType(): int;
 
     /**
-     * If this field is saved as an array value, use
+     * Get a general (not field adapted) setting for this type
+     *
+     * @param string $name
+     * @return array Containing settings for model item
+     */
+    public function getSetting(string $name): mixed;
+
+    /**
+     * Get the general (not field adapted) settings for this type
      *
      * @return array Containing settings for model item
      */

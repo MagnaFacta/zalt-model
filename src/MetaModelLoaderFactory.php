@@ -13,6 +13,9 @@ namespace Zalt\Model;
 
 use Psr\Container\ContainerInterface;
 use Zalt\Loader\ProjectOverloader;
+use Zalt\Model\Type\DateTimeType;
+use Zalt\Model\Type\DateType;
+use Zalt\Model\Type\TimeType;
 
 /**
  *
@@ -35,11 +38,12 @@ class MetaModelLoaderFactory
         if (! isset($config['model']['bridges'])) {
             $config['model']['bridges'] = MetaModelConfigProvider::getBridges();
         }
-        if (! isset($config['model']['linkedDefaults'])) {
-            $config['model']['linkedDefaults'] = [];
-        }
-        if (! isset($config['model']['linkedDefaults']['type'])) {
-            $config['model']['linkedDefaults']['type'] = $config['locale']['defaultTypes'] ?? [];
+        if (! isset($config['model']['modelTypes'])) {
+            $config['model']['modelTypes'] = [
+                MetaModelInterface::TYPE_DATE => DateType::class,
+                MetaModelInterface::TYPE_DATETIME => DateTimeType::class,
+                MetaModelInterface::TYPE_TIME => TimeType::class,
+            ];
         }
         return $config;
     }
