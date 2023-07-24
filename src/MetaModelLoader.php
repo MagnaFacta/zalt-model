@@ -86,10 +86,11 @@ class MetaModelLoader
     {
         if (isset($this->modelConfig['modelTypes'][$type])) {
             $class = $this->modelConfig['modelTypes'][$type];
-            if ($class instanceof ModelTypeInterface) {
-                return $class;
+            if (! $class instanceof ModelTypeInterface) {
+                $class = $this->createType($class);
             }
-            return $this->createType($class);
+            $this->modelConfig['modelTypes'][$type] = $class;
+            return $class;
         }
 
         return null;

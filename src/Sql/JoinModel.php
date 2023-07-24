@@ -74,7 +74,7 @@ class JoinModel implements FullDataInterface
      * @return $this
      * @throws ModelException
      */
-    public function addLeftTable(string $tableName, array $joinFields, bool $saveable = true, ?string $tableAlias = null): JoinModel
+    public function addLeftTable(string $tableName, array $joinFields, bool $saveable = false, ?string $tableAlias = null): JoinModel
     {
         return $this->addTable($tableName, $joinFields, $saveable, $tableAlias, false);
     }
@@ -90,7 +90,7 @@ class JoinModel implements FullDataInterface
      * @return $this
      * @throws ModelException
      */
-    public function addTable(string $tableName, array $joinFields, bool $saveable = true, ?string $tableAlias = null, bool $joinInner = true): JoinModel
+    public function addTable(string $tableName, array $joinFields, bool $saveable = false, ?string $tableAlias = null, bool $joinInner = true): JoinModel
     {
         $joinStore = $this->getJoinStore();
 
@@ -284,6 +284,7 @@ class JoinModel implements FullDataInterface
         } else {
             $this->saveTables = [];
         }
+        $this->metaModel->setKeys($this->getKeysForTable($startTableName));
 
         return $this;
     }

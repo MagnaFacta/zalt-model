@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
+use Laminas\Db\Sql\Expression;
 use Zalt\Model\MetaModel;
 
 /**
@@ -48,12 +49,12 @@ trait SqlModelTrait
     /**
      * Adds a column to the model
      *
-     * @param string $column
+     * @param mixed $column Usually string but might also be a SQL Expression object
      * @param ?string $columnName
      * @param ?string $orignalColumn
      * @return \Zalt\Model\Sql\SqlTableModel Provides a fluent interface
      */
-    public function addColumn(string $column, string $columnName = null, string $orignalColumn = null)
+    public function addColumn(mixed $column, string $columnName = null, string $orignalColumn = null)
     {
         if (null === $columnName) {
             $columnName = strtr((string) $column, ' .,;:?!\'"()<=>-*+\\/&%^', '______________________');

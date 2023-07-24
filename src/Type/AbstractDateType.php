@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Type;
 
+use Zalt\Html\Html;
 use Zalt\Model\MetaModelInterface;
-use Zalt\Validator\Model\IsDateModelValidator;
 
 /**
  * @package    Zalt
@@ -20,13 +20,17 @@ use Zalt\Validator\Model\IsDateModelValidator;
  */
 abstract class AbstractDateType extends AbstractModelType
 {
+    /**
+     * Just to be able to use code completion, but also just in case you want to change the
+     */
+    public static string $whenDateEmptyKey = 'whenDateEmpty';
+    public static string $whenDateEmptyClassKey = 'whenDateEmptyClass';
+
     public static array $databaseConstants = ['CURRENT_TIMESTAMP', 'CURRENT_TIME', 'CURRENT_DATE', 'NOW'];
 
     public string $dateFormat;
 
     public string $description;
-
-    protected MetaModelInterface $metaModel;
 
     public int $size;
     public string $storageFormat;
@@ -34,14 +38,47 @@ abstract class AbstractDateType extends AbstractModelType
     /**
      * @inheritDoc
      */
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $fieldName)
     {
-        $this->metaModel = $metaModel;
+        $metaModel->set($fieldName, $this->getSettings());
 
-        $metaModel->set($name, $this->getSettings());
+        // Create functions with passed on metaModels as we do not want to store it.
+        $type = $this;
+        $metaModel->set($fieldName, ['formatFunction' => function ($value) use ($type, $fieldName, $metaModel) {
+            return $type->format($value, $fieldName, $metaModel);
+        }]);
+        $metaModel->setOnLoad($fieldName, function ($value, bool $isNew = false, string $name = null, array $context = [], bool $isPost = false) use ($type, $fieldName, $metaModel) {
+            return $type->getDateTimeValue($value, $isNew, $fieldName, $context, $isPost, $metaModel);
+        });
+        $metaModel->setOnSave($fieldName, function ($value, bool $isNew = false, string $name = null, array $context = []) use ($type, $fieldName, $metaModel) {
+            return $type->getStringValue($value, $isNew, $fieldName, $context, $metaModel);
+        });
+    }
 
-        $metaModel->setOnLoad($name, [$this, 'getDateTimeValue']);
-        $metaModel->setOnSave($name, [$this, 'getStringValue']);
+    public function format($value, string $name, MetaModelInterface $metaModel)
+    {
+        if (! $value instanceof \DateTimeInterface) {
+            $value = self::toDate(
+                $value,
+                $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
+                $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
+                false);
+        }
+        if ($value instanceof \DateTimeInterface) {
+            return $value->format($metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat));
+        }
+        if (! $value) {
+            if ($metaModel->has($name, self::$whenDateEmptyKey)) {
+                $class = $metaModel->get($name, self::$whenDateEmptyClassKey);
+                $empty = $metaModel->get($name, self::$whenDateEmptyKey);
+                if ($class) {
+                    Html::create('span', $empty, ['class' => $class]);
+                }
+                return $empty;
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -64,7 +101,7 @@ abstract class AbstractDateType extends AbstractModelType
             'description'   => $this->description,
             'size'          => $this->size,
             'storageFormat' => $this->storageFormat,
-        ];
+            ];
 
         return $output + $this->getExtraSettings();
     }
@@ -75,15 +112,16 @@ abstract class AbstractDateType extends AbstractModelType
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @param boolean $isPost True when passing on post data
+     * @param MetaModelInterface $metaModel
      * @return mixed The value to use instead
      */
-    public function getDateTimeValue(mixed $value, bool $isNew = false, string $name = null, array $context = array(), bool $isPost = false)
+    public function getDateTimeValue(mixed $value, bool $isNew, string $name, array $context, bool $isPost, MetaModelInterface $metaModel)
     {
         if ($name) {
             return $this->toDate(
                 $value,
-                $this->metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
-                $this->metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
+                $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
+                $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
                 $isPost);
         }
 
@@ -95,12 +133,18 @@ abstract class AbstractDateType extends AbstractModelType
      * @param boolean $isNew True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
+     * @param MetaModelInterface $metaModel
      * @return string
      */
-    public function getStringValue($value, $isNew = false, $name = null, array $context = array())
+    public function getStringValue($value, $isNew, $name, array $context, MetaModelInterface $metaModel)
     {
         if ($name) {
-            $this->toString($value, $this->metaModel->get($name, 'storageFormat'), $this->metaModel->get($name, 'dateFormat'));
+            $this->toString(
+                $value,
+                $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
+                $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
+                true
+            );
         }
 
         return $this->toString($value, $this->storageFormat, $this->dateFormat);

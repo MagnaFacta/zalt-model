@@ -73,7 +73,11 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         }
         $expressions = $metaModel->getCol('column_expression');
         foreach ($expressions as $name => $expression) {
-            $output[$name] = new Expression($expression);
+            if ($expression instanceof Expression) {
+                $output[$name] = $expression;
+            } else {
+                $output[$name] = new Expression($expression);
+            }
         }
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r(array_keys($output), true) . "\n", FILE_APPEND);
         
@@ -94,12 +98,20 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 if ($metaModel->has($field)) {
                     $expression = $metaModel->get($field, 'column_expression');
                     if ($expression) {
-                        $name = '(' . $expression . ')';
+                        if ($expression instanceof Expression) {
+                            $name = $expression;
+                        } else {
+                            $name = new Expression($expression);
+                        }
                     } else {
                         $name = $field;
                     }
                     if (SORT_DESC === $type) {
-                        $output[] = $name . ' DESC';
+                        if ($name instanceof Expression) {
+                            $output[] = $name->getExpression() . ' DESC';
+                        } else {
+                            $output[] = $name . ' DESC';
+                        }
                     } else {
                         $output[] = $name;
                     }
