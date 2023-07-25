@@ -126,14 +126,14 @@ abstract class AbstractDateType extends AbstractModelType
     public function getDateTimeValue(mixed $value, bool $isNew, string $name, array $context, bool $isPost, MetaModelInterface $metaModel)
     {
         if ($name) {
-            return $this->toDate(
+            return self::toDate(
                 $this->checkValue($value),
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
                 $isPost);
         }
 
-        return $this->toDate($value, $this->storageFormat, $this->dateFormat, $isPost);
+        return self::toDate($value, $this->storageFormat, $this->dateFormat, $isPost);
     }
 
     /**
@@ -147,7 +147,7 @@ abstract class AbstractDateType extends AbstractModelType
     public function getStringValue($value, $isNew, $name, array $context, MetaModelInterface $metaModel)
     {
         if ($name) {
-            $this->toString(
+            self::toString(
                 $this->checkValue($value),
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
@@ -155,10 +155,10 @@ abstract class AbstractDateType extends AbstractModelType
             );
         }
 
-        return $this->toString($value, $this->storageFormat, $this->dateFormat);
+        return self::toString($value, $this->storageFormat, $this->dateFormat);
     }
 
-    public function toDate($value, string $storageFormat, string $dateFormat, bool $isPost = true): mixed
+    public static function toDate($value, string $storageFormat, string $dateFormat, bool $isPost = true): mixed
     {
         if ((null === $value) || ($value instanceof \DateTimeImmutable)) {
             return $value;
@@ -200,7 +200,7 @@ abstract class AbstractDateType extends AbstractModelType
 
     public function toString($value, string $storageFormat, string $dateFormat, bool $isPost = true): ?string
     {
-        if ((null === $value) || (is_string($value) && ('' == trim($value)))) {
+        if ((null === $value) || (is_string($value) && ('' == $value))) {
             return null;
         }
 
@@ -209,7 +209,7 @@ abstract class AbstractDateType extends AbstractModelType
         }
 
         if (! $value instanceof \DateTimeInterface) {
-            $value = $this->toDate($value, $storageFormat, $dateFormat, $isPost);
+            $value = self::toDate($value, $storageFormat, $dateFormat, $isPost);
         }
         if ($value instanceof \DateTimeInterface) {
             return $value->format($storageFormat);
