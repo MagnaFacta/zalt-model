@@ -163,6 +163,9 @@ abstract class AbstractDateType extends AbstractModelType
         if ((null === $value) || ($value instanceof \DateTimeImmutable)) {
             return $value;
         }
+        if ('' == $value) {
+            return null;
+        }
 
         if ($value instanceof \DateTimeInterface) {
             return \DateTimeImmutable::createFromInterface($value);
@@ -197,7 +200,7 @@ abstract class AbstractDateType extends AbstractModelType
 
     public function toString($value, string $storageFormat, string $dateFormat, bool $isPost = true): ?string
     {
-        if ((null === $value) || ('' == $value)) {
+        if ((null === $value) || (is_string($value) && ('' == trim($value)))) {
             return null;
         }
 
