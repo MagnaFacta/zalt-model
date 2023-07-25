@@ -22,6 +22,7 @@ use Zalt\Model\Exception\MetaModelException;
 use Zalt\Model\Transform\ModelTransformerInterface;
 use Zalt\Model\Transform\NestedTransformer;
 use Zalt\Model\Type\ModelTypeInterface;
+use Zalt\Model\Type\OverwritingTypeInterface;
 use Zalt\Ra\Ra;
 
 /**
@@ -1293,9 +1294,11 @@ class MetaModel implements MetaModelInterface
                     if ($key == MetaModelInterface::TYPE_ID) {
                         if (is_int($value))  {
                             $value = $this->modelLoader->getDefaultTypeInterface($value) ?? $value;
+                        } elseif (is_string($value)) {
+                            $value = $this->modelLoader->createType($value);
                         }
                         if ($value instanceof ModelTypeInterface) {
-                            $this->overwriteOnSet = false;
+                            $this->overwriteOnSet = $value instanceof OverwritingTypeInterface;
                             $value->apply($this, $name);
                             $value = $value->getBaseType();
                             $this->overwriteOnSet = true;

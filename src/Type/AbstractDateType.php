@@ -32,7 +32,10 @@ abstract class AbstractDateType extends AbstractModelType
 
     public string $description;
 
+    public string $elementClass = 'Date';
+
     public int $size;
+
     public string $storageFormat;
 
     /**
@@ -80,7 +83,7 @@ abstract class AbstractDateType extends AbstractModelType
                 $class = $metaModel->get($name, self::$whenDateEmptyClassKey);
                 $empty = $metaModel->get($name, self::$whenDateEmptyKey);
                 if ($class) {
-                    Html::create('span', $empty, ['class' => $class]);
+                    return Html::create('span', $empty, ['class' => $class]);
                 }
                 return $empty;
             }
@@ -107,11 +110,12 @@ abstract class AbstractDateType extends AbstractModelType
         $output = [
             'dateFormat'    => $this->dateFormat,
             'description'   => $this->description,
+            'elementClass'  => $this->elementClass,
             'size'          => $this->size,
             'storageFormat' => $this->storageFormat,
             ];
 
-        return $output + $this->getExtraSettings();
+        return $this->getExtraSettings() + $output;
     }
 
     /**
