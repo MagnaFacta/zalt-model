@@ -55,6 +55,14 @@ abstract class AbstractDateType extends AbstractModelType
         });
     }
 
+    public function checkValue(mixed $value)
+    {
+        if (is_object($value) && method_exists($value, '__toString')) {
+            return $value;
+        }
+        return $value;
+    }
+
     public function format($value, string $name, MetaModelInterface $metaModel)
     {
         if (! $value instanceof \DateTimeInterface) {
@@ -119,7 +127,7 @@ abstract class AbstractDateType extends AbstractModelType
     {
         if ($name) {
             return $this->toDate(
-                $value,
+                $this->checkValue($value),
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
                 $isPost);
@@ -140,7 +148,7 @@ abstract class AbstractDateType extends AbstractModelType
     {
         if ($name) {
             $this->toString(
-                $value,
+                $this->checkValue($value),
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
                 true
