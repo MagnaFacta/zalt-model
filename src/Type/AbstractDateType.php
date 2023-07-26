@@ -32,8 +32,6 @@ abstract class AbstractDateType extends AbstractModelType
 
     public string $description;
 
-    public string $elementClass = 'Date';
-
     public int $size;
 
     public string $storageFormat;
@@ -44,6 +42,10 @@ abstract class AbstractDateType extends AbstractModelType
     public function apply(MetaModelInterface $metaModel, string $fieldName)
     {
         $metaModel->set($fieldName, $this->getSettings());
+
+        if ($metaModel->has($fieldName, 'label')) {
+            $metaModel->set($fieldName, ['elementClass' => 'Date']);
+        }
 
         // Create functions with passed on metaModels as we do not want to store it.
         $type = $this;
@@ -110,7 +112,6 @@ abstract class AbstractDateType extends AbstractModelType
         $output = [
             'dateFormat'    => $this->dateFormat,
             'description'   => $this->description,
-            'elementClass'  => $this->elementClass,
             'size'          => $this->size,
             'storageFormat' => $this->storageFormat,
             ];
