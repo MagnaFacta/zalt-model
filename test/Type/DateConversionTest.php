@@ -82,15 +82,14 @@ class DateConversionTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $data = $model->loadFirst(['id' => 1]);
-        $time = $data['date'];
 
         // Check onLoad
-        $this->assertInstanceOf(\DateTimeImmutable::class, $time);
-        $this->assertEquals($display, $time->format($displayFormat));
+        $this->assertInstanceOf(\DateTimeImmutable::class, $data['date']);
+        $this->assertEquals($display, $data['date']->format($displayFormat));
 
         // Check display value
         $bridge = $model->getBridgeFor('display');
-        $this->assertEquals($display, $bridge->format('date', $time));
+        $this->assertEquals($display, $bridge->format('date', $data['date']));
 
         // Check storage of original data (no change)
         $save = $metaModel->processRowBeforeSave($data);
@@ -100,8 +99,8 @@ class DateConversionTest extends \PHPUnit\Framework\TestCase
         // Mimioc post
         $data['date'] = $display;
         $post = $model->loadPostData($data, false);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $time);
-        $this->assertEquals($display, $time->format($displayFormat));
+        $this->assertInstanceOf(\DateTimeImmutable::class, $post['date']);
+        $this->assertEquals($display, $post['date']->format($displayFormat));
 
         // Save post
         $save = $metaModel->processRowBeforeSave($post);

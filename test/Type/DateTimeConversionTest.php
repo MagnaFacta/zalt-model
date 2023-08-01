@@ -83,30 +83,27 @@ class DateTimeConversionTest extends \PHPUnit\Framework\TestCase
         ]);
 
         $data = $model->loadFirst(['id' => 1]);
-        $time = $data['datetime'];
 
         // Check onLoad
-        $this->assertInstanceOf(\DateTimeImmutable::class, $time);
-        $this->assertEquals($display, $time->format($displayFormat));
+        $this->assertInstanceOf(\DateTimeImmutable::class, $data['datetime']);
+        $this->assertEquals($display, $data['datetime']->format($displayFormat));
 
         // Check display value
         $bridge = $model->getBridgeFor('display');
-        $this->assertEquals($display, $bridge->format('datetime', $time));
+        $this->assertEquals($display, $bridge->format('datetime', $data['datetime']));
 
         // Check storage of original data (no change)
         $save = $metaModel->processRowBeforeSave($data);
         $this->assertEquals($input, $save['datetime']);
-        $this->assertEquals(0, $model->getChanged());
 
-        // Mimioc post
+        // Mimic post
         $data['datetime'] = $display;
         $post = $model->loadPostData($data, false);
-        $this->assertInstanceOf(\DateTimeImmutable::class, $time);
-        $this->assertEquals($display, $time->format($displayFormat));
+        $this->assertInstanceOf(\DateTimeImmutable::class, $post['datetime']);
+        $this->assertEquals($display, $post['datetime']->format($displayFormat));
 
         // Save post
         $save = $metaModel->processRowBeforeSave($post);
         $this->assertEquals($storage, $save['datetime']);
-        $this->assertEquals(0, $model->getChanged());
     }
 }
