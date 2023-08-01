@@ -183,17 +183,12 @@ class MetaModel implements MetaModelInterface
     public function addDependency($dependency, $dependsOn = null, array $effects = null,  $key = null)
     {
         if (! $dependency instanceof DependencyInterface) {
-            $loader = \MUtil\Model::getDependencyLoader();
-
             if (is_array($dependency)) {
                 $parameters = $dependency;
-                $className  = array_shift($parameters);
             } else {
-                $parameters = array();
-                $className  = (string) $dependency;
+                $parameters = func_get_args();
             }
-
-            $dependency = $loader->create($className, ...$parameters);
+            $dependency = $this->modelLoader->createDependency(...$parameters);
         }
         if (null !== $dependsOn) {
             $dependency->addDependsOn($dependsOn);
@@ -428,7 +423,7 @@ class MetaModel implements MetaModelInterface
         $args = func_get_args();
         $args = Ra::args($args, 1);
 
-        if ($this->_model_used && (! isset($this->_model_used[$name]))) {
+        if (is_array($this->_model_used) && (! isset($this->_model_used[$name]))) {
             $this->_model_used[$name] = $name;
         }
 
@@ -1406,7 +1401,7 @@ class MetaModel implements MetaModelInterface
     }
 
     /**
-     * Set attributes for all or some fields in the model, but only when those eattributes do not exist (or are null)
+     * Set attributes for all or some fields in the model, but only when those attributes do not exist (or are null)
      *
      * Example 1, all fields:
      * <code>

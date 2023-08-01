@@ -175,4 +175,26 @@ class DateTimeTypesTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($dateInput, $output['datetime']->format($dateFormat));
         }
     }
+
+    public function testSettings()
+    {
+        $loader = $this->getModelLoader();
+        $model  = $this->getModelLoaded($this->getRows());
+        $metaModel = $model->getMetaModel();
+
+        $fields = [
+            'date' => MetaModelInterface::TYPE_DATE,
+            'datetime' => MetaModelInterface::TYPE_DATETIME,
+            'time' => MetaModelInterface::TYPE_TIME,
+            ];
+
+        foreach ($fields as $name => $type) {
+            $class = $loader->getDefaultTypeInterface($type);
+
+            $this->assertEquals($type, $metaModel->get($name, 'type'));
+            $this->assertEquals($type, $class->getBaseType());
+            $this->assertEquals($class->getSetting('storageFormat'), $metaModel->get($name, 'storageFormat'));
+            $this->assertNull($class->getSetting('XXX'));
+        }
+    }
 }

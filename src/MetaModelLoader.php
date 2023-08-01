@@ -16,6 +16,7 @@ use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Dependency\DependencyInterface;
 use Zalt\Model\Transform\ModelTransformerInterface;
 use Zalt\Model\Type\ModelTypeInterface;
 
@@ -43,7 +44,12 @@ class MetaModelLoader
 
         return $this->loader->create($class, $dataModel, ...$parameters);
     }
-    
+
+    public function createDependency($dependencyClass, ...$parameters): DependencyInterface
+    {
+        return $this->loadSubType($dependencyClass, 'Dependency', ...$parameters);
+    }
+
     protected function createMetaModel($metaModelName)
     {
         return new MetaModel($metaModelName, $this);

@@ -152,7 +152,7 @@ abstract class AbstractDateType extends AbstractModelType
     public function getStringValue($value, $isNew, $name, array $context, MetaModelInterface $metaModel)
     {
         if ($name) {
-            self::toString(
+            return self::toString(
                 $this->checkValue($value),
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
