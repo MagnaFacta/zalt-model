@@ -124,9 +124,6 @@ abstract class DependencyAbstract implements DependencyInterface
     {
         if ($effectedSettings) {
             foreach ((array) $effectedSettings as $setting) {
-//                if (is_array($setting)) {
-//                     EchoOut\EchoOut::track($setting);
-//                }
                 $this->_effecteds[$effectedField][$setting] = $setting;
             }
         } else {

@@ -44,7 +44,6 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
     const TAB_OPTIONS        = 'tab';
     const TEXT_OPTIONS       = 'text';
     const TEXTAREA_OPTIONS   = 'textarea';
-    const TOGGLE_OPTIONS     = 'toggleDisplay';
 
     // First list html attributes, then Zend attributes, lastly own attributes
     private $_allowedOptions = [
@@ -63,7 +62,6 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::TAB_OPTIONS        => ['value'],
         self::TEXT_OPTIONS       => ['maxlength', 'minlength', 'onblur', 'onchange', 'onfocus', 'onselect', 'size'],
         self::TEXTAREA_OPTIONS   => ['cols', 'decorators', 'rows', 'wrap'],
-        self::TOGGLE_OPTIONS     => ['selector', 'selectorName'],
     ];
     
     protected string $dateTimeClass = "DateTimeInput";

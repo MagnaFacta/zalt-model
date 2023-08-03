@@ -44,10 +44,10 @@ class MetaModelConfigProvider
 
     public static function getConfig(): array
     {
-        return ['model' => [
+        return [
             'bridges' => self::getBridges(),
             'translateDatabaseFields' => true,
-        ]];
+        ];
     }
     
     public static function getDependencies(): array
