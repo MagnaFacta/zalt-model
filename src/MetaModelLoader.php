@@ -50,7 +50,7 @@ class MetaModelLoader
         return $this->loadSubType($dependencyClass, 'Dependency', ...$parameters);
     }
 
-    protected function createMetaModel($metaModelName)
+    public function createMetaModel($metaModelName): MetaModelInterface
     {
         return new MetaModel($metaModelName, $this);
     }

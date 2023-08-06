@@ -185,10 +185,11 @@ class MetaModel implements MetaModelInterface
         if (! $dependency instanceof DependencyInterface) {
             if (is_array($dependency)) {
                 $parameters = $dependency;
+                $dependency = array_shift($parameters);
             } else {
-                $parameters = func_get_args();
+                $parameters = [];
             }
-            $dependency = $this->modelLoader->createDependency(...$parameters);
+            $dependency = $this->modelLoader->createDependency($dependency, ...$parameters);
         }
         if (null !== $dependsOn) {
             $dependency->addDependsOn($dependsOn);

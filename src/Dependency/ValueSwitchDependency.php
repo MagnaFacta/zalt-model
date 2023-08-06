@@ -14,6 +14,35 @@ namespace Zalt\Model\Dependency;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
+ * A dependency where a fixed array of values is returned for each value in the switch.
+ *
+ * When used with N dependsOn fields, then the first N levels of the switches
+ * should contain match value in the order of the dependsOn fields.
+ *
+ * The next level should be a nested array with the form array(fieldname => array(setting => value)).
+ *
+ * When no value match is found, nothing is changed.
+ *
+ * The next example switches the display and editing of two fields on and off depending on the value of
+ * the depends on field.
+ * <code>
+ * $switch = new ValueSwitchDependency();
+ * $switch->setDependsOn('fieldDecides');
+ * $switch->setSwitches(array(
+ *      0 => array(
+ *              'field1' => array('elementClass' => 'Text', 'label' => 'Field 1'),
+ *              'field2' => array('elementClass' => 'Text', 'label' => 'Field 2'),
+ *          ),
+ *      1 => array(
+ *              'field1' => array('elementClass' => 'Hidden', 'label' => null),
+ *              'field2' => array('elementClass' => 'Text',   'label' => 'Field 2'),
+ *          ),
+ *      2 => array(
+ *              'field1' => array('elementClass' => 'Hidden', 'label' => null),
+ *              'field2' => array('elementClass' => 'Hidden', 'label' => null),
+ *          ),
+ *      ));
+ * </code>
  *
  * @package    Zalt
  * @subpackage Model\Dependency
@@ -122,10 +151,6 @@ class ValueSwitchDependency extends DependencyAbstract
 
         // When there is no data, return no changes
         if (!array_key_exists($name, $context)) {
-//            if (\MUtil\Model::$verbose) {
-//                $names = array_diff_key($this->_dependentOn, $context);
-//                // \MUtil\EchoOut\EchoOut::r(implode(', ', $names), 'Name(s) not found in ' . get_class($this));
-//            }
             return array();
         }
         $value = $context[$name];
@@ -159,32 +184,7 @@ class ValueSwitchDependency extends DependencyAbstract
                 }
             }
         }
-//        if (\MUtil\Model::$verbose) {
-//            \MUtil\EchoOut\EchoOut::track($this->_switches, $this->_dependentOn, $this->_effecteds);
-//            \MUtil\EchoOut\EchoOut::r(
-//                "Value '$value' not found for field $name among the values: " .
-//                implode(', ', array_keys($switches)),
-//                'Value not found in ' . get_class($this));
-//        }
         return array();
-    }
-
-    /**
-     * Adds which settings are effected by a value
-     *
-     * Overrule this function, e.g. when a sub class changed a fixed setting,
-     * but for diverse fields.
-     *
-     * @param string $effectedField A field name
-     * @param mixed $effectedSettings A single setting or an array of settings
-     * @return DependencyInterface (continuation pattern)
-     */
-    public function addEffected($effectedField, $effectedSettings): DependencyInterface
-    {
-        $this->_checked_effected = false;
-        $this->_switches[$effectedField] = $effectedSettings;
-
-        return $this;
     }
 
     /**
@@ -263,7 +263,7 @@ class ValueSwitchDependency extends DependencyAbstract
      *
      * @return array The switches
      */
-    public function getSwitches()
+    public function getSwitches(): array
     {
         return $this->_switches;
     }
