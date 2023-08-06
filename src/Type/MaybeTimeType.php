@@ -45,9 +45,7 @@ class MaybeTimeType extends DateTimeType
                 false);
         }
         if ($value instanceof \DateTimeInterface) {
-            dump($value->format($this->maybeTimeFormat), $this->maybeTimeValue);
             if ($value->format($this->maybeTimeFormat) == $this->maybeTimeValue) {
-                dump($value->format($this->maybeDateFormat));
                 return $value->format($this->maybeDateFormat);
             }
             return $value->format($metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat));
