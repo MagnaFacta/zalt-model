@@ -81,14 +81,7 @@ abstract class AbstractDateType extends AbstractModelType
             return $value->format($metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat));
         }
         if (! $value) {
-            if ($metaModel->has($name, self::$whenDateEmptyKey)) {
-                $class = $metaModel->get($name, self::$whenDateEmptyClassKey);
-                $empty = $metaModel->get($name, self::$whenDateEmptyKey);
-                if ($class) {
-                    return Html::create('span', $empty, ['class' => $class]);
-                }
-                return $empty;
-            }
+            return $this->getNullDisplayValue($name, $metaModel);
         }
 
         return $value;
@@ -102,6 +95,19 @@ abstract class AbstractDateType extends AbstractModelType
     protected function getExtraSettings(): array
     {
         return [];
+    }
+
+    protected function getNullDisplayValue(string $name, MetaModelInterface $metaModel): mixed
+    {
+        if ($metaModel->has($name, self::$whenDateEmptyKey)) {
+            $class = $metaModel->get($name, self::$whenDateEmptyClassKey);
+            $empty = $metaModel->get($name, self::$whenDateEmptyKey);
+            if ($class) {
+                return Html::create('span', $empty, ['class' => $class]);
+            }
+            return $empty;
+        }
+        return null;
     }
 
     /**
