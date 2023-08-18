@@ -66,6 +66,14 @@ interface ModelTranslatorInterface
     public function hasErrors(): bool;
 
     /**
+     * Set the description.
+     *
+     * @param string $description A description that enables users to choose the transformer they need.
+     * @return ModelTranslatorInterface (continuation pattern)
+     */
+    public function setDescription(string $description): ModelTranslatorInterface;
+
+    /**
      * Set the target model, where the data is going to.
      *
      * @param DataWriterInterface $sourceModel The target of the data
