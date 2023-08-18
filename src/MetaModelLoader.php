@@ -18,6 +18,7 @@ use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
 use Zalt\Model\Dependency\DependencyInterface;
 use Zalt\Model\Transform\ModelTransformerInterface;
+use Zalt\Model\Translator\ModelTranslatorInterface;
 use Zalt\Model\Type\ModelTypeInterface;
 
 /**
@@ -81,6 +82,11 @@ class MetaModelLoader
     public function createTransformer(string $class, ...$parameters): ModelTransformerInterface
     {
         return $this->loadSubType($class, 'Transform', ...$parameters);
+    }
+
+    public function createTranslator(string $class, ...$parameters): ModelTranslatorInterface
+    {
+        return $this->loadSubType($class, 'Translator', ...$parameters);
     }
 
     public function createType(string $class, ...$parameters)

@@ -11,8 +11,10 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Zalt\Loader\ProjectOverloader;
 use Zalt\Loader\ProjectOverloaderFactory;
+use Zalt\Mock\MockTranslator;
 use Zalt\Mock\SimpleServiceManager;
 
 /**
@@ -48,6 +50,8 @@ trait MetaModelTestTrait
 
         if (! $sm instanceof SimpleServiceManager) {
             $sm = new SimpleServiceManager(['config' => $this->serverManagerConfig]);
+
+            $sm->set(TranslatorInterface::class, new MockTranslator());
         }
 
         return $sm;

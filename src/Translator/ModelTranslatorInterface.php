@@ -11,9 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Translator;
 
-use phpDocumentor\Reflection\Types\Scalar;
-use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Exception\ModelTranslatorException;
 
 /**
  * @package    Zalt
@@ -41,31 +40,16 @@ interface ModelTranslatorInterface
      * Get information on the field translations
      *
      * @return array of fields sourceName => targetName
-     * @throws \MUtil\Model\ModelException
+     * @throws ModelTranslatorException
      */
     public function getFieldsTranslations(): array;
 
     /**
-     * Returns an array of the field names that are required
+     * Returns an array of the field names that are required (for information purposes in the interface)
      *
      * @return array of fields sourceName => targetName
      */
     public function getRequiredFields(): array;
-
-    /**
-     * Returns a description of the translator errors for the row specified.
-     *
-     * @param mixed $row
-     * @return array of String messages
-     */
-    public function getRowErrors($row): array;
-
-    /**
-     * Get the source model, where the data is coming from.
-     *
-     * @return DataReaderInterface $sourceModel The source of the data
-     */
-    public function getSourceModel(): DataReaderInterface;
 
     /**
      * Get the target model, where the data is going to.
@@ -80,14 +64,6 @@ interface ModelTranslatorInterface
      * @return boolean True when there are errora
      */
     public function hasErrors(): bool;
-
-    /**
-     * Set the source model, where the data is coming from.
-     *
-     * @param DataReaderInterface $sourceModel The source of the data
-     * @return ModelTranslatorInterface (continuation pattern)
-     */
-    public function setSourceModel(DataReaderInterface $sourceModel): ModelTranslatorInterface;
 
     /**
      * Set the target model, where the data is going to.
@@ -118,18 +94,18 @@ interface ModelTranslatorInterface
      * Perform any translations necessary for the code to work
      *
      * @param mixed $row array or \Traversable row
-     * @param scalar $key
+     * @param mixed $key
      * @return mixed Row array or false when errors occurred
      */
-    public function translateRowValues($row, $key);
+    public function translateRowValues($row, mixed $rowId);
 
     /**
      * Validate the data against the target form
      *
      * @param array $row
-     * @param scalar $key
+     * @param mixed $key
      * @return mixed Row array or false when errors occurred
      */
-    public function validateRowValues(array $row, $key);
+    public function validateRowValues(array $row, mixed $rowId);
 
 }
