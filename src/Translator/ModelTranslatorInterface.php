@@ -66,6 +66,12 @@ interface ModelTranslatorInterface
     public function hasErrors(): bool;
 
     /**
+     * @param array $rows The rows to save to the targetModel
+     * @return array The resulting orws
+     */
+    public function saveAll(array $rows): array;
+
+    /**
      * Set the description.
      *
      * @param string $description A description that enables users to choose the transformer they need.

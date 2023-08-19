@@ -182,13 +182,11 @@ class StraightTest extends \PHPUnit\Framework\TestCase
             'type' => MetaModelInterface::TYPE_NUMERIC,
             'validators[int]' => Digits::class,
         ]);
-        $options = ['A' => 'AA', 'B' => 'BB', 'C' => 'CC'];
         $metaModel->set('a', [
             'label' => 'a',
             'type' => MetaModelInterface::TYPE_STRING,
-            'multiOptions' => $options,
+            'multiOptions' => ['A' => 'AA', 'B' => 'BB', 'C' => 'CC'],
             'validators[notEmpty]' => NotEmpty::class,
-            'validators[oneOf]' => [InArray::class, false, ['haystack' => array_keys($options)]],
         ]);
         $metaModel->set('d', [
             'label' => 'd',
@@ -238,13 +236,12 @@ class StraightTest extends \PHPUnit\Framework\TestCase
             'type' => MetaModelInterface::TYPE_NUMERIC,
             'validators[int]' => Digits::class,
         ]);
-        $options = ['A' => 'AA', 'B' => 'BB', 'C' => 'CC'];
         $metaModel->set('a', [
             'label' => 'a',
             'type' => MetaModelInterface::TYPE_STRING,
-            'multiOptions' => $options,
+            'multiOptions' => ['A' => 'AA', 'B' => 'BB', 'C' => 'CC'],
+            'required' => true,
             'validators[notEmpty]' => NotEmpty::class,
-            'validators[oneOf]' => [InArray::class, false, ['haystack' => array_keys($options)]],
         ]);
         $metaModel->set('d', [
             'label' => 'd',

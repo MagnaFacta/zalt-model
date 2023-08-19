@@ -325,11 +325,13 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
         return $row;
     }
 
-    public function saveAll(array $rows): void
+    public function saveAll(array $rows): array
     {
-        foreach ($rows as $row) {
-            $this->targetModel->save($row);
+        $output = [];
+        foreach ($rows as $rowId => $row) {
+            $output[$rowId] = $this->targetModel->save($row);
         }
+        return $output;
     }
 
     /**
@@ -387,7 +389,6 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
         $output = array();
 
         foreach ($data as $key => $row) {
-
             $row = $this->translateRowValues($row, $key);
 
             if ($this->validateInput && $row) {
@@ -424,8 +425,7 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
         $valid = true;
 
         foreach ($this->_validators as $field => $validators) {
-            $value = $row[$field] ?? null;
-
+            $value = $row[$field] ?? '';
             foreach ($validators as $validator) {
                 if ($validator instanceof ValidatorInterface) {
                     if (! $validator->isValid($value, $row)) {

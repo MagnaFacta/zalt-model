@@ -81,12 +81,17 @@ class SqlTableModel implements FullDataInterface
 
     public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
-        return $this->metaModel->processOneRowAfterLoad($this->sqlRunner->fetchRow(
+        $row = $this->sqlRunner->fetchRow(
             $this->tableName,
             $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
-        ));
+        );
+
+        if ($row) {
+            return $this->metaModel->processOneRowAfterLoad($row);
+        }
+        return [];
     }
 
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array

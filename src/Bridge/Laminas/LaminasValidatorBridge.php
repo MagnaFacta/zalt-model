@@ -14,6 +14,8 @@ use Laminas\Validator\Digits;
 use Laminas\Validator\File\Count;
 use Laminas\Validator\File\Extension;
 use Laminas\Validator\File\Size;
+use Laminas\Validator\InArray;
+use Laminas\Validator\NotEmpty;
 use Laminas\Validator\StringLength;
 use Laminas\Validator\ValidatorInterface;
 use MUtil\Validator\IsConfirmed;
@@ -241,6 +243,24 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
     public function gatherValidatorsFor(string $name): array
     {
         $validators = $this->metaModel->get($name, 'validators') ?? [];
+
+        $required = $this->metaModel->get($name, 'required');
+
+        if (! isset($validators[InArray::class])) {
+            $options = $this->metaModel->get($name, 'multiOptions');
+            if ($options) {
+                if ($required) {
+                    // Testting NotEmpty no longer needed.
+                    $required = false;
+                } else {
+                    $options[''] = null;
+                }
+                $validators[InArray::class] = [InArray::class, false, ['haystack' => array_keys($options)]];
+            }
+        }
+        if ($required) {
+            $validators[NotEmpty::class] = NotEmpty::class;
+        }
 
         if ($validator = $this->metaModel->get($name, 'validator')) {
             if ($validators) {
