@@ -152,7 +152,7 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
         }
 
         if ($formats) {
-            if ($value && (! $value instanceof DateTimeInterface)) {
+            if ($value && is_string($value) && (! $value instanceof DateTimeInterface)) {
                 $date = false;
                 foreach ($formats as $format) {
                     $date = DateTimeImmutable::createFromFormat($format, trim($value));
