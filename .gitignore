@@ -1,7 +1,5 @@
 composer.phar
 /vendor/
-/nbproject/
-/composer.lock
 /.idea
-.phpunit.cache
+test/.phpunit.cache
 test/html-coverage
