@@ -226,6 +226,6 @@ abstract class AbstractDateType extends AbstractModelType
             return $value->format($storageFormat);
         }
 
-        return $value;
+        return (string) $value;
     }
 }
