@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  phpunit:
 
     runs-on: ubuntu-latest
 
@@ -31,3 +31,25 @@ jobs:
 
       - name: Run test suite
         run: composer test
+
+  phpstan:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-
+
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-progress
+
+      - name: Run phpstan
+        run: vendor/bin/phpstan --no-progress
