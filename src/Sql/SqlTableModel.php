@@ -108,7 +108,7 @@ class SqlTableModel implements FullDataInterface
     public function save(array $newValues, array $filter = null) : array
     {
         $beforeValues = $this->metaModel->processBeforeSave($newValues);
-        $resultValues = $this->saveTableData($this->tableName, $beforeValues, $filter);
+        $resultValues = $this->saveTableData($this->tableName, $beforeValues, $filter) + $beforeValues; // Add previous values for transformers
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 
         if ($this->metaModel->getMeta(MetaModel::LOAD_TRANSFORMER) || $this->metaModel->hasDependencies()) {

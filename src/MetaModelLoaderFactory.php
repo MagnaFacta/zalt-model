@@ -15,6 +15,7 @@ use Psr\Container\ContainerInterface;
 use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Type\DateTimeType;
 use Zalt\Model\Type\DateType;
+use Zalt\Model\Type\SubModelType;
 use Zalt\Model\Type\TimeType;
 
 /**
@@ -40,6 +41,7 @@ class MetaModelLoaderFactory
         }
         if (! isset($config['model']['modelTypes'])) {
             $config['model']['modelTypes'] = [
+                MetaModelInterface::TYPE_CHILD_MODEL => SubModelType::class,
                 MetaModelInterface::TYPE_DATE => DateType::class,
                 MetaModelInterface::TYPE_DATETIME => DateTimeType::class,
                 MetaModelInterface::TYPE_TIME => TimeType::class,

@@ -165,7 +165,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
     /**
      * Function to allow overruling of transform for certain models
      *
-     * @param MetaModelInterfacet $model Parent model
+     * @param MetaModelInterface $model Parent model
      * @param DataReaderInterface $sub Sub model
      * @param array $data The nested data rows
      * @param array $join The join array
@@ -173,7 +173,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * @param boolean $new True when loading a new item
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
      */
-    abstract protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, $name, $new, $isPostData);
+    abstract protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, string $name, bool $new, bool $isPostData);
 
     /**
      * This transform function performs the actual save (if any) of the transformer data and is called after
@@ -221,7 +221,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * @param array $join
      * @param string $name
      */
-    abstract protected function transformSaveSubModel(MetaModelInterface $model, FullDataInterface $sub, array &$row, array $join, $name);
+    abstract protected function transformSaveSubModel(MetaModelInterface $model, FullDataInterface $sub, array &$row, array $join, string $name);
 
     /**
      * This transform function checks the sort to

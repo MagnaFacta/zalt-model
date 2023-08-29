@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\Data\DataWriterInterface;
 use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 
@@ -43,9 +44,10 @@ class NestedTransformer extends SubmodelTransformerAbstract
     {
         $data = array();
         foreach ($this->_subModels as $sub) {
-            foreach ($sub->getItemNames() as $name) {
-                if (! $model->has($name)) {
-                    $data[$name] = $sub->get($name);
+            $metaModel = $sub->getMetaModel();
+            foreach ($metaModel->getItemNames() as $name) {
+                if (! $metaModel->has($name)) {
+                    $data[$name] = $metaModel->get($name);
                     $data[$name]['no_text_search'] = true;
 
                     // Remove unsuited data
@@ -73,14 +75,14 @@ class NestedTransformer extends SubmodelTransformerAbstract
      * @param boolean $new True when loading a new item
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
      */
-    protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, $name, $new, $isPostData)
+    protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, string $name, bool $new, bool $isPostData)
     {
         foreach ($data as $key => $row) {
             // E.g. if loaded from a post
             if (isset($row[$name])) {
                 $rows = $sub->getMetaModel()->processAfterLoad($row[$name], $new, $isPostData);
             } elseif ($new) {
-                $rows = $sub->loadAllNew();
+                $rows = $sub->loadNew();
             } else {
                 $filter = $sub->getFilter();
 
@@ -91,7 +93,7 @@ class NestedTransformer extends SubmodelTransformerAbstract
                 }
                 // If $filter is empty, treat as new
                 if (empty($filter)) {
-                    $rows = $sub->loadAllNew();
+                    $rows = $sub->loadNew();
                 } else {
                     $rows = $sub->load($filter);
                 }
@@ -110,7 +112,12 @@ class NestedTransformer extends SubmodelTransformerAbstract
      * @param array $join
      * @param string $name
      */
-    protected function transformSaveSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$row, array $join, $name)
+    protected function transformSaveSubModel(
+        MetaModelInterface $model,
+        DataWriterInterface $sub,
+        array &$row,
+        array $join,
+        string $name)
     {
         if ($this->skipSave) {
             return;
@@ -138,7 +145,10 @@ class NestedTransformer extends SubmodelTransformerAbstract
             $data[$key] = $keys + $subrow;
         }
 
-        $saved = $sub->saveAll($data);
+        $saved = [];
+        foreach ($data as $key => $row) {
+            $saved[$key] = $sub->save($row);
+        }
 
         $row[$name] = $saved;
     }
@@ -156,7 +166,7 @@ class NestedTransformer extends SubmodelTransformerAbstract
     {
         foreach ($this->_subModels as $sub) {
             foreach ($sort as $key => $value) {
-                if ($sub->has($key)) {
+                if ($sub->getMetaModel()->has($key)) {
                     // Make sure the filter is applied during load
                     $sub->addSort(array($key => $value));
 
