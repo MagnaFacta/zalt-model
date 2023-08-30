@@ -10,7 +10,6 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
-use phpDocumentor\Reflection\Types\Boolean;
 use Zalt\Model\Data\DataReaderTrait;
 use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\Exception\ModelException;
@@ -216,18 +215,32 @@ class JoinModel implements FullDataInterface
 
     public function load($filter = null, $sort = null, $columns = null): array
     {
-        return $this->sqlRunner->fetchRows(
+        return $this->metaModel->processAfterLoad($this->sqlRunner->fetchRows(
             $this->getJoinStore(),
             $this->sqlRunner->createColumns($this->metaModel, $columns),
             $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
             $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
-        );
+        ));
     }
 
     public function loadCount($filter = null, $sort = null): int
     {
         $where = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         return $this->sqlRunner->fetchCount($this->getJoinStore(), $where);
+    }
+
+    public function loadFirst($filter = null, $sort = null, $columns = null): array
+    {
+        $row = $this->sqlRunner->fetchRow(
+            $this->getJoinStore(),
+            $this->sqlRunner->createColumns($this->metaModel, $columns),
+            $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
+            $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
+        );
+        if ($row) {
+            return $this->metaModel->processOneRowAfterLoad($row);
+        }
+        return [];
     }
 
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
@@ -240,6 +253,49 @@ class JoinModel implements FullDataInterface
         $total = $this->sqlRunner->fetchCount($joins, $where);
 
         return $this->sqlRunner->fetchRows($joins, $columns, $where, $order, ($page - 1) * $items, $items);
+    }
+
+    /**
+     * Processes and returns an array of post data
+     *
+     * @param array $postData
+     * @param boolean $create
+     * @param mixed $filter Null to use the stored filter, array to specify a different filter
+     * @param mixed $sort Null to use the stored sort, array to specify a different sort
+     * @return array
+     */
+    public function loadPostData(array $postData, $create = false, $filter = null, $sort = null, $columns = null): array
+    {
+        if (! $this instanceof FullDataInterface) {
+            throw new ModelException(
+                sprintf('Function "%s" may not be used for class "%s" as it does not implement "%s".', __FUNCTION__, get_class($this), FullDataInterface::class)
+            );
+        }
+
+        if ($create) {
+            $modelData = $this->loadNewRaw();
+        } else {
+            $modelData = $this->sqlRunner->fetchRow(
+                $this->getJoinStore(),
+                $this->sqlRunner->createColumns($this->metaModel, $columns),
+                $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter)),
+                $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort))
+            );
+        }
+        if ($postData && $modelData) {
+            // Elements that do not occur in post data when empty
+            // while they should contain an empty array
+            $excludes = array_fill_keys(array_merge(
+                $this->metaModel->getItemsFor('elementClass', 'MultiCheckbox'),
+                $this->metaModel->getItemsFor('elementClass', 'MultiSelect')
+            ), []);
+        } else {
+            $excludes = [];
+        }
+
+        // 1 - When posting, posted data is used as a value first
+        // 2 - Then we use any values already set
+        return $this->metaModel->processOneRowAfterLoad($postData + $modelData + $excludes, $create, true);
     }
 
     public function save(array $newValues, array $filter = null, array $saveTables = null): array

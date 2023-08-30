@@ -267,6 +267,7 @@ class ValueSwitchDependency extends DependencyAbstract
     {
         return $this->_switches;
     }
+    
     /**
      * Is this field effected by this dependency?
      *

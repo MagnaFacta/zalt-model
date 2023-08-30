@@ -60,7 +60,7 @@ trait SqlModelTrait
             $columnName = strtr((string) $column, ' .,;:?!\'"()<=>-*+\\/&%^', '______________________');
         }
         if ($orignalColumn) {
-            $settings = $this->metaModel->setAlias($columnName, $orignalColumn);
+            $this->metaModel->setAlias($columnName, $orignalColumn);
         }
         $this->metaModel->set($columnName, 'column_expression', $column);
 
@@ -100,7 +100,7 @@ trait SqlModelTrait
 
         // First find the correct fields to save
         foreach ($this->metaModel->getItemsFor(['table' => $tableName]) as $name) {
-            if (array_key_exists($name, $data)) {
+            if (array_key_exists($name, $data) && (! $this->metaModel->has($name, 'column_expression'))) {
                 $len = intval($this->metaModel->get($name, 'maxlength'));
                 if ($len && $data[$name] && (! is_array($data[$name]))) {
                     $output[$name] = substr((string) $data[$name], 0, $len);
