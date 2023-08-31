@@ -305,44 +305,6 @@ class MetaModel implements MetaModelInterface
     }
 
     /**
-     * Remove all non-used elements from a form by setting the elementClasses to None.
-     *
-     * Checks for dependencies and keys to be included
-     *
-     * @return MetaModelInterface (continuation pattern)
-     */
-    public function clearElementClasses()
-    {
-        $labels  = $this->getColNames('label');
-        $options = array_intersect($this->getColNames('multiOptions'), $labels);
-
-        // Set element class to text for those with labels without an element class
-        $this->setDefault($options, 'elementClass', 'Select');
-
-        // Set element class to text for those with labels without an element class
-        $this->setDefault($labels, 'elementClass', 'Text');
-
-        // Hide al dependencies plus the keys
-        $elems   = $this->getColNames('elementClass');
-        $depends = $this->getDependentOn($elems) + $this->getKeys();
-        if ($depends) {
-            $this->setDefault($depends, 'elementClass', 'Hidden');
-        }
-
-        // Leave out the rest
-        $this->setDefault('elementClass', 'None');
-
-        // Cascade
-        foreach ($this->getCol('model') as $subModel) {
-            if ($subModel instanceof DataReaderInterface) {
-                $subModel->clearElementClasses();
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * Delete all, one or some values for a certain field name.
      *
      * @param string $name Field name

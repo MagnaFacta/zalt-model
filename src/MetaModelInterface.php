@@ -158,15 +158,6 @@ interface MetaModelInterface
     public function addTransformer(ModelTransformerInterface $transformer);
 
     /**
-     * Remove all non-used elements from a form by setting the elementClasses to None.
-     *
-     * Checks for dependencies and keys to be included
-     *
-     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
-     */
-    public function clearElementClasses();
-
-    /**
      * Delete all, one or some values for a certain field name.
      *
      * @param string $name Field name
