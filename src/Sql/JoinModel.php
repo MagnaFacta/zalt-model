@@ -252,7 +252,9 @@ class JoinModel implements FullDataInterface
 
         $total = $this->sqlRunner->fetchCount($joins, $where);
 
-        return $this->sqlRunner->fetchRows($joins, $columns, $where, $order, ($page - 1) * $items, $items);
+        return $this->metaModel->processAfterLoad(
+            $this->sqlRunner->fetchRows($joins, $columns, $where, $order, ($page - 1) * $items, $items)
+        );
     }
 
     /**

@@ -102,7 +102,9 @@ class SqlTableModel implements FullDataInterface
 
         $total = $this->sqlRunner->fetchCount($this->tableName, $where);
 
-        return $this->sqlRunner->fetchRows($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items);
+        return $this->metaModel->processAfterLoad(
+            $this->sqlRunner->fetchRows($this->tableName, $columns, $where, $order, ($page - 1) * $items, $items)
+        );
     }
 
     public function save(array $newValues, array $filter = null) : array

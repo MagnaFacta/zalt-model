@@ -1003,7 +1003,7 @@ class MetaModel implements MetaModelInterface
 
         if ($this->getMeta(self::LOAD_TRANSFORMER) || $this->hasDependencies()) {
             if ($data instanceof \Traversable) {
-                return new ItemCallbackIterator($data, array($this, '_processRowAfterLoad'));
+                return new ItemCallbackIterator($data, array($this, 'processRowAfterLoad'));
             } else {
                 // Create empty array, will be filled after first row to speed up performance
                 $transformColumns = array();
