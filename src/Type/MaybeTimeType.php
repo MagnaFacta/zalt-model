@@ -35,6 +35,17 @@ class MaybeTimeType extends DateTimeType
      */
     protected string $maybeTimeValue = '00:00:00';
 
+    public function getSettings(): array
+    {
+        $output = parent::getSettings();
+
+        $output['maybeDateFormat'] = $this->maybeDateFormat;
+        $output['maybeTimeFormat'] = $this->maybeTimeFormat;
+        $output['maybeTimeValue'] = $this->maybeTimeValue;
+
+        return $output;
+    }
+
     public function format($value, string $name, MetaModelInterface $metaModel)
     {
         if (! $value instanceof \DateTimeInterface) {
