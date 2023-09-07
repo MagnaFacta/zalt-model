@@ -537,6 +537,8 @@ interface MetaModelInterface
      */
     public function processDependencies(array $data, $new);
 
+    public function processFilter(array $filter): array;
+
     /**
      * Helper function that procesess a single row of raw data after a load.
      *
@@ -554,6 +556,8 @@ interface MetaModelInterface
      * @return array
      */
     public function processRowBeforeSave(array $row, bool $new = false, array $fullRow = []): array;
+
+    public function processSort(array $sort): array;
     
     /**
      * Remove one attribute for a field name in the model.

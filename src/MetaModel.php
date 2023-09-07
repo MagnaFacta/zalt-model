@@ -1086,6 +1086,15 @@ class MetaModel implements MetaModelInterface
         return $data;
     }
 
+    public function processFilter(array $filter): array
+    {
+        foreach ($this->_transformers as $transformer) {
+            $filter = $transformer->transformFilter($this, $filter);
+        }
+
+        return $filter;
+    }
+
     /**
      * Helper function that procesess a single row of raw data after a load.
      *
@@ -1160,6 +1169,15 @@ class MetaModel implements MetaModelInterface
         }
         
         return $output;        
+    }
+
+    public function processSort(array $sort): array
+    {
+        foreach ($this->_transformers as $transformer) {
+            $sort = $transformer->transformSort($this, $sort);
+        }
+
+        return $sort;
     }
     
     /**

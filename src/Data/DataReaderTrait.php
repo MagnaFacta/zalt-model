@@ -32,14 +32,15 @@ trait DataReaderTrait
     protected function checkFilter(mixed $filter): array
     {
         if (null === $filter) {
-            return $this->getFilter();
+            return $this->metaModel->processFilter($this->getFilter());
         }
         if (is_array($filter)) {
-            return $filter;
-        }        
-        if ($filter) {
-            return [$filter];
+            return $this->metaModel->processFilter($filter);
         }
+        if ($filter) {
+            return $this->metaModel->processFilter([$filter]);
+        }
+
         return [];
     }
 
@@ -49,7 +50,9 @@ trait DataReaderTrait
             $sort = $this->getSort();
         } elseif (! is_array($sort)) {
             $sort = [$sort => SORT_ASC];
-        } 
+        }
+        $sort = $this->metaModel->processSort($sort);
+
         $output = [];
         foreach ($sort as $field => $value) {
             if (SORT_ASC === $value || SORT_DESC === $value) {
