@@ -368,17 +368,6 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
         return $output;
     }
 
-    public function getTypeValidatorsText(MetaModelInterface $metaModel, string $name): array
-    {
-        $output = [];
-
-        if ($metaModel->getWithDefault($name, 'autoInsertNoTagsValidator', true)) {
-            $output[NoTags::class] = [NoTags::class];
-        }
-
-        return $output;
-    }
-
     /**
      * Retrieve all validators for an element
      *
@@ -409,7 +398,6 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
     protected function loadDefaultTypeCompilers()
     {
         $this->setTypeClassCompiler(MetaModelInterface::TYPE_NUMERIC, [$this, 'getTypeValidatorsNumeric']);
-        $this->setTypeClassCompiler(MetaModelInterface::TYPE_STRING, [$this, 'getTypeValidatorsText']);
     }
 
     protected function loadValidators(string $name, array $validators)
