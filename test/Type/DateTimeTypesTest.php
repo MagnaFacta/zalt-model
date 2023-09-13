@@ -43,6 +43,7 @@ class DateTimeTypesTest extends \PHPUnit\Framework\TestCase
         $metaModel->set('datetime', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_DATETIME]);
         $metaModel->set('time', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_TIME]);
 
+        // @phpstan-ignore return.type
         return $model;
     }
 
@@ -80,7 +81,7 @@ class DateTimeTypesTest extends \PHPUnit\Framework\TestCase
      * @dataProvider provideTypeFields
      *
      * @param string $field
-     * @param int $type
+     * @param int $typeId
      * @return void
      */
     public function testInitiation(string $field, int $typeId): void
@@ -122,7 +123,7 @@ class DateTimeTypesTest extends \PHPUnit\Framework\TestCase
      * @dataProvider provideTypeFields
      *
      * @param string $field
-     * @param int $type
+     * @param int $typeId
      * $param array $settings
      * @return void
      */
@@ -194,7 +195,7 @@ class DateTimeTypesTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals($type, $metaModel->get($name, 'type'));
             $this->assertEquals($type, $class->getBaseType());
             $this->assertEquals($class->getSetting('storageFormat'), $metaModel->get($name, 'storageFormat'));
-            $this->assertNull($class->getSetting('XXX'));
+            $this->assertEmpty($class->getSetting('XXX'));
         }
     }
 }

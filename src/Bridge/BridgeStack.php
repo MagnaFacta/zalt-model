@@ -27,7 +27,7 @@ class BridgeStack implements StackInterface
 {
     /**
      *
-     * @param Object $object
+     * @param BridgeInterface $bridge
      */
     public function __construct(protected BridgeInterface $bridge)
     { }
@@ -36,7 +36,7 @@ class BridgeStack implements StackInterface
      * Returns a value for $name
      *
      * @param string $name A name indentifying a value in this stack.
-     * @return A not late value for $name
+     * @return mixed A not late value for $name
      */
     public function lateGet($name)
     {

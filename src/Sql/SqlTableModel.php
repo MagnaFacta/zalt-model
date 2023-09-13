@@ -114,7 +114,7 @@ class SqlTableModel implements FullDataInterface
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 
         if ($this->metaModel->getMeta(MetaModel::LOAD_TRANSFORMER) || $this->metaModel->hasDependencies()) {
-            return $this->metaModel->processRowAfterLoad($afterValues, false);
+            return $this->metaModel->processOneRowAfterLoad($afterValues, false);
         } else {
             return $afterValues;
         }

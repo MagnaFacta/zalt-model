@@ -30,6 +30,7 @@ class MappedTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getModelLoader();
 
         $data  = new \ArrayObject();
+        // @phpstan-ignore return.type
         return $loader->createModel(PhpArrayModel::class, 'test', $data);
     }
 
@@ -69,10 +70,12 @@ class MappedTest extends \PHPUnit\Framework\TestCase
 
         $translator = $modelLoader->createTranslator(MappedTranslator::class);
         $translator->setTargetModel($model);
-        $translator->setMap([0 => 'id', 1 => 'a', 2 => 'd']);
+        if ($translator instanceof MappedTranslator) {
+            $translator->setMap([0 => 'id', 1 => 'a', 2 => 'd']);
 
-        $this->assertInstanceOf(DataWriterInterface::class, $translator->getTargetModel());
-        $this->assertIsArray($translator->getMap());
+            $this->assertInstanceOf(DataWriterInterface::class, $translator->getTargetModel());
+            $this->assertIsArray($translator->getMap());
+        }
 
         $input = [
             [1, 'AA', '2022-06-05'],
@@ -119,12 +122,14 @@ class MappedTest extends \PHPUnit\Framework\TestCase
 
         $translator = $modelLoader->createTranslator(MappedTranslator::class);
         $translator->setTargetModel($model);
-        $translator->setMap(['x0' => 'id', 'x1' => 'a', 'x2' => 'd']);
+        if ($translator instanceof MappedTranslator) {
+            $translator->setMap(['x0' => 'id', 'x1' => 'a', 'x2' => 'd']);
 
-        $this->assertEquals(['x0' => 'id'], $translator->getRequiredFields());
+            $this->assertEquals(['x0' => 'id'], $translator->getRequiredFields());
 
-        $this->assertInstanceOf(DataWriterInterface::class, $translator->getTargetModel());
-        $this->assertIsArray($translator->getMap());
+            $this->assertInstanceOf(DataWriterInterface::class, $translator->getTargetModel());
+            $this->assertIsArray($translator->getMap());
+        }
 
         $input = [
             [1, 'AA', '2022-06-05'],

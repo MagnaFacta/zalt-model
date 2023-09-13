@@ -14,6 +14,7 @@
         "laminas/laminas-filter": "^2.20",
         "laminas/laminas-validator": "^2.20",
         "laminas/laminas-servicemanager": "^3.22.0",
+        "magnafacta/zalt-laminas-validator": "dev-main",
         "phpstan/phpstan": "1.*",
         "phpunit/phpunit": "10.*",
         "symfony/yaml": "^6.1",
@@ -44,6 +45,10 @@
         {
             "type": "git",
             "url": "https://github.com/MagnaFacta/zalt-late.git"
+        },
+        {
+            "type": "git",
+            "url": "https://github.com/MagnaFacta/zalt-laminas-validator.git"
         },
         {
             "type": "git",

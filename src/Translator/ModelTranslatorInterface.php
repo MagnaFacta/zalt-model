@@ -82,7 +82,7 @@ interface ModelTranslatorInterface
     /**
      * Set the target model, where the data is going to.
      *
-     * @param DataWriterInterface $sourceModel The target of the data
+     * @param DataWriterInterface $targetModel The target of the data
      * @return ModelTranslatorInterface (continuation pattern)
      */
     public function setTargetModel(DataWriterInterface $targetModel): ModelTranslatorInterface;
@@ -108,7 +108,7 @@ interface ModelTranslatorInterface
      * Perform any translations necessary for the code to work
      *
      * @param mixed $row array or \Traversable row
-     * @param mixed $key
+     * @param mixed $rowId
      * @return mixed Row array or false when errors occurred
      */
     public function translateRowValues($row, mixed $rowId);
@@ -117,7 +117,7 @@ interface ModelTranslatorInterface
      * Validate the data against the target form
      *
      * @param array $row
-     * @param mixed $key
+     * @param mixed $rowId
      * @return mixed Row array or false when errors occurred
      */
     public function validateRowValues(array $row, mixed $rowId);

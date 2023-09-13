@@ -29,7 +29,7 @@ abstract class BridgeAbstract implements BridgeInterface
 {
     /**
      *
-     * @var \alt\Model\Bridge\BridgeInterface
+     * @var \Zalt\Model\Bridge\BridgeInterface
      */
     protected $_chainedBridge;
 
@@ -48,7 +48,7 @@ abstract class BridgeAbstract implements BridgeInterface
     /**
      * A lazy repeater
      *
-     * @var \MUtil\Lazy\RepeatableInterface
+     * @var \Zalt\Late\RepeatableInterface
      */
     protected $_repeater = null;
 
@@ -68,9 +68,7 @@ abstract class BridgeAbstract implements BridgeInterface
     protected $metaModel;
 
     /**
-     * Omde of the self::MODE constants
-     *
-     * @var int
+     * @var int One of the self::MODE constants
      */
     protected int $mode = BridgeInterface::MODE_LAZY;
 
@@ -98,7 +96,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param string $name The field name or key name
      * @return mixed Lazy unless in single row mode
-     * @throws \MUtil\Model\ModelException
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     public function __get(string $name): mixed
     {
@@ -175,7 +173,7 @@ abstract class BridgeAbstract implements BridgeInterface
     public function format($name, $value)
     {
         if (! array_key_exists($name, $this->_compilations)) {
-            if ($this->_chainedBridge) {
+            if ($this->_chainedBridge instanceof BridgeAbstract) {
                 $this->_compilations[$name] = array_merge(
                     $this->_chainedBridge->_compile($name),
                     $this->_compile($name)
@@ -338,7 +336,7 @@ abstract class BridgeAbstract implements BridgeInterface
             case BridgeInterface::MODE_SINGLE_ROW:
                 $this->mode = $mode;
     
-                if ($this->_chainedBridge) {
+                if ($this->_chainedBridge instanceof BridgeAbstract) {
                     $this->_chainedBridge->mode = $this->mode;
                 }
     
@@ -360,7 +358,7 @@ abstract class BridgeAbstract implements BridgeInterface
             $repeater = new Repeatable($repeater);
         }
         $this->_repeater = $repeater;
-        if ($this->_chainedBridge) {
+        if ($this->_chainedBridge instanceof BridgeAbstract) {
             $this->_chainedBridge->_repeater = $repeater;
         }
         if ($this->useAsLateStack) {
@@ -374,7 +372,6 @@ abstract class BridgeAbstract implements BridgeInterface
      * Switch to single row mode and set that row.
      *
      * @param ?array $row Or load from model
-     * @throws \MUtil\Model\ModelException
      */
     public function setRow(array $row = null)
     {
@@ -392,7 +389,7 @@ abstract class BridgeAbstract implements BridgeInterface
         }
 
         $this->_data = $row;
-        if ($this->_chainedBridge) {
+        if ($this->_chainedBridge instanceof BridgeAbstract) {
             $this->_chainedBridge->_data = $this->_data;
         }
 

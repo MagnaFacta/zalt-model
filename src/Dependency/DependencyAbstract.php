@@ -11,8 +11,8 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Dependency;
 
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Zalt\Base\TranslateableTrait;
+use Zalt\Base\TranslatorInterface;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Ra\Ra;
 

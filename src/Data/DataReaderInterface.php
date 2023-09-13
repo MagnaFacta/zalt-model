@@ -83,11 +83,9 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * Returns the numbers of rows with the items requested
      *
      * @param mixed $filter Array to use as filter
-     * @param mixed $sort Array to use for sort
-     * @param mixed $columns Array with columns to use (or trackUsage or all)
      * @return int number of rows
      */
-    public function loadCount($filter = null, $sort = null): int;
+    public function loadCount($filter = null): int;
 
     /**
      * Returns an array containing the first requested item.

@@ -37,6 +37,6 @@ abstract class AbstractModelType implements ModelTypeInterface
         if (isset($settings[$name])) {
             return $settings[$name];
         }
-        return null;
+        return [];
     }
 }

@@ -42,6 +42,7 @@ class TimeConversionTest extends \PHPUnit\Framework\TestCase
         $metaModel->set('id', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_NUMERIC, 'key' => true]);
         $metaModel->set('time', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_TIME]);
 
+        // @phpstan-ignore return.type
         return $model;
     }
 

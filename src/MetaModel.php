@@ -288,7 +288,7 @@ class MetaModel implements MetaModelInterface
                     }
 
                     foreach ($data[$name] as &$row) {
-                        $submodel->applyDependencyChanges($submodel, $settings['model'], $row);
+                        $submodel->getMetaModel()->applyDependencyChanges($submodel, $settings['model'], $row);
                     }
                 }
 
@@ -444,7 +444,7 @@ class MetaModel implements MetaModelInterface
      *
      * @param DataReaderInterface $dataModel
      * @param string $identifier
-     * @param array $args Optional extra arguments
+     * @param array $parameters Optional extra arguments
      * @return \Zalt\Model\Bridge\BridgeInterface
      */
     public function getBridgeForModel(DataReaderInterface $dataModel, $identifier, ...$parameters): BridgeInterface
@@ -488,7 +488,7 @@ class MetaModel implements MetaModelInterface
      *
      * This is a more efficient function than using array_keys($tmoel->getCol())
      *
-     * @param string $column_name Name of the attribute
+     * @param string $columnName Name of the attribute
      * @return array [names]
      */
     public function getColNames($columnName)
@@ -729,7 +729,7 @@ class MetaModel implements MetaModelInterface
      * loading the value
      *
      * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
+     * @param boolean $new True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @param boolean $isPost True when passing on post data
@@ -754,7 +754,7 @@ class MetaModel implements MetaModelInterface
      * saving the value
      *
      * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
+     * @param boolean $new True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @return mixed The value to save
@@ -783,6 +783,7 @@ class MetaModel implements MetaModelInterface
         if (isset($this->_model_order[$name])) {
             return $this->_model_order[$name];
         }
+        return null;
     }
 
     /**
@@ -955,7 +956,7 @@ class MetaModel implements MetaModelInterface
      * Must the model save field $name with this $value and / or this $new values.
      *
      * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
+     * @param boolean $new True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @return boolean True if the data can be saved
@@ -988,7 +989,7 @@ class MetaModel implements MetaModelInterface
      * @param mixed $data Nested array or \Traversable containing rows or iterator
      * @param boolean $new True when it is a new item
      * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
-     * @return array or \Traversable Nested
+     * @return array|\Traversable Nested
      */
     public function processAfterLoad($data, $new = false, $isPostData = false): mixed
     {
@@ -1221,7 +1222,7 @@ class MetaModel implements MetaModelInterface
      */
     public function resetOrder()
     {
-        $this->_model_order = null;
+        $this->_model_order = [];
         return $this;
     }
 
@@ -1297,7 +1298,7 @@ class MetaModel implements MetaModelInterface
             $order = $this->_model_order[$name];
         } else {
             $order = 0;
-            if (is_array($this->_model_order)) {
+            if ($this->_model_order) {
                 $order = max(array_values($this->_model_order));
             }
             $order += $this->orderIncrement;

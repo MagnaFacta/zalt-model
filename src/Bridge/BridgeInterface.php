@@ -14,6 +14,7 @@ namespace Zalt\Model\Bridge;
 use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\Exception\MetaModelException;
 
 /**
  *
@@ -54,7 +55,7 @@ interface BridgeInterface
      *
      * @param string $name The field name or key name
      * @return mixed Lazy unless in single row mode
-     * @throws \MUtil\Model\ModelException
+     * @throws MetaModelException
      */
     public function __get(string $name): mixed;
 
@@ -131,7 +132,7 @@ interface BridgeInterface
      * Switch to single row mode and return that row.
      *
      * @return array, ArrayObject or false when no row was found
-     * @throws \MUtil\Model\ModelException
+     * @throws MetaModelException
      */
     public function getRow(): mixed;
     

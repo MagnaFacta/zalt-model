@@ -34,6 +34,7 @@ class SqliteJoinModelTest extends \PHPUnit\Framework\TestCase
         $sm->set(SqlRunnerInterface::class, new LaminasRunner($adapter));
         $modelLoader = $this->getModelLoader();
 
+        // @phpstan-ignore return.type
         return $modelLoader->createModel(JoinModel::class, $table);
     }
 

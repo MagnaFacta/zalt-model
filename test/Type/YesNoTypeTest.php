@@ -42,6 +42,7 @@ class YesNoTypeTest extends \PHPUnit\Framework\TestCase
         $metaModel->set('id', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_NUMERIC, 'key' => true]);
         $metaModel->set('yesno');
 
+        // @phpstan-ignore return.type
         return $model;
     }
 
@@ -59,9 +60,10 @@ class YesNoTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * @dataProvider providerYesNo
      *
-     * @param string $input
+     * @param int $input
      * @param string $display
-     * @param string $init
+     * @param array $init
+     * @param string $className
      * @return void
      * @throws \Zalt\Model\Exception\ModelException
      */

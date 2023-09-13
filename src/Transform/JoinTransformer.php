@@ -26,6 +26,8 @@ class JoinTransformer extends SubmodelTransformerAbstract
 {
     protected function transformLoadSubModel(MetaModelInterface $model, DataReaderInterface $sub, array &$data, array $join, $name, $new, $isPostData)
     {
+        $metaModel = $sub->getMetaModel();
+
         if (1 === count($join)) {
             // Simple implementation
             $mkey = key($join);
@@ -35,7 +37,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
 
             // dump($mfor);
             if ($new) {
-                $sdata = $sub->loadNew(1);
+                $sdata = $sub->loadNew();
             } else {
                 $sdata = $sub->load(array($skey => $mfor));
             }
@@ -55,7 +57,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
                     }
                 }
             } else {
-                $empty = array_fill_keys($sub->getItemNames(), null);
+                $empty = array_fill_keys($metaModel->getItemNames(), null);
 
                 foreach ($data as &$mrow) {
                     $mrow += $empty;
@@ -64,7 +66,7 @@ class JoinTransformer extends SubmodelTransformerAbstract
             // \dump($mrow);
         } else {
             // Multi column implementation
-            $empty = array_fill_keys($sub->getItemNames(), null);
+            $empty = array_fill_keys($metaModel->getItemNames(), null);
             foreach ($data as &$mrow) {
                 $filter = $sub->getFilter();
                 foreach ($join as $from => $to) {

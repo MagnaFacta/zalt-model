@@ -84,7 +84,7 @@ abstract class ModelTransformerAbstract implements ModelTransformerInterface
      * know which fields to add by then (optionally using the model
      * for that).
      *
-     * @param \MUtil\Model\ModelAbstract $model The parent model
+     * @param MetaModelInterface $model The parent model
      * @return array Of fieldname => set() values
      */
     public function getFieldInfo(MetaModelInterface $model): array
@@ -137,7 +137,7 @@ abstract class ModelTransformerAbstract implements ModelTransformerInterface
      * a) retreiving filters to be applied to the transforming data,
      * b) adding filters that are needed
      *
-     * @param \MUtil\Model\ModelAbstract $model
+     * @param MetaModelInterface $model
      * @param array $filter
      * @return array The (optionally changed) filter
      */
@@ -152,7 +152,7 @@ abstract class ModelTransformerAbstract implements ModelTransformerInterface
      * a) remove sorts from the main model that are not possible
      * b) add sorts that are required needed
      *
-     * @param \MUtil\Model\ModelAbstract $model
+     * @param MetaModelInterface $model
      * @param array $sort
      * @return array The (optionally changed) sort
      */
@@ -182,7 +182,7 @@ abstract class ModelTransformerAbstract implements ModelTransformerInterface
      * This transform function performs the actual save (if any) of the transformer data and is called after
      * the saving of the data in the source model.
      *
-     * @param \MUtil\Model\ModelAbstract $model The parent model
+     * @param MetaModelInterface $model The parent model
      * @param array $row Array containing row
      * @return array Row array containing (optionally) transformed data
      */
@@ -196,7 +196,7 @@ abstract class ModelTransformerAbstract implements ModelTransformerInterface
      * This transform function is called before the saving of the data in the source model and allows you to
      * change all data.
      *
-     * @param \MUtil\Model\ModelAbstract $model The parent model
+     * @param MetaModelInterface $model The parent model
      * @param array $row Array containing row
      * @return array Row array containing (optionally) transformed data
      */

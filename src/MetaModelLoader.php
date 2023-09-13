@@ -16,6 +16,7 @@ use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\Dependency\DependencyInterface;
 use Zalt\Model\Transform\ModelTransformerInterface;
 use Zalt\Model\Translator\ModelTranslatorInterface;
@@ -56,7 +57,7 @@ class MetaModelLoader
         return new MetaModel($metaModelName, $this);
     }
     
-    public function createModel(string $className, mixed $metaModelName = null, mixed ...$parameters): DataReaderInterface|DataWriterInterface
+    public function createModel(string $className, mixed $metaModelName = null, mixed ...$parameters): DataReaderInterface|DataWriterInterface|FullDataInterface
     {
         if (null === $metaModelName) {
             $metaModelName = isset($className::$modelName) ? $className::$modelName :$className;

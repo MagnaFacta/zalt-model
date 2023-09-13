@@ -13,8 +13,8 @@ namespace Zalt\Model\Translator;
 use \DateTimeInterface;
 use \DateTimeImmutable;
 use Laminas\Validator\ValidatorInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use Zalt\Base\TranslateableTrait;
+use Zalt\Base\TranslatorInterface;
 use Zalt\Model\Bridge\ValidatorBridgeInterface;
 use Zalt\Model\Data\DataWriterInterface;
 use Zalt\Model\Exception\ModelTranslatorException;
@@ -286,8 +286,8 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
      *
      * @param mixed $row array or \Traversable row
      * @param scalar $rowId
-     * @return array or boolean
-     * @throws \MUtil\Model\ModelException
+     * @return array|bool
+     * @throws ModelTranslatorException
      */
     protected function prepareRow($row, $rowId)
     {
@@ -428,6 +428,7 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
             $value = $row[$field] ?? '';
             foreach ($validators as $validator) {
                 if ($validator instanceof ValidatorInterface) {
+                    // @phpstan-ignore arguments.count
                     if (! $validator->isValid($value, $row)) {
                         $valid = false;
                         $this->addErrors($rowId, $field, $validator->getMessages());

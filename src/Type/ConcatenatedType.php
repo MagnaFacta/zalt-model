@@ -66,7 +66,7 @@ class ConcatenatedType extends AbstractModelType
     /**
      * Use this function for a default application of this type to the model
      *
-     * @param MetaModelInterface $model
+     * @param MetaModelInterface $metaModel
      * @param string $name The field to set the seperator character
      * @return void
      */

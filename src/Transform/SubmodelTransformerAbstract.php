@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\Data\DataWriterInterface;
 use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
 
@@ -57,7 +58,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      *
      * @param DataReaderInterface $subModel
      * @param array $joinFields
-     * @return MetaModelInterface (continuation pattern)
+     * @return SubmodelTransformerAbstract (continuation pattern)
      */
     public function addModel(DataReaderInterface $subModel, array $joinFields, $name = null)
     {
@@ -77,7 +78,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * know which fields to add by then (optionally using the model
      * for that).
      *
-     * @param MetaModelInterfacet $model The parent model
+     * @param MetaModelInterface $model The parent model
      * @return array Of filedname => set() values
      */
     public function getFieldInfo(MetaModelInterface $model)
@@ -191,7 +192,9 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
 
         foreach ($this->_subModels as $name => $sub) {
             $this->transformSaveSubModel($model, $sub, $row, $this->_joins[$name], $name);
-            $this->_changed = $this->_changed + $sub->getChanged();
+            if ($sub instanceof DataWriterInterface) {
+                $this->_changed = $this->_changed + $sub->getChanged();
+            }
         }
         // \MUtil\EchoOut\EchoOut::track($row);
 
@@ -217,7 +220,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      *
      * @param MetaModelInterface $model
      * @param FullDataInterface $sub
-     * @param array $data
+     * @param array $row
      * @param array $join
      * @param string $name
      */

@@ -12,6 +12,7 @@ namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -81,7 +82,7 @@ class ToManyTransformer extends NestedTransformer
             $rows = null;
             // E.g. if loaded from a post
             if (isset($row[$name])) {
-                $rows = $sub->processAfterLoad($row[$name], $new, $isPostData);
+                $rows = $sub->getMetaModel()->processAfterLoad($row[$name], $new, $isPostData);
                 unset($parentIds[$key]);
             } elseif ($new) {
                 $rows = $sub->loadNew();
@@ -108,15 +109,15 @@ class ToManyTransformer extends NestedTransformer
     /**
      * Function to allow overruling of transform for certain models
      *
-     * @param \MUtil\Model\ModelAbstract $model
-     * @param \MUtil\Model\ModelAbstract $sub
-     * @param array $data
+     * @param MetaModelInterface $model
+     * @param FullDataInterface $sub
+     * @param array $row
      * @param array $join
      * @param string $name
      */
     protected function transformSaveSubModel(
         MetaModelInterface $model,
-        DataWriterInterface $sub,
+        FullDataInterface $sub,
         array &$row,
         array $join,
         string $name,

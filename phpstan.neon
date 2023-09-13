@@ -1,7 +1,7 @@
 parameters:
 	bootstrapFiles:
 		- vendor/autoload.php
-	level: 1
+	level: 3
 	paths:
 		- src
 		- test

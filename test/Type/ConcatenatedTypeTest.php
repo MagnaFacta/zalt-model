@@ -12,7 +12,6 @@ namespace Zalt\Model\Type;
 
 use Zalt\Html\HtmlElement;
 use Zalt\Html\HtmlInterface;
-use Zalt\Html\Sequence;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Model\MetaModelTestTrait;
 use Zalt\Model\Ra\PhpArrayModel;
@@ -45,6 +44,7 @@ class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
         $metaModel->set('id', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_NUMERIC, 'key' => true]);
         $metaModel->set('concat');
 
+        // @phpstan-ignore return.type
         return $model;
     }
 
@@ -70,9 +70,10 @@ class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $input
      * @param string $display
-     * @param string $storage
-     * @param string $displayFormat
-     * @param string $storageFormat
+     * @param string $stored
+     * @param string $seperatorChar
+     * @param mixed $displaySeperator
+     * @param bool $valuePad
      * @return void
      * @throws \Zalt\Model\Exception\ModelException
      */

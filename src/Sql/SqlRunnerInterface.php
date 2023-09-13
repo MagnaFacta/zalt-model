@@ -28,7 +28,7 @@ interface SqlRunnerInterface
 
     /**
      * @param \Zalt\Model\MetaModelInterface $metaModel
-     * @param array                          $sort
+     * @param mixed                          $columns
      * @return mixed Something to be used as a sort
      */
     public function createColumns(MetaModelInterface $metaModel, mixed $columns): mixed;
@@ -58,8 +58,7 @@ interface SqlRunnerInterface
     /**
      * @param string|JoinTableStore $tables
      * @param mixed  $where
-     * @param mixed  $sort
-     * @return array One row of data
+     * @return int The number of rows
      */
     public function fetchCount(string|JoinTableStore $tables, mixed $where): int;
 

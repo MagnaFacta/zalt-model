@@ -107,8 +107,8 @@ class NestedTransformer extends SubmodelTransformerAbstract
      * Function to allow overruling of transform for certain models
      *
      * @param MetaModelInterface $model
-     * @param DataReaderInterface $sub
-     * @param array $data
+     * @param DataWriterInterface $sub
+     * @param array $row
      * @param array $join
      * @param string $name
      */
@@ -165,14 +165,14 @@ class NestedTransformer extends SubmodelTransformerAbstract
     public function transformSort(MetaModelInterface $model, array $sort)
     {
         foreach ($this->_subModels as $sub) {
+            $subSorts = [];
             foreach ($sort as $key => $value) {
                 if ($sub->getMetaModel()->has($key)) {
-                    // Make sure the filter is applied during load
-                    $sub->addSort(array($key => $value));
-
-                    // Remove all sorts on columns from the submodel
-                    unset($sort[$key]);
+                    $subSorts[$key] = $value;
                 }
+            }
+            if ($subSorts) {
+                $sub->setSort($subSorts + $sub->getSort());
             }
         }
 

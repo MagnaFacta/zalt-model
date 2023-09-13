@@ -55,7 +55,7 @@ interface ModelTransformerInterface
      * a) remove sorts from the main model that are not possible
      * b) add sorts that are required needed
      *
-     * @param \Zalt\Model\MetaModelInterfacet $model
+     * @param \Zalt\Model\MetaModelInterface $model
      * @param array $sort
      * @return array The (optionally changed) sort
      */

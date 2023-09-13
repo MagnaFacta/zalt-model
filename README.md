@@ -1,5 +1,6 @@
 # zalt-model
-The Model component in MVC, classes for data reading, writing, metadata and translations.
+The Model component in MVC, classes for data reading, writing, metadata and translations. See 
+[About Zalt](docs/ABOUT-ZALT.md) for more information on Zalt libraries in general.
 
 The core of the zalt-model package are the **MetaModels**. These contain information about a datamodel, e.g. labels
 and descriptions for data fields, but also preferred form element use and selection options, date formats, primary keys, 

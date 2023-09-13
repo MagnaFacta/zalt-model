@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Zalt\Base\TranslatorInterface;
 use Zalt\Loader\ProjectOverloader;
 use Zalt\Loader\ProjectOverloaderFactory;
 use Zalt\Mock\MockTranslator;

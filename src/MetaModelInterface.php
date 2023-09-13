@@ -11,9 +11,9 @@
 
 namespace Zalt\Model;
 
-use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Transform\ModelTransformerInterface;
+use Zalt\Model\Transform\NestedTransformer;
 
 /**
  *
@@ -145,9 +145,9 @@ interface MetaModelInterface
      * @param DataReaderInterface $model
      * @param array $joins The join fields for the sub model
      * @param string $name Optional 'field' name, otherwise model name is used
-     * @return \MUtil\Model\Transform\NestedTransformer The added transformer
+     * @return NestedTransformer The added transformer
      */
-    public function addModel(DataReaderInterface $model, array $joins, $name = null);
+    public function addModel(DataReaderInterface $model, array $joins, string $name = null);
 
     /**
      * Add a model transformer
@@ -156,6 +156,15 @@ interface MetaModelInterface
      * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function addTransformer(ModelTransformerInterface $transformer);
+
+    /**
+     * Recursively apply the changes from a dependency
+     *
+     * @param MetaModelInterface $model
+     * @param array $changes
+     * @param array $data Referenced data
+     */
+    public function applyDependencyChanges(MetaModelInterface $model, array $changes, array &$data);
 
     /**
      * Delete all, one or some values for a certain field name.
@@ -248,7 +257,7 @@ interface MetaModelInterface
      *
      * This is a more efficient function than using array_keys($tmoel->getCol())
      *
-     * @param string $column_name Name of the attribute
+     * @param string $columnName Name of the attribute
      * @return array [names]
      */
     public function getColNames($columnName);
@@ -359,7 +368,7 @@ interface MetaModelInterface
      * loading the value
      *
      * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
+     * @param boolean $new True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @param boolean $isPost True when passing on post data
@@ -372,7 +381,7 @@ interface MetaModelInterface
      * saving the value
      *
      * @param mixed $value The value being saved
-     * @param boolean $isNew True when a new item is being saved
+     * @param boolean $new True when a new item is being saved
      * @param string $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @return mixed The value to save
@@ -551,7 +560,7 @@ interface MetaModelInterface
 
     /**
      * @param array $row
-     * @param bool $isNew
+     * @param bool $new
      * @param array $fullRow Optional full dataset for save context
      * @return array
      */
@@ -614,7 +623,7 @@ interface MetaModelInterface
      * @param string $name
      * @param string $aliasOf
      * @return \Zalt\Model\MetaModelInterface
-     * @throws \MUtil\Model\ModelException
+     * @throws \Zalt\Model\Exception\MetaModelException
      */
     public function setAlias($name, $aliasOf);
 

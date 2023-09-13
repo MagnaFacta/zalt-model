@@ -38,6 +38,7 @@ class StraightTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getModelLoader();
 
         $data  = new \ArrayObject();
+        // @phpstan-ignore return.type
         return $loader->createModel(PhpArrayModel::class, 'test', $data);
     }
 

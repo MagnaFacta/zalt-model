@@ -134,9 +134,9 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     /**
      * Filters the data array using a model filter
      *
-     * @param \Traversable $data
+     * @param array|\Traversable $data
      * @param array $filters
-     * @return \Traversable
+     * @return mixed
      */
     protected function _filterData($data, array $filters)
     {
@@ -415,7 +415,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
         $afterValues  = $this->metaModel->processAfterSave($beforeValues);
 
         if ($this->metaModel->getMeta(MetaModel::LOAD_TRANSFORMER) || $this->metaModel->hasDependencies()) {
-            return $this->metaModel->processRowAfterLoad($afterValues, false);
+            return $this->metaModel->processOneRowAfterLoad($afterValues, false);
         } else {
             return $afterValues;
         }

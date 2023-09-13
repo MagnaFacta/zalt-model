@@ -31,6 +31,8 @@ class PhpArrayTest extends TestCase
         $loader = $this->getModelLoader();
 
         $data  = new \ArrayObject($rows);
+
+        // @phpstan-ignore return.type
         return $loader->createModel(PhpArrayModel::class, 'test', $data);
     }
 

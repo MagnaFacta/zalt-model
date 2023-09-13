@@ -42,6 +42,7 @@ class DateConversionTest extends \PHPUnit\Framework\TestCase
         $metaModel->set('id', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_NUMERIC, 'key' => true]);
         $metaModel->set('date', [MetaModelInterface::TYPE_ID => MetaModelInterface::TYPE_DATE]);
 
+        // @phpstan-ignore return.type
         return $model;
     }
 

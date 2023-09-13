@@ -94,7 +94,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
      * Add the element to the form and apply any filters & validators
      *
      * @param string $name
-     * @param string|\Zend_Form_Element $element Element or element class name
+     * @param mixed $element Element or element class name
      * @param array $options Element creation options
      * @param boolean $addFilters When true filters are added
      * @param boolean $addValidators When true validators are added

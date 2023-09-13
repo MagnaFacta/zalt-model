@@ -11,14 +11,10 @@ declare(strict_types=1);
 namespace Zalt\Model\Bridge\Laminas;
 
 use Laminas\Validator\Digits;
-use Laminas\Validator\File\Count;
-use Laminas\Validator\File\Extension;
-use Laminas\Validator\File\Size;
 use Laminas\Validator\InArray;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\StringLength;
 use Laminas\Validator\ValidatorInterface;
-use MUtil\Validator\IsConfirmed;
 use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Bridge\ValidatorBridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
@@ -28,6 +24,7 @@ use Zalt\Model\Exception\ModelValidatorLoadException;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Model\Validator\ModelAwareValidatorInterface;
 use Zalt\Model\Validator\NameAwareValidatorInterface;
+use Zalt\Validator\NoTags;
 
 /**
  * A validator added can be added as a:
@@ -88,6 +85,7 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
         $this->validatorOverloader->legacyClasses = false;
 
         $this->loadDefaultElementCompilers();
+        $this->loadDefaultTypeCompilers();
     }
 
     /**
@@ -162,7 +160,7 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
      * @param  bool $breakChainOnFailure
      * @param  array $options
      * @return self
-     * @throws \Zend_Form_Exception if invalid validator type
+     * @throws ModelValidatorLoadException if invalid validator type
      */
     public function addValidator($validator, $breakChainOnFailure = false, $options = [])
     {
@@ -188,9 +186,9 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
      * Add multiple validators
      *
      * @param  array $validators
-     * @return array $validators but processed
+     * @return void
      */
-    public function _addValidators(array $validators)
+    protected function _addValidators(array $validators): void
     {
         foreach ($validators as $validatorInfo) {
             if (is_string($validatorInfo)) {
@@ -230,8 +228,6 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                 throw new ModelValidatorLoadException('Invalid validator passed to addValidators() ' . get_class($validatorInfo));
             }
         }
-
-        return $this;
     }
 
     /**
@@ -270,13 +266,13 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
             }
         }
 
-        if ($this->metaModel->get($name, 'ignoreElementValidators')) {
+        if (! $this->metaModel->get($name, 'ignoreElementValidators')) {
             $elementClass = $this->getElementClassFor($name);
             if (isset($this->_elementClassCompilers[$elementClass])) {
                 $validators += call_user_func($this->_elementClassCompilers[$elementClass], $this->metaModel, $name);
             }
         }
-        if ($this->metaModel->get($name, 'ignoreTypeValidators')) {
+        if (! $this->metaModel->get($name, 'ignoreTypeValidators')) {
             $typeId = $this->metaModel->get($name, 'type');
             if ($typeId && isset($this->_typeClassCompilers[$typeId])) {
                 $validators += call_user_func($this->_typeClassCompilers[$typeId], $this->metaModel, $name);
@@ -298,41 +294,6 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
             return 'Text';
         }
         return 'Hidden';
-    }
-
-    /**
-     * @param MetaModelInterface $metaModel
-     * @param string $name
-     * @return array
-     * /
-    public function getElementValidatorsFile(MetaModelInterface $metaModel, string $name): array
-    {
-        $output = [];
-
-        $filename = $metaModel->get($name, 'filename');
-        if ($filename) {
-            $count = 1;
-        } else {
-            $count = $metaModel->get($name, 'count');
-        }
-        if ($count) {
-            $output[Count::class] = [Count::class, false, ['max' => $count]];
-        }
-
-        $size = $metaModel->get($name, 'size');
-        if ($size) {
-            $output[Size::class] = [Size::class, false, ['max' => $size]];
-        }
-
-        $extension = $metaModel->get($name, 'extension');
-        if ($extension) {
-            $output[Extension::class] = [Extension::class, false, [
-                'extension' => $extension,
-                'messages'  => [Extension::FALSE_EXTENSION => 'Only %extension% files are accepted.'],
-            ]];
-        }
-
-        return $output;
     }
 
     /**
@@ -407,6 +368,17 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
         return $output;
     }
 
+    public function getTypeValidatorsText(MetaModelInterface $metaModel, string $name): array
+    {
+        $output = [];
+
+        if ($metaModel->getWithDefault($name, 'autoInsertNoTagsValidator', true)) {
+            $output[NoTags::class] = [NoTags::class];
+        }
+
+        return $output;
+    }
+
     /**
      * Retrieve all validators for an element
      *
@@ -437,6 +409,7 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
     protected function loadDefaultTypeCompilers()
     {
         $this->setTypeClassCompiler(MetaModelInterface::TYPE_NUMERIC, [$this, 'getTypeValidatorsNumeric']);
+        $this->setTypeClassCompiler(MetaModelInterface::TYPE_STRING, [$this, 'getTypeValidatorsText']);
     }
 
     protected function loadValidators(string $name, array $validators)

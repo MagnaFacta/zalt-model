@@ -39,6 +39,7 @@ class SqliteTableModelTest extends \PHPUnit\Framework\TestCase
         $sm->set(SqlRunnerInterface::class, $factory($sm));
         $modelLoader = $this->getModelLoader();
 
+        // @phpstan-ignore return.type
         return $modelLoader->createModel(SqlTableModel::class, $table);
     }
 
