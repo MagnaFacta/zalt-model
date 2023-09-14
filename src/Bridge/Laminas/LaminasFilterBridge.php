@@ -80,7 +80,7 @@ class LaminasFilterBridge extends \Zalt\Model\Bridge\BridgeAbstract implements F
      */
     public function gatherFiltersFor(string $name): array
     {
-        $filters = $this->metaModel->get($name, 'filters');
+        $filters = $this->metaModel->get($name, 'filters') ?? [];
 
         if ($filter = $this->metaModel->get($name, 'filter')) {
             if ($filters) {
