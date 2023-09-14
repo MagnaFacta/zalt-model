@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Bridge;
 
-use Laminas\Validator\StringLength;
 use Zalt\Late\Late;
 use Zalt\Late\LateCall;
 use Zalt\Late\RepeatableInterface;
@@ -74,6 +73,8 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
      */
     public $defaultSize = 40;
 
+    public FilterBridgeInterface $filterBridge;
+
     public MetaModelInterface $metaModel;
 
     public ValidatorBridgeInterface $validatorBridge;
@@ -87,6 +88,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             throw new MetaModelException("Only FullDataInterface objects are allowed as input for a FormBridge");
         }
         $this->metaModel = $this->dataModel->getMetaModel();
+        $this->filterBridge = $this->getFilterBridge();
         $this->validatorBridge = $this->getValidatorBridge();
     }
 
@@ -465,6 +467,16 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         }
     }
 
+    public function getFilterBridge(): FilterBridgeInterface
+    {
+        if (! isset($this->filterBridge)) {
+            // @phpstan-ignore assign.propertyType
+            $this->filterBridge = $this->dataModel->getBridgeFor('filter');
+        }
+        // @phpstan-ignore return.type
+        return $this->filterBridge;
+    }
+
     public function getFormatted(string $name) : mixed
     {
         return \Zalt\Late\Late::method($this, 'format', $name, \Zalt\Late\Late::get($name));
@@ -519,7 +531,15 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         return $this->dataModel->loadFirst();
     }
 
-    abstract public function getValidatorBridge(): ValidatorBridgeInterface;
+    public function getValidatorBridge(): ValidatorBridgeInterface
+    {
+        if (! isset($this->validatorBridge)) {
+            // @phpstan-ignore assign.propertyType
+            $this->validatorBridge = $this->dataModel->getBridgeFor('validator');
+        }
+        // @phpstan-ignore return.type
+        return $this->validatorBridge;
+    }
 
     /**
      * @inheritDoc

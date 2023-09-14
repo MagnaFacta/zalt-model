@@ -22,9 +22,8 @@ use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\Exception\MetaModelException;
 use Zalt\Model\Exception\ModelValidatorLoadException;
 use Zalt\Model\MetaModelInterface;
-use Zalt\Model\Validator\ModelAwareValidatorInterface;
-use Zalt\Model\Validator\NameAwareValidatorInterface;
-use Zalt\Validator\NoTags;
+use Zalt\Model\ModelAwareInterface;
+use Zalt\Model\ModelFieldNameAwareInterface;
 
 /**
  * A validator added can be added as a:
@@ -39,6 +38,8 @@ use Zalt\Validator\NoTags;
  */
 class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implements ValidatorBridgeInterface
 {
+    use LaminasElementClassRetrieverTrait;
+
     /**
      * @var array elementClassName => compile function
      */
@@ -240,6 +241,14 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
     {
         $validators = $this->metaModel->get($name, 'validators') ?? [];
 
+        if ($validator = $this->metaModel->get($name, 'validator')) {
+            if ($validators) {
+                array_unshift($validators, $validator);
+            } else {
+                $validators = array($validator);
+            }
+        }
+
         $required = $this->metaModel->get($name, 'required');
 
         if (! isset($validators[InArray::class])) {
@@ -254,16 +263,8 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                 $validators[InArray::class] = [InArray::class, false, ['haystack' => array_keys($options)]];
             }
         }
-        if ($required && (! $this->metaModel->is($name, 'autoInsertNotEmptyValidator', false))) {
+        if ($required && (! $this->metaModel->is($name, 'autoInsertNotEmptyValidator', false)) && (! $validators[NotEmpty::class])) {
             $validators[NotEmpty::class] = NotEmpty::class;
-        }
-
-        if ($validator = $this->metaModel->get($name, 'validator')) {
-            if ($validators) {
-                array_unshift($validators, $validator);
-            } else {
-                $validators = array($validator);
-            }
         }
 
         if (! $this->metaModel->get($name, 'ignoreElementValidators')) {
@@ -280,20 +281,6 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
         }
 
         return $validators;
-    }
-
-    public function getElementClassFor(string $name): string
-    {
-        if ($this->metaModel->has($name, 'elementClass')) {
-            return $this->metaModel->get($name, 'elementClass');
-        }
-        if ($this->metaModel->has($name, 'label')) {
-            if ($this->metaModel->has('multiOptions')) {
-                return 'Select';
-            }
-            return 'Text';
-        }
-        return 'Hidden';
     }
 
     /**
@@ -414,10 +401,10 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                     $output[$key] = $this->_loadValidator($value);
                 }
 
-                if ($output[$key] instanceof NameAwareValidatorInterface) {
+                if ($output[$key] instanceof ModelFieldNameAwareInterface) {
                     $output[$key]->setName($name);
                 }
-                if ($output[$key] instanceof ModelAwareValidatorInterface) {
+                if ($output[$key] instanceof ModelAwareInterface) {
                     $output[$key]->setDataModel($this->dataModel);
                 }
             }

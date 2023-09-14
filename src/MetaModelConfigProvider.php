@@ -12,6 +12,7 @@ declare(strict_types=1);
 namespace Zalt\Model;
 
 use Zalt\Model\Bridge\DisplayBridge;
+use Zalt\Model\Bridge\Laminas\LaminasFilterBridge;
 use Zalt\Model\Bridge\Laminas\LaminasValidatorBridge;
 use Zalt\Snippets\ModelBridge\DetailTableBridge;
 use Zalt\Snippets\ModelBridge\TableBridge;
@@ -37,6 +38,7 @@ class MetaModelConfigProvider
     {
         return [
             'display'   => DisplayBridge::class,
+            'filter'    => LaminasFilterBridge::class,
             'form'      => ZendFormBridge::class,
             'itemTable' => DetailTableBridge::class,
             'table'     => TableBridge::class,

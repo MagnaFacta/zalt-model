@@ -9,7 +9,7 @@ declare(strict_types=1);
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  */
 
-namespace Zalt\Model\Validator;
+namespace Zalt\Model;
 
 /**
  * Interface to mark validators that want to know the current field name
@@ -18,7 +18,7 @@ namespace Zalt\Model\Validator;
  * @subpackage Model\Validator
  * @since      Class available since version 1.0
  */
-interface NameAwareValidatorInterface
+interface ModelFieldNameAwareInterface
 {
     /**
      * Set the name

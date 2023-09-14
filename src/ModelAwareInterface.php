@@ -8,7 +8,7 @@ declare(strict_types=1);
  * @author     Matijs de Jong <mjong@magnafacta.nl>
  */
 
-namespace Zalt\Model\Validator;
+namespace Zalt\Model;
 
 use Zalt\Model\Data\FullDataInterface;
 
@@ -19,7 +19,7 @@ use Zalt\Model\Data\FullDataInterface;
  * @subpackage Model\Validate
  * @since      Class available since version 1.0
  */
-interface ModelAwareValidatorInterface
+interface ModelAwareInterface
 {
     /**
      * Set / apply the model
