@@ -208,6 +208,11 @@ class JoinModel implements FullDataInterface
         return $this->metaModel->getName();
     }
 
+    public function getSaveTables(): array
+    {
+        return $this->saveTables;
+    }
+
     public function hasNew(): bool
     {
         return (bool) $this->saveTables;
