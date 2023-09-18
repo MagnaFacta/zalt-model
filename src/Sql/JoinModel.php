@@ -108,7 +108,7 @@ class JoinModel implements FullDataInterface
         }
 
         // First get meta-data for table
-        $settings = $this->sqlRunner->getTableMetaData($tableName);
+        $tableMetaData = $this->sqlRunner->getTableMetaData($tableName);
 
         // Set the joins
         $realJoins   = [];
@@ -121,7 +121,7 @@ class JoinModel implements FullDataInterface
                         if (! $field->hasTableName()) {
                             $field->setTableName($this->metaModel->get($from, 'table'));
                         }
-                    } elseif (isset($settings[$from])) {
+                    } elseif (isset($tableMetaData[$from])) {
                         if ($tableAlias) {
                             $field->setAliasName($tableAlias);
                         }
@@ -137,7 +137,7 @@ class JoinModel implements FullDataInterface
                     $to = $field->getNameInModel();
                 }
                 if (! $field->isExpression()) {
-                    if (isset($settings[$to])) {
+                    if (isset($tableMetaData[$to])) {
                         if ($tableAlias) {
                             $field->setAliasName($tableAlias);
                         }
@@ -157,7 +157,7 @@ class JoinModel implements FullDataInterface
 
         // Add settings to metamodel
         $targetTable = strlen($prefix) ? $prefix : $tableName . '.';
-        foreach ($settings as $name => $settings) {
+        foreach ($tableMetaData as $name => $settings) {
             $settings['table'] = $prefix . $tableName;
             $this->metaModel->set($prefix . $name, $settings);
         }
