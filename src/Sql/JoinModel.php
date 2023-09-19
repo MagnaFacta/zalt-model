@@ -25,6 +25,7 @@ class JoinModel implements FullDataInterface
     use DataReaderTrait;
     use SqlModelTrait;
 
+    protected array $joinFields = [];
     protected JoinTableStore $joinStore;
 
     protected array $saveTables = [];
@@ -100,15 +101,17 @@ class JoinModel implements FullDataInterface
             }
             // Saving currently does not work with table aliases
             $saveable = false;
+            $this->joinFields[$tableAlias] = $joinFields;
         } else {
             $prefix = '';
             if ($joinStore->hasTable($tableName)) {
                 throw new ModelException("Table $tableName already added to join.");
             }
+            $this->joinFields[$tableName] = $joinFields;
         }
 
         // First get meta-data for table
-        $settings = $this->sqlRunner->getTableMetaData($tableName);
+        $tableMetaData = $this->sqlRunner->getTableMetaData($tableName);
 
         // Set the joins
         $realJoins   = [];
@@ -121,7 +124,7 @@ class JoinModel implements FullDataInterface
                         if (! $field->hasTableName()) {
                             $field->setTableName($this->metaModel->get($from, 'table'));
                         }
-                    } elseif (isset($settings[$from])) {
+                    } elseif (isset($tableMetaData[$from])) {
                         if ($tableAlias) {
                             $field->setAliasName($tableAlias);
                         }
@@ -137,7 +140,7 @@ class JoinModel implements FullDataInterface
                     $to = $field->getNameInModel();
                 }
                 if (! $field->isExpression()) {
-                    if (isset($settings[$to])) {
+                    if (isset($tableMetaData[$to])) {
                         if ($tableAlias) {
                             $field->setAliasName($tableAlias);
                         }
@@ -157,7 +160,7 @@ class JoinModel implements FullDataInterface
 
         // Add settings to metamodel
         $targetTable = strlen($prefix) ? $prefix : $tableName . '.';
-        foreach ($settings as $name => $settings) {
+        foreach ($tableMetaData as $name => $settings) {
             $settings['table'] = $prefix . $tableName;
             $this->metaModel->set($prefix . $name, $settings);
         }
@@ -193,6 +196,11 @@ class JoinModel implements FullDataInterface
         return $output;
     }
 
+    public function getJoinFields(): array
+    {
+        return $this->joinFields;
+    }
+
     public function getJoinStore(): JoinTableStore
     {
         if (! isset($this->joinStore)) {
@@ -206,6 +214,11 @@ class JoinModel implements FullDataInterface
     public function getName(): string
     {
         return $this->metaModel->getName();
+    }
+
+    public function getSaveTables(): array
+    {
+        return $this->saveTables;
     }
 
     public function hasNew(): bool
@@ -302,6 +315,7 @@ class JoinModel implements FullDataInterface
 
     public function save(array $newValues, array $filter = null, array $saveTables = null): array
     {
+        $this->oldValues = [];
         $oldChanged    = $this->changed;
 
         $saveTables    = $this->_checkSaveTables($saveTables);
@@ -319,7 +333,6 @@ class JoinModel implements FullDataInterface
 
             // This will not work with aliased values
             $resultValues = $this->saveTableData($tableName, $resultValues, $newValues) + $resultValues;
-            $oldValues    = $resultValues;
         }
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 

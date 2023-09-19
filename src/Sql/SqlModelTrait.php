@@ -40,6 +40,8 @@ trait SqlModelTrait
      */
     protected $keyCopier = '__c_1_3_copy__%s__key_k_0_p_1__';
 
+    protected array|null $oldValues = null;
+
     protected function addChanged()
     {
         $this->changed++;
@@ -146,6 +148,13 @@ trait SqlModelTrait
         return $this->metaModel->getItemsFor(['table' => $tableName, 'key' => true]);
     }
 
+    /**
+     * @return array|null
+     */
+    public function getOldValues(): array|null
+    {
+        return $this->oldValues;
+    }
 
     /**
      * General utility function for saving a row in a table.
@@ -204,6 +213,7 @@ trait SqlModelTrait
                 false,
                 $this->sqlRunner->createWhere($this->metaModel, $filter),
                 []);
+            $this->oldValues = array_merge($this->oldValues, $oldValues);
         } else {
             $oldValues = false;
         }
