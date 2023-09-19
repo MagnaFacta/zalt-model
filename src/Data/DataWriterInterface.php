@@ -27,6 +27,12 @@ interface DataWriterInterface extends \Zalt\Model\MetaModellerInterface
     public function getChanged(): int;
 
     /**
+     * The values before a save
+     * @return array|null
+     */
+    public function getOldValues(): array|null;
+
+    /**
      * True if this model allows the creation of new model items.
      *
      * @return boolean

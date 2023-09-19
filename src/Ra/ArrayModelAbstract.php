@@ -41,6 +41,8 @@ abstract class ArrayModelAbstract implements DataReaderInterface
 
     private array $_sorts;
 
+    protected array|null $oldValues = null;
+
     public function __construct(
         protected MetaModelInterface $metaModel
     )
@@ -331,6 +333,14 @@ abstract class ArrayModelAbstract implements DataReaderInterface
         return $this->metaModel->getName();
     }
 
+    /**
+     * @return array|null
+     */
+    public function getOldValues(): array|null
+    {
+        return $this->oldValues;
+    }
+
     public function hasNew() : bool
     {
         return $this instanceof DataWriterInterface;
@@ -400,6 +410,8 @@ abstract class ArrayModelAbstract implements DataReaderInterface
             // Copy ald values into row;
             $newValues = $newValues + $data[$key];
         }
+
+        $this->oldValues = $data[$key];
 
         $beforeValues = $this->metaModel->processBeforeSave($newValues);
         if (null !== $key) {

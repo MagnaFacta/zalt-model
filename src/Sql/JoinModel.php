@@ -307,6 +307,7 @@ class JoinModel implements FullDataInterface
 
     public function save(array $newValues, array $filter = null, array $saveTables = null): array
     {
+        $this->oldValues = [];
         $oldChanged    = $this->changed;
 
         $saveTables    = $this->_checkSaveTables($saveTables);
@@ -324,7 +325,6 @@ class JoinModel implements FullDataInterface
 
             // This will not work with aliased values
             $resultValues = $this->saveTableData($tableName, $resultValues, $newValues) + $resultValues;
-            $oldValues    = $resultValues;
         }
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 
