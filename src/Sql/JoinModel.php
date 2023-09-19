@@ -25,6 +25,7 @@ class JoinModel implements FullDataInterface
     use DataReaderTrait;
     use SqlModelTrait;
 
+    protected array $joinFields = [];
     protected JoinTableStore $joinStore;
 
     protected array $saveTables = [];
@@ -100,11 +101,13 @@ class JoinModel implements FullDataInterface
             }
             // Saving currently does not work with table aliases
             $saveable = false;
+            $this->joinFields[$tableAlias] = $joinFields;
         } else {
             $prefix = '';
             if ($joinStore->hasTable($tableName)) {
                 throw new ModelException("Table $tableName already added to join.");
             }
+            $this->joinFields[$tableName] = $joinFields;
         }
 
         // First get meta-data for table
@@ -191,6 +194,11 @@ class JoinModel implements FullDataInterface
              );
         }
         return $output;
+    }
+
+    public function getJoinFields(): array
+    {
+        return $this->joinFields;
     }
 
     public function getJoinStore(): JoinTableStore
