@@ -13,6 +13,7 @@ namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Data\DataWriterInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 
@@ -107,14 +108,14 @@ class NestedTransformer extends SubmodelTransformerAbstract
      * Function to allow overruling of transform for certain models
      *
      * @param MetaModelInterface $model
-     * @param DataWriterInterface $sub
+     * @param FullDataInterface $sub
      * @param array $row
      * @param array $join
      * @param string $name
      */
     protected function transformSaveSubModel(
         MetaModelInterface $model,
-        DataWriterInterface $sub,
+        FullDataInterface $sub,
         array &$row,
         array $join,
         string $name)
