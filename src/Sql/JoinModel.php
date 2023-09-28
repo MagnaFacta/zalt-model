@@ -322,6 +322,17 @@ class JoinModel implements FullDataInterface
         $resultValues  = $this->metaModel->processBeforeSave($newValues);
         $fieldMappings = $this->joinStore->getFieldMappings();
 
+        $oldKeys = [];
+        if ($filter) {
+            foreach ($this->metaModel->getKeys() as $id => $name) {
+                if (isset($filter[$id])) {
+                    $oldKeys[$name] = $filter[$id];
+                } elseif (isset($filter[$name])) {
+                    $oldKeys[$name] = $filter[$name];
+                }
+            }
+        }
+
         // print_r($fieldMappings);
         foreach ($saveTables as $tableAlias => $tableName) {
             // First copy all required keys
@@ -332,7 +343,7 @@ class JoinModel implements FullDataInterface
             }
 
             // This will not work with aliased values
-            $resultValues = $this->saveTableData($tableName, $resultValues, $newValues) + $resultValues;
+            $resultValues = $this->saveTableData($tableName, $resultValues, $oldKeys) + $resultValues;
         }
         $afterValues  = $this->metaModel->processAfterSave($resultValues);
 

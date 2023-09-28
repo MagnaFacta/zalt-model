@@ -391,7 +391,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     case 'CURRENT_DATE':
                     case 'CURRENT_TIME':
                     case 'CURRENT_TIMESTAMP':
-                        $fieldData[$name]['default'] = new Expression($default);
+                        $fieldData[$name]['default'] = $default;
                         break;
                     case 'NULL':
                         break;

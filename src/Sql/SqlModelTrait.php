@@ -83,7 +83,9 @@ trait SqlModelTrait
     public function copyKeys($reset = false)
     {
         foreach ($this->metaModel->getKeys($reset) as $name) {
-            $this->addColumn($name, $this->getKeyCopyName($name), $name);
+            $copyName = $this->getKeyCopyName($name);
+            $this->addColumn($name, $copyName, $name);
+            $this->metaModel->set($copyName, ['elementClass' => 'Hidden']);
         }
         return $this;
     }
@@ -186,11 +188,11 @@ trait SqlModelTrait
                 // Never include null key values, except when we have a save transformer
                 if (! $this->metaModel->has($key, MetaModel::SAVE_TRANSFORMER)) {
                     unset($newValues[$key]);
-//                    \MUtil\EchoOut\EchoOut::r('Null key value: ' . $key, 'INSERT!!');
+//                    dump('Null key value: ' . $key, 'INSERT!!');
                 }
 
             } elseif (isset($oldKeys[$key])) {
-//                \MUtil\EchoOut\EchoOut::r($key . ' => ' . $oldKeys[$key], 'Old key');
+//                dump($key . ' => ' . $oldKeys[$key], 'Old key');
                 $filter[$key] = $oldKeys[$key];
                 // Key values left in $returnValues in case of partial key insert
 
@@ -200,7 +202,7 @@ trait SqlModelTrait
 
                 if (isset($newValues[$copyKey])) {
                     $filter[$key] = $newValues[$copyKey];
-//                    \MUtil\EchoOut\EchoOut::r($key . ' => ' . $newValues[$copyKey], 'Copy key');
+//                    dump($key . ' => ' . $newValues[$copyKey], 'Copy key');
 
                 } elseif (isset($newValues[$key])) {
                     $filter[$key] = $newValues[$key];

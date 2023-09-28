@@ -135,7 +135,7 @@ abstract class SubmodelTransformerAbstract implements ModelTransformerInterface
      * @param array $joins
      * @return array
      */
-    public function transformFilterSubModel(MetaModelInterface $model, DataReaderInterface $sub, array $filter, array $join)
+    public function transformFilterSubModel(MetaModelInterface $model, DataReaderInterface $sub, array $filter, array $joins)
     {
         return $filter;
     }

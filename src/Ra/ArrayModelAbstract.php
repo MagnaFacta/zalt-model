@@ -409,9 +409,10 @@ abstract class ArrayModelAbstract implements DataReaderInterface
         if (null !== $key) {
             // Copy ald values into row;
             $newValues = $newValues + $data[$key];
+            $this->oldValues = $data[$key];
+        } else {
+            $this->oldValues = null;
         }
-
-        $this->oldValues = $data[$key];
 
         $beforeValues = $this->metaModel->processBeforeSave($newValues);
         if (null !== $key) {
