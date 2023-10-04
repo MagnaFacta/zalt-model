@@ -49,7 +49,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::AUTO_OPTIONS       => ['elementClass', 'multiOptions'],
         self::CHECK_OPTIONS      => ['checkedValue', 'uncheckedValue'],
         self::DATE_OPTIONS       => ['dateFormat', 'datePickerSettings', 'storageFormat'],
-        self::DISPLAY_OPTIONS    => ['accesskey', 'addDecorators', 'autoInsertNoTagsValidator', 'autoInsertNotEmptyValidator', 'class', 'decorators', 'disabled', 'disableTranslator', 'description', 'escape', 'escapeDescription', 'label', 'labelplacement', 'onclick', 'placeholder', 'readonly', 'required', 'tabindex', 'value', 'showLabels'],
+        self::DISPLAY_OPTIONS    => ['accesskey', 'addDecorators', 'autoInsertNoTagsValidator', 'autoInsertNotEmptyValidator', 'autosubmit', 'class', 'decorators', 'disabled', 'disableTranslator', 'description', 'escape', 'escapeDescription', 'label', 'labelplacement', 'onclick', 'placeholder', 'readonly', 'required', 'tabindex', 'value', 'showLabels'],
         self::EXHIBIT_OPTIONS    => ['formatFunction', 'itemDisplay', 'nohidden'],
         self::FAKESUBMIT_OPTIONS => ['label', 'tabindex', 'disabled'],
         self::FILE_OPTIONS       => ['accept', 'count', 'destination', 'extension', 'filename', 'valueDisabled'],
@@ -129,15 +129,12 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
      *
      * @param string $name
      * @param array $options
-     * @param mixed $allowedOptionKeys_array
+     * @param array $allowedOptionsKeys containing arrays and string keys of $this->_allowedOptions
      * @return array
      */
-    protected function _mergeOptions($name, array $options, $allowedOptionKeys_array)
+    protected function _mergeOptions($name, array $options, ...$allowedOptionsKeys)
     {
-        $args = func_get_args();
-        $allowedOptionsKeys = Ra::args($args, 2);
-
-        $allowedOptions = array();
+        $allowedOptions = [];
         foreach ($allowedOptionsKeys as $allowedOptionsKey) {
             if (is_array($allowedOptionsKey)) {
                 $allowedOptions = array_merge($allowedOptions, $allowedOptionsKey);
@@ -145,15 +142,9 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
                 if (array_key_exists($allowedOptionsKey, $this->_allowedOptions)) {
                     $allowedOptions = array_merge($allowedOptions, $this->_allowedOptions[$allowedOptionsKey]);
                 } else {
-                    $allowedOptions[] = $allowedOptionsKey;
+                     $allowedOptions[] = $allowedOptionsKey;
                 }
             }
-        }
-
-        // Move options to model.
-        if (isset($options['validator'])) {
-            $this->metaModel->set($name, 'validators[]', $options['validator']);
-            unset($options['validator']);
         }
 
         if ($allowedOptions) {
@@ -161,22 +152,30 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             // might trigger a lot of lazy calculations that are not needed.
             $allowedOptionsFlipped = array_flip($allowedOptions);
 
-            // First strip the options that are not allowed
-//            if (\MUtil\Model::$verbose) {
-//                $strippedKeys = array_keys(array_diff_key($options, $allowedOptionsFlipped));
-//                if (!empty($strippedKeys)) {
-//                    // \MUtil\EchoOut\EchoOut::r($strippedKeys, 'stripped from options for ' . $name);
-//                }
-//            }
             $options = array_intersect_key($options, $allowedOptionsFlipped);
 
             // Now get allowed options from the model
             $modelOptions = $this->metaModel->get($name, $allowedOptions);
 
             // Merge them: first use supplied $options, and add missing values from model
-            return (array) $options + (array) $modelOptions;
+            $options = (array) $options + (array) $modelOptions;
         }
-        
+
+        if (isset($options['autosubmit'])) {
+            $autosubmit = $this->_moveOption('autosubmit', $options);
+
+            $autosubmitClass = 'autosubmit';
+            if (is_string($autosubmit)) {
+                $autosubmitClass .= ' ' . $autosubmit;
+            }
+
+            if (isset($options['class'])) {
+                $options['class'] = ' ' . $autosubmitClass;
+            } else {
+                $options['class'] = $autosubmitClass;
+            }
+        }
+
         return $options;
     }
 
@@ -201,8 +200,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
 
     public function add($name, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null)
     {
-        $options = func_get_args();
-        $options = Ra::pairs($options, 1);
+        $options = Ra::pairs(func_get_args(), 1);
 
         /**
          * As this method redirects to the correct 'add' method, we preserve the original options
