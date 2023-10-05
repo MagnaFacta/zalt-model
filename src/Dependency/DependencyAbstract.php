@@ -66,7 +66,7 @@ abstract class DependencyAbstract implements DependencyInterface
      * @var array settings to enable for autosubmit
      */
     protected array $autoSubmitSettings = [
-        'autosubmit' => true,
+        'autoSubmit' => true,
         ];
 
     /**

@@ -49,7 +49,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::AUTO_OPTIONS       => ['elementClass', 'multiOptions'],
         self::CHECK_OPTIONS      => ['checkedValue', 'uncheckedValue'],
         self::DATE_OPTIONS       => ['dateFormat', 'datePickerSettings', 'storageFormat'],
-        self::DISPLAY_OPTIONS    => ['accesskey', 'addDecorators', 'autoInsertNoTagsValidator', 'autoInsertNotEmptyValidator', 'autosubmit', 'class', 'decorators', 'disabled', 'disableTranslator', 'description', 'escape', 'escapeDescription', 'label', 'labelplacement', 'onclick', 'placeholder', 'readonly', 'required', 'tabindex', 'value', 'showLabels'],
+        self::DISPLAY_OPTIONS    => ['accesskey', 'addDecorators', 'autoInsertNoTagsValidator', 'autoInsertNotEmptyValidator', 'autoSubmit', 'class', 'decorators', 'disabled', 'disableTranslator', 'description', 'escape', 'escapeDescription', 'label', 'labelplacement', 'onclick', 'placeholder', 'readonly', 'required', 'tabindex', 'value', 'showLabels'],
         self::EXHIBIT_OPTIONS    => ['formatFunction', 'itemDisplay', 'nohidden'],
         self::FAKESUBMIT_OPTIONS => ['label', 'tabindex', 'disabled'],
         self::FILE_OPTIONS       => ['accept', 'count', 'destination', 'extension', 'filename', 'valueDisabled'],
@@ -161,10 +161,10 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             $options = (array) $options + (array) $modelOptions;
         }
 
-        if (isset($options['autosubmit'])) {
-            $autosubmit = $this->_moveOption('autosubmit', $options);
+        if (isset($options['autoSubmit'])) {
+            $autosubmit = $this->_moveOption('autoSubmit', $options);
 
-            $autosubmitClass = 'autosubmit';
+            $autosubmitClass = 'auto-submit';
             if (is_string($autosubmit)) {
                 $autosubmitClass .= ' ' . $autosubmit;
             }
