@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Dependency;
 
-use Symfony\Contracts\Translation\TranslatorInterface;
+use Zalt\Base\TranslatorInterface;
 
 /**
  * A dependency where a fixed array of values is returned for each value in the switch.
