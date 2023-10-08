@@ -23,6 +23,8 @@ interface FormBridgeInterface extends BridgeInterface
 
     public function addFilter($name, $filter, $options = array());
 
+    public function addHidden($name, $arrayOrKey1 = null, $value1 = null, $key2 = null, $value2 = null);
+
     /**
      *
      * @param string $elementName
