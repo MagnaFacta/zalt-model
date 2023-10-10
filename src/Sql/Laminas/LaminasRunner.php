@@ -153,7 +153,11 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 } else {
                     $expression = $metaModel->get($field, 'column_expression');
                     if ($expression) {
-                        $name = new Expression('(' . $expression . ')');
+                        if ($expression instanceof Expression) {
+                            $name = $expression;
+                        } else {
+                            $name = new Expression('(' . $expression . ')');
+                        }
                     } else {
                         $name = $field;
                     }
