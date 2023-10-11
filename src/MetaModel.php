@@ -1252,7 +1252,7 @@ class MetaModel implements MetaModelInterface
         if ($args) {
             foreach ($args as $key => $value) {
                 // If $key end with ] it is array value
-                if (substr($key, -1) == ']') {
+                if (is_string($key) && substr($key, -1) == ']') {
                     if (substr($key, -2) == '[]') {
                         // If $key ends with [], append it to array
                         $key    = substr($key, 0, -2);
