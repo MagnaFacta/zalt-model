@@ -10,7 +10,7 @@ use Zalt\Html\TableElement;
 use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
 
-class JsonData extends AbstractModelType
+class JsonType extends AbstractModelType
 {
     /**
      *
