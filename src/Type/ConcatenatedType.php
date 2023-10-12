@@ -2,6 +2,7 @@
 
 namespace Zalt\Model\Type;
 
+use Zalt\Html\ElementInterface;
 use Zalt\Html\Sequence;
 use Zalt\Model\MetaModel;
 use Zalt\Model\MetaModelInterface;
@@ -46,7 +47,11 @@ class ConcatenatedType extends AbstractModelType
      * @param string $displaySeperator
      * @param boolean $valuePad
      */
-    public function __construct(string $seperatorChar = ' ', string $displaySeperator = ' ', bool $valuePad = true)
+    public function __construct(
+        string|ElementInterface $seperatorChar = ' ',
+        string|ElementInterface $displaySeperator = ' ',
+        bool $valuePad = true
+    )
     {
         $args = Ra::args(
             func_get_args(),
