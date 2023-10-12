@@ -82,10 +82,10 @@ class JsonType extends AbstractModelType
         if (is_array($value)) {
             $i = 0;
             $output = new Sequence();
-            $output->setGlue($this->_separator);
+            $output->setGlue($this->separator);
             foreach ($value as $val) {
-                if ($i++ > $this->_maxTable) {
-                    $output->append($this->_more);
+                if ($i++ > $this->maxTable) {
+                    $output->append($this->more);
                     break;
                 }
                 $output->append($val);
