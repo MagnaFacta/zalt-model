@@ -24,9 +24,6 @@ class JsonType extends AbstractModelType
         protected readonly string $more = '...'
     )
     {
-        $this->_maxTable  = $maxTable;
-        $this->_more      = $more;
-        $this->_separator = $separator;
     }
 
     /**
@@ -34,7 +31,6 @@ class JsonType extends AbstractModelType
      *
      * @param MetaModelInterface $metaModel
      * @param string $name The field to set the separator character
-     * @param boolean $detailed When true show detailed information
      */
     public function apply(MetaModelInterface $metaModel, string $name): void
     {
