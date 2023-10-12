@@ -37,7 +37,7 @@ class ConcatenatedType extends AbstractModelType
      *
      * @var boolean
      */
-    protected $valuePad = true;
+    protected bool $valuePad = true;
 
     /**
      * \MUtil\Ra::args() parameter passing is allowed.
@@ -46,7 +46,7 @@ class ConcatenatedType extends AbstractModelType
      * @param string $displaySeperator
      * @param boolean $valuePad
      */
-    public function __construct($seperatorChar = ' ', $displaySeperator = ' ', $valuePad = true)
+    public function __construct(string $seperatorChar = ' ', string $displaySeperator = ' ', bool $valuePad = true)
     {
         $args = Ra::args(
             func_get_args(),
@@ -143,7 +143,6 @@ class ConcatenatedType extends AbstractModelType
      */
     public function loadValue($value, $isNew = false, $name = null, array $context = array(), $isPost = false)
     {
-        // \MUtil\EchoOut\EchoOut::track($value, $name, $context);
         if (! is_array($value)) {
             if ($this->valuePad) {
                 $value = trim((string)$value, $this->seperatorChar);
