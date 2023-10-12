@@ -63,11 +63,11 @@ abstract class DependencyAbstract implements DependencyInterface
     protected bool $applyOnChange = true;
 
     /**
-     * Set to false to disable automatically setting the onchange code
-     *
-     * @var string|bool
+     * @var array settings to enable for autosubmit
      */
-    protected string|bool $onChangeJs = 'this.form.submit();';
+    protected array $autoSubmitSettings = [
+        'autoSubmit' => true,
+        ];
 
     /**
      * Constructor checks any subclass set variables
@@ -163,13 +163,9 @@ abstract class DependencyAbstract implements DependencyInterface
     {
         if ($this->applyOnChange) {
             foreach ($this->getDependsOn() as $name) {
-                if ($metaModel->is($name, 'elementClass', 'Checkbox')) {
-                    if (! $metaModel->has($name, 'onclick')) {
-                        $metaModel->set($name, 'onclick', $this->onChangeJs);
-                    }
-                } else {
-                    if (! $metaModel->has($name, 'onchange')) {
-                        $metaModel->set($name, 'onchange', $this->onChangeJs);
+                foreach ($this->autoSubmitSettings as $key => $value) {
+                    if (! $metaModel->has($name, $key)) {
+                        $metaModel->set($name, [$key => $value]);
                     }
                 }
             }
