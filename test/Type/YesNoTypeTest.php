@@ -86,9 +86,10 @@ class YesNoTypeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($display, $bridge->format('yesno', $data['yesno']));
 
         if ($className) {
-            $this->assertTrue($metaModel->has('yesno', 'column_expression'));
+            $this->assertTrue($metaModel->has($className, 'column_expression'));
+            $this->assertCount(1, $metaModel->getColNames( 'column_expression'));
         } else {
-            $this->assertFalse($metaModel->has('yesno', 'column_expression'));
+            $this->assertCount(0, $metaModel->getColNames( 'column_expression'));
         }
     }
 

@@ -23,7 +23,7 @@ class YesNoType extends AbstractModelType
 
         if ($this->className) {
             $column = sprintf("CASE WHEN %s = 1 THEN '%s' ELSE '%s' END", $name, $this->classYes, $this->classNo);
-            $metaModel->set($name, 'column_expression', $column);
+            $metaModel->set($this->className, 'column_expression', $column);
         }
     }
 
