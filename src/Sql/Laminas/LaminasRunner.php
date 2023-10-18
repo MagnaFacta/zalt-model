@@ -215,7 +215,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
      */
     public function fetchCount(string|JoinTableStore $tables, mixed $where): int
     {
-        $select = $this->getSelect($tables);
+        $select = $this->getSelect($tables, true);
         $select->columns(['count' => new Expression("COUNT(*)")]);
         if ($where) {
             $select->where($where);
@@ -309,7 +309,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $this->lastSqlStatement;
     }
 
-    public function getSelect(string|JoinTableStore $tables): Select
+    public function getSelect(string|JoinTableStore $tables, bool $onlyInnerJoins = false): Select
     {
         if (is_string($tables)) {
             return $this->sql->select($tables);
@@ -318,6 +318,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         $select = $this->sql->select($tables->getStartTableName());
         foreach ($tables->getJoins() as $join) {
             if ($join instanceof JoinTableItem) {
+                if ($onlyInnerJoins && !$join->isInnerJoin()) {
+                    continue;
+                }
                 $on = [];
                 foreach ($join->getJoin() as $key => $value) {
                     if ($value instanceof JoinCondition) {
