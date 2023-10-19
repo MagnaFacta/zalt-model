@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
-use Zalt\Loader\DependencyResolver\ConstructorDependencyParametersResolver;
+use Zalt\Loader\DependencyResolver\OrderedParamsContainerResolver;
 use Zalt\Loader\ProjectOverloader;
 use Zalt\Model\Bridge\BridgeInterface;
 use Zalt\Model\Data\DataReaderInterface;
@@ -35,7 +35,9 @@ class MetaModelLoader
         protected array $modelConfig,
     )
     {
-        $this->loader->setDependencyResolver(new ConstructorDependencyParametersResolver());
+        if (!$this->loader->getDependencyResolver() instanceof OrderedParamsContainerResolver) {
+            $this->loader->setDependencyResolver(new OrderedParamsContainerResolver());
+        }
     }
 
     public function createBridge($class, DataReaderInterface $dataModel, ...$parameters): BridgeInterface
