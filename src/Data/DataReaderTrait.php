@@ -150,7 +150,7 @@ trait DataReaderTrait
 
         // 1 - When posting, posted data is used as a value first
         // 2 - Then we use any values already set
-        return $this->metaModel->processOneRowAfterLoad($postData + $modelData + $excludes, $create, true);
+        return $this->metaModel->processOneRowAfterLoad($postData + $excludes + $modelData, $create, true);
     }
 
     public function loadRepeatable($filter = null, $sort = null, $columns = null) : ?RepeatableInterface
