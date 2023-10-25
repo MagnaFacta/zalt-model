@@ -319,7 +319,16 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
             $stringlength['maxlength'] = $metaModel->get($name, 'size');
         }
         if ($stringlength) {
-            $output[StringLength::class] = [StringLength::class, false, $stringlength];
+            $type = $metaModel->get($name, 'type');
+            if ($type === MetaModelInterface::TYPE_STRING) {
+                $output[StringLength::class] = [StringLength::class, false, $stringlength];
+            }
+            if ($type === MetaModelInterface::TYPE_NUMERIC) {
+                if ($stringlength['max']) {
+                    $maxSize = (int)1 . str_repeat('0', $stringlength['max']);
+                    $output[LessThan::class] = [LessThan::class, false, ['max' => $maxSize]];
+                }
+            }
         }
 
         return $output;
