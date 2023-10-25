@@ -12,6 +12,7 @@ namespace Zalt\Model\Bridge\Laminas;
 
 use Laminas\Validator\Digits;
 use Laminas\Validator\InArray;
+use Laminas\Validator\LessThan;
 use Laminas\Validator\NotEmpty;
 use Laminas\Validator\StringLength;
 use Laminas\Validator\ValidatorInterface;
