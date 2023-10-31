@@ -19,7 +19,6 @@ use Zalt\Model\MetaModelInterface;
  */
 abstract class AbstractModelType implements ModelTypeInterface
 {
-
     /**
      * @inheritDoc
      */
