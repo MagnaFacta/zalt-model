@@ -115,6 +115,24 @@ class LaminasSelectModel implements DataReaderInterface
     /**
      * @inheritDoc
      */
+    public function loadPage(int $page, int $items, $filter = null, $sort = null, $columns = null): array
+    {
+        $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
+        $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
+
+        $selectRows  = clone $this->select;
+        $selectRows->columns($columns);
+        $selectRows->where($where);
+        $selectRows->order($order);
+        $output = $this->laminasRunner->fetchRowsFromSelect($selectRows, ($page - 1) * $items, $items);
+
+        return $this->metaModel->processAfterLoad($output);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
         $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);

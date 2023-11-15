@@ -256,6 +256,18 @@ class JoinModel implements FullDataInterface
         return [];
     }
 
+    public function loadPage(int $page, int $items, $filter = null, $sort = null, $columns = null): array
+    {
+        $joins   = $this->getJoinStore();
+        $columns = $this->sqlRunner->createColumns($this->metaModel, $columns);
+        $where   = $this->sqlRunner->createWhere($this->metaModel, $this->checkFilter($filter));
+        $order   = $this->sqlRunner->createSort($this->metaModel, $this->checkSort($sort));
+
+        return $this->metaModel->processAfterLoad(
+            $this->sqlRunner->fetchRows($joins, $columns, $where, $order, ($page - 1) * $items, $items)
+        );
+    }
+
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
         $joins   = $this->getJoinStore();

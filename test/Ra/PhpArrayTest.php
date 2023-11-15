@@ -198,7 +198,7 @@ class PhpArrayTest extends TestCase
         $this->assertEquals($newRow, $model->loadNew());
     }
 
-    public function testLoadPage1(): void
+    public function testLoadPageWithCount1(): void
     {
         $rows  = $this->getRows();
         $model = $this->getModelLoaded($rows);
@@ -215,7 +215,7 @@ class PhpArrayTest extends TestCase
         $this->assertEquals(3, $total);
     }
 
-    public function testLoadPage2(): void
+    public function testLoadPageWithCount2(): void
     {
         $rows  = $this->getRows();
         $model = $this->getModelLoaded($rows);
@@ -230,6 +230,36 @@ class PhpArrayTest extends TestCase
         $this->assertEquals($output, $result);
         $this->assertCount(2, $result);
         $this->assertEquals(4, $total);
+    }
+
+    public function testLoadPage1(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $output = [
+            $rows[0],
+            $rows[2],
+        ];
+        $result = $model->loadPage(1, 2, ['c' => [MetaModelInterface::FILTER_BETWEEN_MIN => 10, MetaModelInterface::FILTER_BETWEEN_MAX => 30]]);
+        $this->assertEquals($output, $result);
+        $this->assertCount(2, $result);
+    }
+
+    public function testLoadPage2(): void
+    {
+        $rows  = $this->getRows();
+        $model = $this->getModelLoaded($rows);
+
+        $this->assertInstanceOf(PhpArrayModel::class, $model);
+        $output = [
+            $rows[2],
+            $rows[3],
+        ];
+        $result = $model->loadPage(2, 2);
+        $this->assertEquals($output, $result);
+        $this->assertCount(2, $result);
     }
 
     public function testLoadRepeater(): void

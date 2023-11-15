@@ -384,6 +384,16 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     /**
      * @inheritDoc
      */
+    public function loadPage(int $page, int $items, $filter = null, $sort = null, $columns = null): array
+    {
+        $output = $this->load($filter, $sort);
+
+        return array_slice($output, ($page - 1) * $items, $items);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
         $output = $this->load($filter, $sort);
