@@ -40,10 +40,10 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     protected string $lastSqlStatement = '';
 
     protected Sql $sql;
-    
+
     public function __construct(
         protected Adapter $db
-    ) { 
+    ) {
         $this->sql = new Sql($this->db);
     }
 
@@ -80,7 +80,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
             }
         }
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r(array_keys($output), true) . "\n", FILE_APPEND);
-        
+
         return $output;
     }
 
@@ -132,7 +132,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         }
         if (! $where) {
             return [];
-        } 
+        }
         if (is_array($where)) {
             $output = new Where([], $and ? PredicateSet::COMBINED_BY_AND : PredicateSet::COMBINED_BY_OR);
             foreach ($where as $field => $value) {
@@ -193,11 +193,11 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                         $output->isNull($name);
                     } else {
                         $output->equalTo($name, $value);
-                    }                    
+                    }
                 }
             }
             return $output;
-        } 
+        }
         return new Literal($where);
     }
 
@@ -215,7 +215,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
      */
     public function fetchCount(string|JoinTableStore $tables, mixed $where): int
     {
-        $select = $this->getSelect($tables, true);
+        $select = $this->getSelect($tables);
         $select->columns(['count' => new Expression("COUNT(*)")]);
         if ($where) {
             $select->where($where);
@@ -255,7 +255,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         $select->limit(1);
 
         $rows = $this->fetchRowsFromSelect($select);
-        
+
         return reset($rows) ?: [];
     }
 
@@ -309,7 +309,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         return $this->lastSqlStatement;
     }
 
-    public function getSelect(string|JoinTableStore $tables, bool $onlyInnerJoins = false): Select
+    public function getSelect(string|JoinTableStore $tables): Select
     {
         if (is_string($tables)) {
             return $this->sql->select($tables);
@@ -318,9 +318,6 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
         $select = $this->sql->select($tables->getStartTableName());
         foreach ($tables->getJoins() as $join) {
             if ($join instanceof JoinTableItem) {
-                if ($onlyInnerJoins && !$join->isInnerJoin()) {
-                    continue;
-                }
                 $on = [];
                 foreach ($join->getJoin() as $key => $value) {
                     if ($value instanceof JoinCondition) {
@@ -416,22 +413,22 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 }
             }
 //            if ($constraint->isUnique()) {
-//            
+//
 //            }
 //            if ($constraint->isForeignKey()) {
-//                
+//
 //            }
         }
-        
+
         // Supply the data sorted on ordinal position
         ksort($fieldOrder);
         $output = [];
         foreach ($fieldOrder as $name) {
             $output[$name] = $fieldData[$name];
         }
-        
+
         // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r($output, true) . "\n", FILE_APPEND);
-        
+
         return $output;
     }
 
@@ -441,9 +438,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     public function insertInTable(string $tableName, array $values) : ?int
     {
         $table = new TableGateway($tableName, $this->db);
-        
+
         $table->insert($values);
-        
+
         return intval($table->getLastInsertValue());
     }
 
@@ -453,7 +450,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     public function updateInTable(string $tableName, array $values, mixed $where) : int
     {
         $table = new TableGateway($tableName, $this->db);
-        
+
         return $table->update($values, $where);
     }
 }
