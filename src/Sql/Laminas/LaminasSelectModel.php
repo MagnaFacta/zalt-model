@@ -29,14 +29,14 @@ class LaminasSelectModel implements DataReaderInterface
     use DataReaderTrait;
     
     /**
-     * @param \Laminas\Db\Sql\Select                $select
      * @param \Zalt\Model\MetaModelInterface        $metaModel
      * @param \Zalt\Model\Sql\Laminas\LaminasRunner $laminasRunner
+     * @param \Laminas\Db\Sql\Select                $select
      */
     public function __construct(
-        protected Select $select,
         protected MetaModelInterface $metaModel,
-        protected LaminasRunner $laminasRunner
+        protected LaminasRunner $laminasRunner,
+        protected Select $select,
     )
     { }
 
