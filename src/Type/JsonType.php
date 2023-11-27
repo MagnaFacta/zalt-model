@@ -34,14 +34,14 @@ class JsonType extends AbstractModelType
      */
     public function apply(MetaModelInterface $metaModel, string $name): void
     {
-        $metaModel->set($name, 'formatFunction', 'format');
+        $metaModel->set($name, 'formatFunction', [$this, 'format']);
         $metaModel->setOnLoad($name, [$this, 'loadValue']);
         $metaModel->setOnSave($name, [$this, 'saveValue']);
     }
 
     public function applyTableView(MetaModelInterface $metaModel, string $name): void
     {
-        $metaModel->set($name, 'formatFunction', 'formatTable');
+        $metaModel->set($name, 'formatFunction', [$this, 'formatTable']);
     }
 
     /**
