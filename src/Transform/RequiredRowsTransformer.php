@@ -11,20 +11,20 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
     /**
      * Contains default values for all missing row values
      *
-     * @var mixed Something that can be made into an array using Ra::to()
+     * @var object|array|null Something that can be made into an array using Ra::to()
      */
     protected object|array|null $_defaultRow = null;
 
     /**
      * The number of key values to compare, if empty the number of fields in the first required row
      *
-     * @var int
+     * @var int|null
      */
     protected ?int $_keyItemCount = null;
 
     /**
      *
-     * @var mixed Something that can be made into an array using Ra::to()
+     * @var object|array|null Something that can be made into an array using Ra::to()
      */
     protected object|array|null $_requiredRows = null;
 
@@ -33,7 +33,7 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
      * @param array $required
      * @param array $row
      * @param int $count
-     * @return boolean True if the rows refer to the same row
+     * @return bool True if the rows refer to the same row
      */
     protected function _compareRows(array $required, array $row, int $count): bool
     {
@@ -125,7 +125,7 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
     /**
      * Contains default values for all missing row values
      *
-     * @param mixed $defaultRow Something that can be made into an array using Ra::to()
+     * @param object|array $defaultRow Something that can be made into an array using Ra::to()
      * @return self
      * @throws ModelException
      */
@@ -145,7 +145,7 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
      * @param int $count
      * @return self
      */
-    public function setKeyItemCount($count)
+    public function setKeyItemCount(int $count): self
     {
         $this->_keyItemCount = $count;
         return $this;
@@ -154,8 +154,8 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
     /**
      * The keys for the required rows
      *
-     * @param mixed $rows Something that can be made into an array using Ra::to()
-     * @return RequiredRowsTransformer
+     * @param object|array $rows Something that can be made into an array using Ra::to()
+     * @return self
      * @throws ModelException
      */
     public function setRequiredRows(object|array $rows): self
@@ -174,8 +174,8 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
      *
      * @param MetaModelInterface $model The parent model
      * @param array $data Nested array
-     * @param boolean $new True when loading a new item
-     * @param boolean $isPostData With post data, unselected multiOptions values are not set so should be added
+     * @param bool $new True when loading a new item
+     * @param bool $isPostData With post data, unselected multiOptions values are not set so should be added
      * @return array Nested array containing (optionally) transformed data
      */
     public function transformLoad(MetaModelInterface $model, array $data, $new = false, $isPostData = false)
