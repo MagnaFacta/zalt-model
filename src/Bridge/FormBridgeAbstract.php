@@ -62,7 +62,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::TEXT_OPTIONS       => ['maxlength', 'minlength', 'onblur', 'onchange', 'onfocus', 'onselect', 'size'],
         self::TEXTAREA_OPTIONS   => ['cols', 'decorators', 'rows', 'wrap'],
     ];
-    
+
     protected string $dateTimeClass = "DateTimeInput";
 
     /**
@@ -78,12 +78,12 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
     public MetaModelInterface $metaModel;
 
     public ValidatorBridgeInterface $validatorBridge;
-    
+
     /**
      * @inheritDoc
      */
     public function __construct(protected DataReaderInterface $dataModel)
-    {   
+    {
         if (! $this->dataModel instanceof FullDataInterface) {
             throw new MetaModelException("Only FullDataInterface objects are allowed as input for a FormBridge");
         }
@@ -264,7 +264,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
 
         if (isset($options['dateFormat'])) {
             // Make sure the model knows the dateFormat (can be important for storage).
-            $this->metaModel->set($name, 'dateFormat', $options['dateFormat']);
+            $this->metaModel->set($name, ['dateFormat' => $options['dateFormat']]);
         }
 
         return $this->_addToForm($name, $this->dateTimeClass, $options);
@@ -559,7 +559,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         $this->_allowedOptions[$key] = $options;
         return $this;
     }
-    
+
     /**
      * @inheritDoc
      */
