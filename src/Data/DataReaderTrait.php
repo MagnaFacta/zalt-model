@@ -63,7 +63,7 @@ trait DataReaderTrait
         }
         return $output;
     }
-    
+
     public function getFilter(): array
     {
         return $this->filter;
@@ -94,7 +94,7 @@ trait DataReaderTrait
     {
         return (bool) $this->sort;
     }
-    
+
     public function loadFirst($filter = null, $sort = null, $columns = null) : array
     {
         $rows = $this->load($filter, $sort, $columns);
@@ -108,7 +108,7 @@ trait DataReaderTrait
     {
         return $this->metaModel->processOneRowAfterLoad($this->loadNewRaw(), true, false);
     }
-    
+
     protected function loadNewRaw()
     {
         return $this->metaModel->getCol('default') +
@@ -161,7 +161,7 @@ trait DataReaderTrait
         }
         return null;
     }
-    
+
     public function setFilter(array $filter) : DataReaderInterface
     {
         $this->filter = $filter;

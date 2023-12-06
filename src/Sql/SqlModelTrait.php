@@ -26,7 +26,7 @@ trait SqlModelTrait
      * @var int The number of changed rows
      */
     protected int $changed = 0;
-    
+
     /**
      * A standard rename scaffold for hidden kopies of primary key fields.
      *
@@ -42,11 +42,15 @@ trait SqlModelTrait
 
     protected array|null $oldValues = null;
 
-    protected function addChanged()
+    protected function addChanged(): void
     {
         $this->changed++;
     }
 
+    protected function resetChanged(): void
+    {
+        $this->changed = 0;
+    }
 
     /**
      * Adds a column to the model
@@ -140,7 +144,7 @@ trait SqlModelTrait
     {
         return sprintf($this->keyCopier, $name);
     }
-    
+
     /**
      * @param string $tableName  Does not test for existence
      * @return array array int => name  containing the key field names.
