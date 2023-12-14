@@ -79,7 +79,6 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 $output[$name] = new Expression($expression);
             }
         }
-        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  print_r(array_keys($output), true) . "\n", FILE_APPEND);
 
         return $output;
     }
@@ -295,6 +294,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 
         $this->lastSqlStatement = $select->getSqlString($this->db->getPlatform());
         // dump($this->lastSqlStatement);
+        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): sql: ' . $this->lastSqlStatement . "\n", FILE_APPEND);
         // echo "SQL: " . $this->lastSqlStatement . "\n";
 
         $resultSet = new ResultSet(ResultSet::TYPE_ARRAY);

@@ -20,7 +20,7 @@ This is an unsatisfying state as different views can and **should** share a lot 
 1. Different views for a model should use the same textual information on model fields, like labels and descriptions.
 1. Different views for a model should use the same type information, like field length, data type and formatting. 
 1. Similar views in different controllers should reuse the same code, using the different meta-data.
-1. Most controllers should re-use the same views: browse/search for item / show/create/edit/delete item.
+1. Most controllers should re-use the same views: browse/search for items / show/create/edit/delete item.
 1. But these days we should alse be able to use this information in a json web api, providing both item-data and meta-data.
 
 The Zalt libraries provide (independently usable) modules to increase code reuse and ease of programming:
@@ -30,12 +30,12 @@ The Zalt libraries provide (independently usable) modules to increase code reuse
 
 ### Problem 2 Reusing information. Solution: Meta-models
 
-The label of a name field in a database, con be "name" or "naam" or "nom" or "名前" depending on the language in use. 
+The label of a name field in a database, can be "name" or "naam" or "nom" or "名前" depending on the language in use. 
 If the label of this field differs in different views, say the edit and show fields, this will usually confuse the
 end users. If it is translated only in some views, but not in others this is a problem.
 
 The user will also be confused when the name is shown first in the show view and last in the edit view. The order of 
-display should therefore also be known.  
+display should therefore also be fixed as much as practicable.  
 
 The solution is to add a meta-model to each data-model containing this information. The meta-model can be the same for 
 different (types) of data-model, but for one controller the information should be set centrally in one place: either 
@@ -73,7 +73,7 @@ You can make a default controller/handler object (or use the one from the HTML S
 need additional code. The Zalt libraries offer you great freedom in implementing these changes:
 
 1. You can change the meta-model for a specific view.
-2. You can use a **dependecy** to change meta-model settings depending on a value in the data. (Say for a sub-select.) 
-3. You can use a **Transformer** to change the form of the data. (Say a crosstab view.)
+2. You can use a **dependency** to change meta-model settings depending on a value in the data. (Say for a sub-select.) 
+3. You can use a **transformer** to change the form of the data. (Say a crosstab view.)
 2. You can use (an)other snippet(s) for a certain view.
 3. By extending an existing snippet you can add your code without losing the existing functionality.
