@@ -107,7 +107,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     }
                     if (SORT_DESC === $type) {
                         if ($name instanceof Expression) {
-                            $output[] = $name->getExpression() . ' DESC';
+                            $output[] = new Expression($name->getExpression() . ' DESC');
                         } else {
                             $output[] = $name . ' DESC';
                         }
