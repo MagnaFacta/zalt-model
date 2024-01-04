@@ -132,10 +132,10 @@ interface MetaModelInterface
     /**
      * @param string $alias Alternative to map to
      * @param string $fieldName Existing field
-     * @return \Zalt\Model\MetaModelInterface (continuation pattern) 
+     * @return \Zalt\Model\MetaModelInterface (continuation pattern)
      */
     public function addMap(string $alias, string $fieldName): MetaModelInterface;
-    
+
     /**
      * Add a 'submodel' field to the model.
      *
@@ -291,7 +291,7 @@ interface MetaModelInterface
     /**
      * Returns all the field names that have the properties passed in the parameters
      *
-     * @param array ...$args A single key value array or a sequence of items made into an array using Ra::pairs() 
+     * @param array ...$args A single key value array or a sequence of items made into an array using Ra::pairs()
      * @return array Of names
      */
     public function getItemsFor(...$args);
@@ -343,8 +343,8 @@ interface MetaModelInterface
     /**
      * @return array alternative id => field name
      */
-    public function getMaps(): array;    
-    
+    public function getMaps(): array;
+
     /**
      * Get a model level variable named $key
      *
@@ -353,9 +353,9 @@ interface MetaModelInterface
      * @return mixed
      */
     public function getMeta($key, $default = null);
-    
+
     public function getMetaModelLoader(): MetaModelLoader;
-    
+
     /**
      * The internal name of the model, used for joining models and sub forms, etc...
      *
@@ -567,7 +567,7 @@ interface MetaModelInterface
     public function processRowBeforeSave(array $row, bool $new = false, array $fullRow = []): array;
 
     public function processSort(array $sort): array;
-    
+
     /**
      * Remove one attribute for a field name in the model.
      *
@@ -654,7 +654,7 @@ interface MetaModelInterface
      * </code>
      * both set the attribute 'save' to true for the x, y and z fields.
      *
-     * @param $namesOrKeyArray When array and there is more than one parameter an array of field names
+     * @param array|mixed $namesOrKeyArray When array and there is more than one parameter an array of field names
      * @param string|array $arrayOrKey1 A key => value array or the name of the first key
      * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2 Optional second key when $arrayOrKey1 is a string
@@ -730,7 +730,7 @@ interface MetaModelInterface
      * @param array $map alternative id => field name
      * @return \Zalt\Model\MetaModelInterface  (continuation pattern)
      */
-    public function setMaps(array $map): MetaModelInterface; 
+    public function setMaps(array $map): MetaModelInterface;
 
     /**
      * Set a model level variable named $key to $value
