@@ -36,33 +36,54 @@ class MetaModelTest extends \PHPUnit\Framework\TestCase
             'field3[]' => 'three',
             'field4[1]' => 'one',
             'field4[2]' => 'two',
+            'field5' => null,
+            'field6[]' => null,
             ]);
         $mm->set('test2',
             'field1', 1,
             'field2', 'two',
             'field3[]', 'three',
             'field4[1]', 'one',
-            'field4[2]', 'two'
+            'field4[2]', 'two',
+            'field5', null,
+            'field6[]', null,
         );
 
-        $this->assertTrue($mm->hasAnyOf(['test1', 'test5', 'test6']));
+        $this->assertTrue($mm->hasAnyOf(['test1', 'test2']));
         $this->assertFalse($mm->hasAnyOf(['test5', 'test6']));
 
         $fields = ['test1', 'test2'];
         $this->assertEquals($fields, $mm->getItemNames());
         foreach ($fields as $field) {
-            $this->assertCount(4, $mm->get($field));
+            $this->assertCount(5, $mm->get($field));
             $this->assertEquals(1, $mm->get($field, 'field1'));
+
+            $this->assertNull($mm->get($field, 'field0'));
 
             $this->assertEquals('two', $mm->get($field, 'field2'));
             $mm->del($field, 'field2');
+            $this->assertFalse($mm->has($field, 'field2'));
             $this->assertNull($mm->get($field, 'field2'));
 
             $this->assertCount(1, $mm->get($field, 'field3'));
             $mm->remove($field, 'field3');
+            $this->assertFalse($mm->has($field, 'field3'));
             $this->assertNull($mm->get($field, 'field3'));
 
             $this->assertCount(2, $mm->get($field, 'field4'));
+
+            $this->assertFalse($mm->has($field, 'field5'));
+            $this->assertNull($mm->get($field, 'field5'));
+
+            $this->assertTrue($mm->has($field, 'field6'));
+            $this->assertCount(1, $mm->get($field, 'field6'));
+            $this->assertNull($mm->get($field, 'field6[0]'));
+            $this->assertNull($mm->get($field, 'field6[1]'));
+            $this->assertNull($mm->get($field, 'field6')[0]);
+            $this->assertArrayNotHasKey(1, $mm->get($field, 'field6'));
+            $mm->remove($field, 'field6');
+            $this->assertFalse($mm->has($field, 'field6'));
+            $this->assertNull($mm->get($field, 'field6'));
         }
         $this->assertEquals($fields, $mm->getItemsOrdered());
 
@@ -120,5 +141,33 @@ class MetaModelTest extends \PHPUnit\Framework\TestCase
         $mm->get('test3');
         $this->assertTrue($mm->hasItemsUsed());
         $this->assertCount(2, $mm->getItemsUsed());
+    }
+
+    public function testSettingNullDoesntChangePreviousValue(): void
+    {
+        $mm = $this->getEmptyModel();
+
+        $mm->set('test', ['field' => 'a']);
+        $this->assertEquals('a', $mm->get('test', 'field'));
+
+        $mm->set('test', ['field' => 'b']);
+        $this->assertEquals('b', $mm->get('test', 'field'));
+
+        $mm->set('test', ['field' => null]);
+        $this->assertEquals('b', $mm->get('test', 'field'));
+    }
+
+    public function testSettingInAnArrayNullDoesChangeTheArray(): void
+    {
+        $mm = $this->getEmptyModel();
+
+        $mm->set('test', ['field' => ['a', 'b']]);
+        $this->assertEquals(['a', 'b'], $mm->get('test', 'field'));
+
+        $mm->set('test', ['field[0]' => 'c', 'field[]' => null]);
+        $this->assertEquals(['c', 'b', null], $mm->get('test', 'field'));
+
+        $mm->set('test', ['field[0]' => null]);
+        $this->assertEquals([null, 'b', null], $mm->get('test', 'field'));
     }
 }

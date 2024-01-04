@@ -134,7 +134,7 @@ class MetaModel implements MetaModelInterface
      * @param string $modelName Hopefully unique model name, used for joining models and sub forms, etc...
      */
     public function __construct(
-        private string $modelName, 
+        private string $modelName,
         protected MetaModelLoader $modelLoader,
     )
     { }
@@ -1153,7 +1153,7 @@ class MetaModel implements MetaModelInterface
     }
 
     /**
-     * @inheritdoc 
+     * @inheritdoc
      */
     public function processRowBeforeSave(array $row, bool $new = false, array $fullRow = []): array
     {
@@ -1168,8 +1168,8 @@ class MetaModel implements MetaModelInterface
                 $output[$name] = $this->getOnSave($value, $new, $name, $fullRow ?: $row);
             }
         }
-        
-        return $output;        
+
+        return $output;
     }
 
     public function processSort(array $sort): array
@@ -1180,7 +1180,7 @@ class MetaModel implements MetaModelInterface
 
         return $sort;
     }
-    
+
     /**
      * Remove one attribute for a field name in the model.
      *

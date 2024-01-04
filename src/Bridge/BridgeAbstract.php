@@ -15,7 +15,6 @@ use Zalt\Late\Late;
 use Zalt\Late\LateCall;
 use Zalt\Late\Repeatable;
 use Zalt\Late\RepeatableInterface;
-use Zalt\Late\Stack\RepeatableStack;
 use Zalt\Model\Data\DataReaderInterface;
 use Zalt\Model\Exception\MetaModelException;
 
@@ -86,7 +85,7 @@ abstract class BridgeAbstract implements BridgeInterface
      * @param \Zalt\Model\Data\DataReaderInterface $dataModel
      */
     public function __construct(protected DataReaderInterface $dataModel)
-    { 
+    {
         $this->metaModel = $this->dataModel->getMetaModel();
     }
 
@@ -156,7 +155,7 @@ abstract class BridgeAbstract implements BridgeInterface
         }
         return $value;
     }
-    
+
     /**
      * Format a value using the rules for the specified name.
      *
@@ -309,7 +308,7 @@ abstract class BridgeAbstract implements BridgeInterface
     {
         return array_merge($this->currentUrl, $params);
     }
-    
+
     /**
      * Is there a repeater
      *
@@ -335,17 +334,17 @@ abstract class BridgeAbstract implements BridgeInterface
             case BridgeInterface::MODE_ROWS:
             case BridgeInterface::MODE_SINGLE_ROW:
                 $this->mode = $mode;
-    
+
                 if ($this->_chainedBridge instanceof BridgeAbstract) {
                     $this->_chainedBridge->mode = $this->mode;
                 }
-    
+
                 return $this;
         }
 
         throw new MetaModelException("Illegal bridge mode set after mode had already been set.");
     }
-    
+
     /**
      * Set the repeater source for the lazy data
      *
@@ -364,10 +363,10 @@ abstract class BridgeAbstract implements BridgeInterface
         if ($this->useAsLateStack) {
             Late::addStack($this->lateStackName, new BridgeStack($this));
         }
-        
+
         return $this;
     }
-    
+
     /**
      * Switch to single row mode and set that row.
      *
