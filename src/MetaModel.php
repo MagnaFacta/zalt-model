@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model;
 
-use Zalt\Interator\ItemCallbackIterator;
+use Zalt\Iterator\ItemCallbackIterator;
 use Zalt\Late\Late;
 use Zalt\Late\LateInterface;
 use Zalt\Late\RepeatableInterface;
