@@ -142,4 +142,32 @@ class MetaModelTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($mm->hasItemsUsed());
         $this->assertCount(2, $mm->getItemsUsed());
     }
+
+    public function testSettingNullDoesntChangePreviousValue(): void
+    {
+        $mm = $this->getEmptyModel();
+
+        $mm->set('test', ['field' => 'a']);
+        $this->assertEquals('a', $mm->get('test', 'field'));
+
+        $mm->set('test', ['field' => 'b']);
+        $this->assertEquals('b', $mm->get('test', 'field'));
+
+        $mm->set('test', ['field' => null]);
+        $this->assertEquals('b', $mm->get('test', 'field'));
+    }
+
+    public function testSettingInAnArrayNullDoesChangeTheArray(): void
+    {
+        $mm = $this->getEmptyModel();
+
+        $mm->set('test', ['field' => ['a', 'b']]);
+        $this->assertEquals(['a', 'b'], $mm->get('test', 'field'));
+
+        $mm->set('test', ['field[0]' => 'c', 'field[]' => null]);
+        $this->assertEquals(['c', 'b', null], $mm->get('test', 'field'));
+
+        $mm->set('test', ['field[0]' => null]);
+        $this->assertEquals([null, 'b', null], $mm->get('test', 'field'));
+    }
 }
