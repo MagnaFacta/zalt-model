@@ -1356,7 +1356,7 @@ class MetaModel implements MetaModelInterface
      * </code>
      * both set the attribute 'save' to true for the x, y and z fields.
      *
-     * @param $namesOrKeyArray When array and there is more than one parameter an array of field names
+     * @param array|mixed $namesOrKeyArray When array and there is more than one parameter an array of field names
      * @param string|array $arrayOrKey1 A key => value array or the name of the first key
      * @param mixed $value1 The value for $arrayOrKey1 or null when $arrayOrKey1 is an array
      * @param string $key2 Optional second key when $arrayOrKey1 is a string
