@@ -390,7 +390,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                 }
             }
             $default = $column->getColumnDefault();
-            if ($default) {
+            if ($default !== null) {
                 switch (strtoupper($default)) {
                     case 'CURRENT_DATE':
                     case 'CURRENT_TIME':
