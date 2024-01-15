@@ -57,16 +57,16 @@ trait SqlModelTrait
      *
      * @param mixed $column Usually string but might also be a SQL Expression object
      * @param ?string $columnName
-     * @param ?string $orignalColumn
+     * @param ?string $originalColumn
      * @return \Zalt\Model\Data\FullDataInterface Provides a fluent interface
      */
-    public function addColumn(mixed $column, string $columnName = null, string $orignalColumn = null)
+    public function addColumn(mixed $column, string $columnName = null, string $originalColumn = null)
     {
         if (null === $columnName) {
             $columnName = strtr((string) $column, ' .,;:?!\'"()<=>-*+\\/&%^', '______________________');
         }
-        if ($orignalColumn) {
-            $this->metaModel->setAlias($columnName, $orignalColumn);
+        if ($originalColumn) {
+            $this->metaModel->setAlias($columnName, $originalColumn);
         }
         $this->metaModel->set($columnName, 'column_expression', $column);
 
