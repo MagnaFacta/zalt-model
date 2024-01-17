@@ -33,21 +33,41 @@ class ActivatingYesNoType extends YesNoType
     }
 
     /**
+     * For multi value settings: returns the first array item as value to set.
+     *
      * @param MetaModelInterface $metaModel
      * @return array [name => value]
      */
     public static function getActivatingValues(MetaModelInterface $metaModel): array
     {
-        return $metaModel->getCol(self::$activatingValue);
+        $output = [];
+        foreach ($metaModel->getCol(self::$activatingValue) as $name => $value) {
+            if (is_array($value)) {
+                $output[$name] = reset($value);
+            } else {
+                $output[$name] = $value;
+            }
+        }
+        return $output;
     }
 
     /**
+     * For multi value settings: returns the first array item as value to set.
+     *
      * @param MetaModelInterface $metaModel
      * @return array [name => value]
      */
-    public static function getDectivatingValues(MetaModelInterface $metaModel): array
+    public static function getDeactivatingValues(MetaModelInterface $metaModel): array
     {
-        return $metaModel->getCol(self::$deactivatingValue);
+        $output = [];
+        foreach ($metaModel->getCol(self::$deactivatingValue) as $name => $value) {
+            if (is_array($value)) {
+                $output[$name] = reset($value);
+            } else {
+                $output[$name] = $value;
+            }
+        }
+        return $output;
     }
 
     /**
@@ -56,7 +76,7 @@ class ActivatingYesNoType extends YesNoType
      */
     public static function hasActivation(MetaModelInterface $metaModel): bool
     {
-        return (bool) self::getActivatingValues($metaModel) || self::getDectivatingValues($metaModel);
+        return (bool) ($metaModel->getCol(self::$activatingValue)  || $metaModel->getCol(self::$deactivatingValue));
     }
 
     /**
@@ -66,8 +86,14 @@ class ActivatingYesNoType extends YesNoType
      */
     public static function isActive(MetaModelInterface $metaModel, array $row): bool
     {
-        foreach (self::getActivatingValues($metaModel) as $name => $value) {
-            if ((! isset($row[$name])) || $value != $row[$name]) {
+        foreach ($metaModel->getCol(self::$activatingValue) as $name => $value) {
+            if (! isset($row[$name])) {
+                return false;
+            } elseif (is_array($value)) {
+                if (! in_array($row[$name], $value)) {
+                    return false;
+                }
+            } elseif ($value != $row[$name]) {
                 return false;
             }
         }
@@ -77,15 +103,21 @@ class ActivatingYesNoType extends YesNoType
     /**
      * @param MetaModelInterface $metaModel
      * @param array $row
-     * @return bool True if one of the values is not equal to the deactivating values
-     */
+     * @return bool True if one of the values is not equal to the deactivating values (i.e. not: ! self::isActive())
+     * /
     public static function isInactive(MetaModelInterface $metaModel, array $row): bool
     {
-        foreach (self::getDectivatingValues($metaModel) as $name => $value) {
-            if ((! isset($row[$name])) || $value != $row[$name]) {
+        foreach ($metaModel->getCol(self::$deactivatingValue) as $name => $value) {
+            if (! isset($row[$name])) {
+                return true;
+            } elseif (is_array($value)) {
+                if (in_array($row[$name], $value)) {
+                    return true;
+                }
+            } elseif ($value != $row[$name]) {
                 return true;
             }
         }
         return false;
-    }
+    } // */
 }
