@@ -82,14 +82,14 @@ trait SqlModelTrait
      * perform an update instead of an insert on a changed key.
      *
      * @param boolean $reset True if the key list should be rebuilt.
-     * return \MUtil\Model\DatabaseModelAbstract $this
+     * return SqlModelTrait $this
      */
     public function copyKeys($reset = false)
     {
         foreach ($this->metaModel->getKeys($reset) as $name) {
             $copyName = $this->getKeyCopyName($name);
             $this->addColumn($name, $copyName, $name);
-            $this->metaModel->set($copyName, ['elementClass' => 'Hidden']);
+            $this->metaModel->set($copyName, ['elementClass' => 'Hidden', 'copyKey' => true]);
         }
         return $this;
     }
@@ -183,11 +183,10 @@ trait SqlModelTrait
         }
 
         $primaryKeys  = $this->getKeysForTable($tableName);
-        $primaryCount = count($primaryKeys);
         $filter       = [];
 
-        // \MUtil\EchoOut\EchoOut::r($newValues, $tableName);
-        foreach ($primaryKeys as $key) {
+        // dump($newValues, $tableName);
+        foreach ($primaryKeys as $id => $key) {
             if (array_key_exists($key, $newValues) && (0 == strlen((string) $newValues[$key]))) {
                 // Never include null key values, except when we have a save transformer
                 if (! $this->metaModel->has($key, MetaModel::SAVE_TRANSFORMER)) {
@@ -197,20 +196,19 @@ trait SqlModelTrait
 
             } elseif (isset($oldKeys[$key])) {
 //                dump($key . ' => ' . $oldKeys[$key], 'Old key');
+                // If specified in the oldKeys, add it to the save filter
                 $filter[$key] = $oldKeys[$key];
                 // Key values left in $returnValues in case of partial key insert
 
-            } else {
-                // Check for old key values being stored using copyKeys()
-                $copyKey = $this->getKeyCopyName($key);
+            } elseif ($this->metaModel->get($key, 'copyKey')) {
+                // If it is a copy key move it to the filter
+                $filter[$key] = $newValues[$key];
+                unset($newValues[$key]);
 
-                if (isset($newValues[$copyKey])) {
-                    $filter[$key] = $newValues[$copyKey];
-//                    dump($key . ' => ' . $newValues[$copyKey], 'Copy key');
+            } elseif (isset($newValues[$key])) {
+                // We have a key value, add it to the filter
+                $filter[$key] = $newValues[$key];
 
-                } elseif (isset($newValues[$key])) {
-                    $filter[$key] = $newValues[$key];
-                }
             }
         }
         if ($filter) {
@@ -224,14 +222,13 @@ trait SqlModelTrait
             $oldValues = false;
         }
 
-
         // Check for actual values for this table to save.
-        // \MUtil\EchoOut\EchoOut::track($newValues);
+        // dump($newValues);
         $saveValues = $this->filterDataForTable($tableName, $newValues, ! $oldValues);
         if ($saveValues) {
-//            \MUtil\EchoOut\EchoOut::r($saveValues, 'Return');
+//            dump($saveValues);
             if ($oldValues) {
-                // \MUtil\EchoOut\EchoOut::r($filter);
+                // dump($filter);
                 $save = false;
 
                 // Check for actual changes
@@ -282,10 +279,10 @@ trait SqlModelTrait
 
             } else {
                 // Perform insert
-                // \MUtil\EchoOut\EchoOut::r($returnValues);
+                // dump($returnValues);
                 $newKeyValues = $this->sqlRunner->insertInTable($tableName, $saveValues);
                 $this->addChanged();
-                // \MUtil\EchoOut\EchoOut::rs($newKeyValues, $primaryKeys);
+                // dump($newKeyValues, $primaryKeys);
 
                 // Composite key returned.
                 if (is_array($newKeyValues)) {

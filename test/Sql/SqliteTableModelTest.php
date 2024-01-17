@@ -11,10 +11,9 @@ declare(strict_types=1);
 namespace Zalt\Model\Sql;
 
 use Laminas\Db\Adapter\Adapter;
-use MUtil\Model\TableModel;
 use Zalt\Model\Data\FullDataInterface;
+use Zalt\Model\MetaModelInterface;
 use Zalt\Model\MetaModelTestTrait;
-use Zalt\Model\Sql\Laminas\LaminasRunner;
 use Zalt\Model\Sql\Laminas\LaminasRunnerFactory;
 
 /**
