@@ -160,7 +160,9 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     } else {
                         $name = $field;
                     }
-                    if (is_array($value)) {
+                    if ($value instanceof Predicate) {
+                        $output->addPredicate($value);
+                    } elseif (is_array($value)) {
                         if (1 == count($value)) {
                             if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
                                 $output->like($name, '%' . $value[MetaModelInterface::FILTER_CONTAINS] . '%');
