@@ -737,8 +737,8 @@ class MetaModel implements MetaModelInterface
      */
     public function getOnLoad($value, $new, $name, array $context = array(), $isPost = false)
     {
-        $call = $this->get($name, self::LOAD_TRANSFORMER);
-        if ($call) {
+        if ($this->has($name, self::LOAD_TRANSFORMER)) {
+            $call = $this->get($name, self::LOAD_TRANSFORMER);
             if (is_callable($call)) {
                 $value = call_user_func($call, $value, $new, $name, $context, $isPost);
             } else {
@@ -761,8 +761,8 @@ class MetaModel implements MetaModelInterface
      */
     public function getOnSave($value, $new, $name, array $context = array())
     {
-        if ($call = $this->get($name, self::SAVE_TRANSFORMER)) {
-
+        if ($this->has($name, self::SAVE_TRANSFORMER)) {
+            $call = $this->get($name, self::SAVE_TRANSFORMER);
             if (is_callable($call)) {
                 $value = call_user_func($call, $value, $new, $name, $context);
             } else {
