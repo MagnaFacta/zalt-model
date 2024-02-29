@@ -76,7 +76,7 @@ class ActivatingYesNoType extends YesNoType
      */
     public static function hasActivation(MetaModelInterface $metaModel): bool
     {
-        return (bool) ($metaModel->getCol(self::$activatingValue)  || $metaModel->getCol(self::$deactivatingValue));
+        return ($metaModel->getCol(self::$activatingValue)  || $metaModel->getCol(self::$deactivatingValue));
     }
 
     /**

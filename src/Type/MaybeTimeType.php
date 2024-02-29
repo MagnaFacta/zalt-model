@@ -10,7 +10,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Type;
 
-use Zalt\Html\Html;
+use DateTimeInterface;
 use Zalt\Model\MetaModelInterface;
 
 /**
@@ -48,14 +48,14 @@ class MaybeTimeType extends DateTimeType
 
     public function format($value, string $name, MetaModelInterface $metaModel)
     {
-        if (! $value instanceof \DateTimeInterface) {
+        if (! $value instanceof DateTimeInterface) {
             $value = self::toDate(
                 $value,
                 $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
                 $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
                 false);
         }
-        if ($value instanceof \DateTimeInterface) {
+        if ($value instanceof DateTimeInterface) {
             if ($value->format($this->maybeTimeFormat) == $this->maybeTimeValue) {
                 return $value->format($this->maybeDateFormat);
             }

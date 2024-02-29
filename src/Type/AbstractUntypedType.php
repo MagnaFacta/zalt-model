@@ -21,7 +21,7 @@ abstract class AbstractUntypedType extends AbstractModelType
 {
     protected int $originalType = MetaModelInterface::TYPE_STRING;
 
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
         $this->originalType = $metaModel->getWithDefault($name, 'type', $this->originalType);
 

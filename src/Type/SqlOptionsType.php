@@ -36,7 +36,7 @@ class SqlOptionsType extends AbstractUntypedType
         }
     }
 
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
         parent::apply($metaModel, $name);
 

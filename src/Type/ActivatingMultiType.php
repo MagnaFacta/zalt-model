@@ -22,7 +22,7 @@ class ActivatingMultiType extends AbstractUntypedType
     public function __construct(
         protected array $activeLabels,
         protected array $inactiveLabels,
-        protected string $className = '',
+        protected string|null $className = null,
         protected string $classNo   = 'deleted',
         protected string $classYes  = '',
     )
@@ -31,10 +31,22 @@ class ActivatingMultiType extends AbstractUntypedType
     /**
      * @inheritDoc
      */
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
         parent::apply($metaModel, $name);
 
+        $this->applyClass($metaModel, $name);
+    }
+
+    /**
+     * Apply active or deactivated class names to model
+     *
+     * @param MetaModelInterface $metaModel
+     * @param string $name
+     * @return void
+     */
+    public function applyClass(MetaModelInterface $metaModel, string $name): void
+    {
         if ($this->className) {
             $column = sprintf(
                 "CASE WHEN %s IN ('%s') THEN '%s' ELSE '%s' END",

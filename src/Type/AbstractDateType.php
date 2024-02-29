@@ -39,24 +39,24 @@ abstract class AbstractDateType extends AbstractModelType
     /**
      * @inheritDoc
      */
-    public function apply(MetaModelInterface $metaModel, string $fieldName)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
-        $metaModel->set($fieldName, $this->getSettings());
+        $metaModel->set($name, $this->getSettings());
 
-        if ($metaModel->has($fieldName, 'label')) {
-            $metaModel->set($fieldName, ['elementClass' => 'Date']);
+        if ($metaModel->has($name, 'label')) {
+            $metaModel->set($name, ['elementClass' => 'Date']);
         }
 
         // Create functions with passed on metaModels as we do not want to store it.
         $type = $this;
-        $metaModel->set($fieldName, ['formatFunction' => function ($value) use ($type, $fieldName, $metaModel) {
-            return $type->format($value, $fieldName, $metaModel);
+        $metaModel->set($name, ['formatFunction' => function ($value) use ($type, $name, $metaModel) {
+            return $type->format($value, $name, $metaModel);
         }]);
-        $metaModel->setOnLoad($fieldName, function ($value, bool $isNew = false, string $name = null, array $context = [], bool $isPost = false) use ($type, $fieldName, $metaModel) {
-            return $type->getDateTimeValue($value, $isNew, $fieldName, $context, $isPost, $metaModel);
+        $metaModel->setOnLoad($name, function ($value, bool $isNew = false, string $name = null, array $context = [], bool $isPost = false) use ($type, $name, $metaModel) {
+            return $type->getDateTimeValue($value, $isNew, $name, $context, $isPost, $metaModel);
         });
-        $metaModel->setOnSave($fieldName, function ($value, bool $isNew = false, string $name = null, array $context = []) use ($type, $fieldName, $metaModel) {
-            return $type->getStringValue($value, $isNew, $fieldName, $context, $metaModel);
+        $metaModel->setOnSave($name, function ($value, bool $isNew = false, string $name = null, array $context = []) use ($type, $name, $metaModel) {
+            return $type->getStringValue($value, $isNew, $name, $context, $metaModel);
         });
     }
 

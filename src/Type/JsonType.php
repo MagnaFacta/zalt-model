@@ -103,10 +103,10 @@ class JsonType extends AbstractModelType
      *
      * @param mixed $value The value being saved
      * @param boolean $isNew True when a new item is being saved
-     * @param string $name The name of the current field
+     * @param string|null $name The name of the current field
      * @param array $context Optional, the other values being saved
      * @param boolean $isPost True when passing on post data
-     * @return array Of the values
+     * @return array|null Of the values
      */
     public function loadValue(mixed $value, bool $isNew = false, ?string $name = null, array $context = [], bool $isPost = false): ?array
     {
@@ -131,9 +131,9 @@ class JsonType extends AbstractModelType
      *
      * @param mixed $value The value being saved
      * @param boolean $isNew True when a new item is being saved
-     * @param string $name The name of the current field
+     * @param string|null $name The name of the current field
      * @param array $context Optional, the other values being saved
-     * @return string Of the values concatenated
+     * @return string|null Of the values concatenated
      */
     public function saveValue(mixed $value, bool $isNew = false, ?string $name = null, array $context = []): ?string
     {

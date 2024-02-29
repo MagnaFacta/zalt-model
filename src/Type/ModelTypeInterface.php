@@ -10,10 +10,10 @@ interface ModelTypeInterface
      * Use this function for a default application of this type to the model
      *
      * @param MetaModelInterface $metaModel Store only if the type is not shared among models!
-     * @param string $name The field to set the seperator character
+     * @param string $name The field to set the separator character
      * @return void
      */
-    public function apply(MetaModelInterface $metaModel, string $name);
+    public function apply(MetaModelInterface $metaModel, string $name): void;
 
     public function getBaseType(): int;
 

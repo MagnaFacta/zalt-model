@@ -22,7 +22,7 @@ abstract class AbstractModelType implements ModelTypeInterface
     /**
      * @inheritDoc
      */
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
         $metaModel->set($name, $this->getSettings());
     }

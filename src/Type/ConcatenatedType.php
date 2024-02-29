@@ -15,21 +15,21 @@ class ConcatenatedType extends AbstractModelType
      *
      * @var string
      */
-    protected $displaySeperator = ' ';
+    protected string $displaySeperator = ' ';
 
     /**
      * Optional multi options to use
      *
      * @var array
      */
-    protected $options;
+    protected array $options;
 
     /**
      * The character used to separate values when storing.
      *
      * @var string
      */
-    protected $seperatorChar = ' ';
+    protected string $seperatorChar = ' ';
 
     /**
      * When true the value is padded on both sides with the $seperatorChar.
@@ -43,9 +43,9 @@ class ConcatenatedType extends AbstractModelType
     /**
      * \MUtil\Ra::args() parameter passing is allowed.
      *
-     * @param string $seperatorChar
-     * @param string $displaySeperator
-     * @param boolean $valuePad
+     * @param string|ElementInterface $seperatorChar
+     * @param string|ElementInterface $displaySeperator
+     * @param bool $valuePad
      */
     public function __construct(
         string|ElementInterface $seperatorChar = ' ',
@@ -75,7 +75,7 @@ class ConcatenatedType extends AbstractModelType
      * @param string $name The field to set the seperator character
      * @return void
      */
-    public function apply(MetaModelInterface $metaModel, string $name)
+    public function apply(MetaModelInterface $metaModel, string $name): void
     {
         $metaModel->set($name, 'formatFunction', array($this, 'format'));
         $metaModel->setOnLoad($name, array($this, 'loadValue'));
@@ -167,7 +167,7 @@ class ConcatenatedType extends AbstractModelType
      * A ModelAbstract->setOnSave() function that concatenates the
      * value if it is an array.
      *
-     * @see \MUtil\Model\ModelAbstract
+     * @see MetaModelInterface
      *
      * @param mixed $value The value being saved
      * @param boolean $isNew True when a new item is being saved
