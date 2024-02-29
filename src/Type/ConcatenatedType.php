@@ -22,7 +22,7 @@ class ConcatenatedType extends AbstractModelType
      *
      * @var array
      */
-    protected array $options;
+    protected array|null $options = null;
 
     /**
      * The character used to separate values when storing.
