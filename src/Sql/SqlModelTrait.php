@@ -42,6 +42,8 @@ trait SqlModelTrait
 
     protected array|null $oldValues = null;
 
+    protected SqlRunnerInterface $sqlRunner;
+
     protected function addChanged(): void
     {
         $this->changed++;
@@ -152,6 +154,11 @@ trait SqlModelTrait
     protected function getKeysForTable($tableName)
     {
         return $this->metaModel->getItemsFor(['table' => $tableName, 'key' => true]);
+    }
+
+    public function getLastQuery(): string
+    {
+        return $this->sqlRunner->getLastSqlStatement();
     }
 
     /**
