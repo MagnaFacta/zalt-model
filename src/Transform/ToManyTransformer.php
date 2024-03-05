@@ -144,11 +144,12 @@ class ToManyTransformer extends NestedTransformer
 
         $keys = $sub->getMetaModel()->getKeys();
         $key  = array_key_first($keys);
+        $tableIdField = reset($keys);
 
-        $dataKeys = array_column($data, $key);
+        $dataKeys = array_column($data, $tableIdField);
 
         foreach($oldResults as $oldResult) {
-            $index = array_search($oldResult[$key], $dataKeys);
+            $index = array_search($oldResult[$tableIdField], $dataKeys);
             if ($index !== false) {
                 $saveRows[] = $oldResult;
                 unset($data[$index]);
