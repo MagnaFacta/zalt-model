@@ -52,6 +52,11 @@ abstract class BridgeAbstract implements BridgeInterface
     protected $_repeater = null;
 
     /**
+     * @var array Stroage for formatted names
+     */
+    protected array $_vars = [];
+
+    /**
      * @var array Optional current url array for links on the page (usable by Zalt/Html/UrlArrayAttribute
      */
     public array $currentUrl = [];
@@ -195,8 +200,8 @@ abstract class BridgeAbstract implements BridgeInterface
      */
     public function getFormatted(string $name): mixed
     {
-        if (isset($this->$name)) {
-            return $this->$name;
+        if (isset($this->_vars[$name])) {
+            return $this->_vars[$name];
         }
 
         $fieldName = $this->_checkName($name);
@@ -205,16 +210,16 @@ abstract class BridgeAbstract implements BridgeInterface
         $this->metaModel->get($fieldName);
 
         if ((BridgeInterface::MODE_SINGLE_ROW === $this->mode) && isset($this->_data[$fieldName])) {
-            $this->$name = $this->format($fieldName, $this->_data[$fieldName]);
+            $this->_vars[$name] = $this->format($fieldName, $this->_data[$fieldName]);
         } else {
-            $this->$name = new LateBridgeFormat($this, $fieldName);
+            $this->_vars[$name] = new LateBridgeFormat($this, $fieldName);
         }
         if ($fieldName !== $name) {
             $this->metaModel->get($name);
-            $this->$fieldName = $this->$name;
+            $this->_vars[$fieldName] = $this->_vars[$name];
         }
 
-        return $this->$name;
+        return $this->_vars[$name];
     }
 
     /**

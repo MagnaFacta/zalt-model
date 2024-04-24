@@ -106,11 +106,10 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
      */
     protected function _loadValidator(array $validator): ValidatorInterface
     {
-        $origName = $validator['validator'];
-        $name     = $this->validatorOverloader->find($validator['validator']);
+        $name = $this->validatorOverloader->find($validator['validator']);
 
         $messages = false;
-        if (isset($validator['options']) && array_key_exists('messages', (array) $validator['options'])) {
+        if (isset($validator['options']) && array_key_exists('messages', (array)$validator['options'])) {
             $messages = $validator['options']['messages'];
             unset($validator['options']['messages']);
         }
@@ -122,8 +121,8 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
             if ($r->hasMethod('__construct')) {
                 $numeric = false;
                 if (is_array($validator['options'])) {
-                    $keys    = array_keys($validator['options']);
-                    foreach($keys as $key) {
+                    $keys = array_keys($validator['options']);
+                    foreach ($keys as $key) {
                         if (is_numeric($key)) {
                             $numeric = true;
                             break;
@@ -148,7 +147,9 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                 $instance->setMessage($messages);
             }
         }
-        $instance->zfBreakChainOnFailure = $validator['breakChainOnFailure'];
+        if (isset($instance->zfBreakChainOnFailure)) {
+            $instance->zfBreakChainOnFailure = $validator['breakChainOnFailure'];
+        }
 
         return $instance;
     }
