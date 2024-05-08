@@ -26,12 +26,12 @@ trait SortArrayTrait
             if ($order !== SORT_DESC) {
                 $order = SORT_ASC;
             }
-            $usedSorts[$order] = $order;
+            $usedSorts[$key] = $order;
         }
 
         usort($data, function(array $a, array $b) use ($usedSorts) {
             foreach($usedSorts as $order => $direction) {
-                if ($a[$order] !==  $b[$order]) {
+                if ($a[$order] !== $b[$order]) {
                     if (SORT_ASC === $direction) {
                         return $a[$order] > $b[$order] ? 1 : -1;
                     }

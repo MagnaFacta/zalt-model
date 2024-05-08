@@ -53,7 +53,7 @@ class UnionModel implements FullDataInterface
 
         $subMetaModel = $model->getMetaModel();
 
-        foreach ($subMetaModel as $subName) {
+        foreach ($subMetaModel->getItemsOrdered() as $subName) {
             $mainName = $fieldMap[$subName] ?? $subName;
             $this->metaModel->set($mainName, $subMetaModel->get($subName));
         }
