@@ -36,10 +36,9 @@ use Zalt\Model\MetaModelInterface;
 abstract class ArrayModelAbstract implements DataReaderInterface
 {
     use DataReaderTrait;
+    use SortArrayTrait;
 
     protected int $_changed = 0;
-
-    private array $_sorts;
 
     protected array|null $oldValues = null;
 
@@ -236,49 +235,6 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     }
 
     /**
-     * Sorts the output
-     *
-     * @param array $data
-     * @param mixed $sorts
-     * @return array
-     */
-    protected function _sortData(array $data, $sorts)
-    {
-        $this->_sorts = [];
-
-        foreach ($sorts as $key => $order) {
-            if (is_numeric($key) || is_string($order)) {
-                if (strtoupper(substr($order,  -5)) == ' DESC') {
-                    $order     = substr($order,  0,  -5);
-                    $direction = SORT_DESC;
-                } else {
-                    if (strtoupper(substr($order,  -4)) == ' ASC') {
-                        $order = substr($order,  0,  -4);
-                    }
-                    $direction = SORT_ASC;
-                }
-                $this->_sorts[$order] = $direction;
-
-            } else {
-                switch ($order) {
-                    case SORT_DESC:
-                        $this->_sorts[$key] = SORT_DESC;
-                        break;
-
-                    case SORT_ASC:
-                    default:
-                        $this->_sorts[$key] = SORT_ASC;
-                        break;
-                }
-            }
-        }
-
-        usort($data, [$this, 'sortCmp']);
-
-        return $data;
-    }
-
-    /**
      * Returns true if the passed row passed through the filter
      *
      * @param array $row A row of data
@@ -365,7 +321,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
         }
 
         if ($sort) {
-            $data = $this->_sortData($data, $sort);
+            $data = $this->sortData($data, $sort);
         }
 
         return $this->metaModel->processAfterLoad($data);
@@ -450,28 +406,5 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     {
         $this->_changed = $changed;
         return $this;
-    }
-
-    /**
-     * Sort function for sorting array on defined sort order
-     *
-     * @param array $a
-     * @param array $b
-     * @return int
-     */
-    public function sortCmp(array $a, array $b): int
-    {
-        foreach ($this->_sorts as $key => $direction) {
-            if ($a[$key] !== $b[$key]) {
-                // \MUtil\EchoOut\EchoOut::r($key . ': [' . $direction . ']' . $a[$key] . '-' . $b[$key]);
-                if (SORT_ASC == $direction) {
-                    return $a[$key] > $b[$key] ? 1 : -1;
-                } else {
-                    return $a[$key] > $b[$key] ? -1 : 1;
-                }
-            }
-        }
-
-        return 0;
     }
 }
