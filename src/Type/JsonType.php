@@ -117,7 +117,7 @@ class JsonType extends AbstractModelType
             return $value;
         }
         if (is_string($value)) {
-            return json_decode($value, true);
+            return (array) json_decode($value, true);
         }
 
         return null;
