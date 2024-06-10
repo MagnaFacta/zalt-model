@@ -135,11 +135,11 @@ class UnionModel implements FullDataInterface
         foreach ($this->getFilterModels($filter) as $name => $model) {
             $modelFilter = $this->map($filter, $name, false, true);
 
-            if (isset($this->_unionMapsTo[$name]) && $this->_unionMapsTo[$name]) {
+            if (isset($this->unionMapsTo[$name]) && $this->unionMapsTo[$name]) {
                 // Translate the texts filters
                 foreach ($modelFilter as $key => $value) {
                     if (is_numeric($key) && is_string($value)) {
-                        $modelFilter[$key] = strtr($value, $this->_unionMapsTo[$name]);
+                        $modelFilter[$key] = strtr($value, $this->unionMapsTo[$name]);
                     }
                 }
             }
