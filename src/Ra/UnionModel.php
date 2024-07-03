@@ -132,7 +132,12 @@ class UnionModel implements FullDataInterface
         $setCount = 0;
         $results  = [];
 
-        foreach ($this->getFilterModels($filter) as $name => $model) {
+        $filterModels = $this->getFilterModels($filter);
+        if (isset($filter[$this->modelField])) {
+            unset($filter[$this->modelField]);
+        }
+
+        foreach ($filterModels as $name => $model) {
             $modelFilter = $this->map($filter, $name, false, true);
 
             if (isset($this->unionMapsTo[$name]) && $this->unionMapsTo[$name]) {
