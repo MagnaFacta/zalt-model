@@ -76,7 +76,6 @@ class UnionModel implements FullDataInterface
     {
         if (isset($filter[$this->modelField])) {
             $name = $filter[$this->modelField];
-            unset($filter[$this->modelField]);
             return array($name => $this->getUnionModel($name));
         }
 
@@ -133,9 +132,6 @@ class UnionModel implements FullDataInterface
         $results  = [];
 
         $filterModels = $this->getFilterModels($filter);
-        if (isset($filter[$this->modelField])) {
-            unset($filter[$this->modelField]);
-        }
 
         foreach ($filterModels as $name => $model) {
             $modelFilter = $this->map($filter, $name, false, true);
@@ -178,8 +174,9 @@ class UnionModel implements FullDataInterface
     public function loadCount($filter = null): int
     {
         $count = 0;
-        foreach ($this->getFilterModels($filter) as $model) {
-            $count += $model->loadCount($filter);
+        foreach ($this->getFilterModels($filter) as $name => $model) {
+            $newFilter = $this->map($filter, $name, false, true);
+            $count += $model->loadCount($newFilter);
         }
 
         return $count;
@@ -224,10 +221,33 @@ class UnionModel implements FullDataInterface
         }
 
         if (! (isset($mapStore[$name]) && $mapStore[$name])) {
+            if ($recursive) {
+                return $this->removeModelField($row);
+            } else {
+                unset($row[$this->modelField]);
+            }
             return $row;
         }
 
         return $this->translateRowFields($row, $mapStore[$name], $recursive);
+    }
+
+    /**
+     * Maps the key names in the array from the current name to the new
+     * name in the $mapArray
+     *
+     * @param array $sourceArray The array to replace the key names in
+     * @return array
+     */
+    protected function removeModelField(array $sourceArray): array
+    {
+        unset($sourceArray[$this->modelField]);
+        foreach ($sourceArray as $name => $value) {
+            if (is_array($value)) {
+                $sourceArray[$name] = $this->removeModelField($value);
+            }
+        }
+        return $sourceArray;
     }
 
     /**
@@ -254,6 +274,7 @@ class UnionModel implements FullDataInterface
                 $result[$name] = $value;
             }
         }
+        unset($result[$this->modelField]);
 
         return $result;
     }
