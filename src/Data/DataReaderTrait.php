@@ -153,13 +153,13 @@ trait DataReaderTrait
         return $this->metaModel->processOneRowAfterLoad($postData + $excludes + $modelData, $create, true);
     }
 
-    public function loadRepeatable($filter = null, $sort = null, $columns = null) : ?RepeatableInterface
+    public function loadRepeatable($filter = null, $sort = null, $columns = null) : RepeatableInterface
     {
         $rows = $this->load($filter, $sort, $columns);
         if ($rows) {
             return Late::repeat($rows);
         }
-        return null;
+        return Late::repeat([]);
     }
 
     public function setFilter(array $filter) : DataReaderInterface

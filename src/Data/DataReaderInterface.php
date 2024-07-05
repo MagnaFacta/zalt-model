@@ -135,9 +135,9 @@ interface DataReaderInterface extends \Zalt\Model\MetaModellerInterface
      * @param mixed $filter Null to use the stored filter, array to specify a different filter
      * @param mixed $sort Null to use the stored sort, array to specify a different sort
      * @param mixed $columns Array with columns to use (or trackUsage or all)
-     * @return ?\Zalt\Late\RepeatableInterface
+     * @return \Zalt\Late\RepeatableInterface
      */
-    public function loadRepeatable($filter = null, $sort = null, $columns = null): ?RepeatableInterface;
+    public function loadRepeatable($filter = null, $sort = null, $columns = null): RepeatableInterface;
 
     /**
      * Sets a default filter to be used when no filter was passed to a load() or loadX() function.

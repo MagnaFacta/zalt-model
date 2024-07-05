@@ -64,7 +64,7 @@
             "vendor/bin/phpunit --configuration test/phpunit.xml test"
         ],
         "stan": [
-            "vendor/bin/phpstan"
+            "vendor/bin/phpstan --memory-limit=512M"
         ]
     }
 }

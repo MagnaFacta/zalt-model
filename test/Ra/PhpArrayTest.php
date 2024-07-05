@@ -267,7 +267,7 @@ class PhpArrayTest extends TestCase
         $rows  = $this->getRows();
         $model = $this->getModelLoaded($rows);
 
-        $this->assertNull($model->loadRepeatable(['c' => 100]));
+        $this->assertInstanceOf(RepeatableInterface::class, $model->loadRepeatable(['c' => 100]));
 
         $repeater = $model->loadRepeatable();
         $this->assertInstanceOf(RepeatableInterface::class, $repeater);
