@@ -335,6 +335,12 @@ class JoinModel implements FullDataInterface
         $fieldMappings = $this->joinStore->getFieldMappings();
 
         $oldKeys = [];
+        foreach ($this->metaModel->getKeys() as $id => $name) {
+            $copyName = $this->getKeyCopyName($name);
+            if (isset($newValues[$copyName])) {
+                $filter[$name] = $newValues[$copyName];
+            }
+        }
         if ($filter) {
             foreach ($this->metaModel->getKeys() as $id => $name) {
                 if (isset($filter[$id])) {
