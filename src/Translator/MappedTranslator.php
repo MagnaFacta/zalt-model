@@ -21,6 +21,11 @@ use Zalt\Model\Exception\ModelTranslatorException;
 class MappedTranslator extends ModelTranslatorAbstract
 {
     /**
+     * @var array Optional map to use when none specified in constructor
+     */
+    protected array $defaultMap = [];
+
+    /**
      * @param TranslatorInterface $translator
      * @param string[] $map sourceName => targetName
      */
@@ -30,6 +35,10 @@ class MappedTranslator extends ModelTranslatorAbstract
     )
     {
         parent::__construct($translator);
+
+        if (! $this->map) {
+            $this->map = $this->defaultMap;
+        }
     }
 
     /**
