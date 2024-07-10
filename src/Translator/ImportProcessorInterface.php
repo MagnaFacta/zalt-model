@@ -49,7 +49,7 @@ interface ImportProcessorInterface
     public function setSourceModel(DataReaderInterface $model): ImportProcessorInterface;
 
     /**
-     * @param DataReaderInterface $model
+     * @param DataWriterInterface $model
      * @return ImportProcessorInterface
      */
     public function setTargetModel(DataWriterInterface $model): ImportProcessorInterface;
