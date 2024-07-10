@@ -10,6 +10,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Translator;
 
+use Zalt\Base\TranslatorInterface;
 use Zalt\Model\Exception\ModelTranslatorException;
 
 /**
@@ -20,9 +21,16 @@ use Zalt\Model\Exception\ModelTranslatorException;
 class MappedTranslator extends ModelTranslatorAbstract
 {
     /**
-     * @var array of fields sourceName => targetName
+     * @param TranslatorInterface $translator
+     * @param string[] $map sourceName => targetName
      */
-    protected array $map = [];
+    public function __construct(
+        TranslatorInterface $translator,
+        protected array $map = [],
+    )
+    {
+        parent::__construct($translator);
+    }
 
     /**
      * @inheritDoc
