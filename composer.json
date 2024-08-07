@@ -24,7 +24,7 @@
             "email": "mjong@magnafacta.nl"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Zalt\\Model\\": "src"
