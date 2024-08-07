@@ -3,4 +3,3 @@ composer.phar
 /.idea
 test/.phpunit.cache
 test/html-coverage
-/composer.lock
