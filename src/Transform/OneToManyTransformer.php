@@ -3,6 +3,7 @@
 namespace Zalt\Model\Transform;
 
 use Zalt\Model\Data\DataReaderInterface;
+use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModelInterface;
 
 class OneToManyTransformer extends NestedTransformer
@@ -90,5 +91,85 @@ class OneToManyTransformer extends NestedTransformer
         }
 
         return $data;
+    }
+
+    /**
+     * Function to allow overruling of transform for certain models
+     *
+     * @param MetaModelInterface $model
+     * @param FullDataInterface $sub
+     * @param array $row
+     * @param array $join
+     * @param string $name
+     */
+    protected function transformSaveSubModel(
+        MetaModelInterface $model,
+        FullDataInterface $sub,
+        array &$row,
+        array $join,
+        string $name)
+    {
+        if ($this->skipSave) {
+            return;
+        }
+
+        if (! isset($row[$name])) {
+            return;
+        }
+
+        $subItems = $row[$name];
+        $keys = [];
+
+        // Get the parent key values.
+        foreach ($join as $parent => $child) {
+            if (isset($row[$parent])) {
+                $keys[$child] = $row[$parent];
+            } else {
+                // if there is no parent identifier set, don't save
+                return;
+            }
+        }
+
+        $saved = [];
+        foreach($subItems as $key => $subrow) {
+            // Make sure the (possibly changed) parent key
+            // is stored in the sub data.
+            $subItems[$key] = $keys + $subrow;
+            $saved[$key] = $sub->save($subItems[$key]);
+        }
+
+        $filter = [$child => $row[$parent]];
+        $oldResults = $sub->load($filter);
+        $subKeys = $sub->getMetaModel()->getKeys();
+        $deletedValues = $this->findDeletedItems($oldResults, $subItems, $subKeys);
+
+        foreach($deletedValues as $deletedValue) {
+            $sub->delete($deletedValue);
+        }
+
+        $row[$name] = $saved;
+    }
+
+    protected function findDeletedItems(array $oldValues, array $newValues, array $keysToCheck): array
+    {
+        $oldValues = $this->extractAndSortKeyPairs($oldValues, $keysToCheck);
+        $newValues = $this->extractAndSortKeyPairs($newValues, $keysToCheck);
+
+        $serializedOldValues = array_map('serialize', $oldValues);
+        $serializedNewValues = array_map('serialize', $newValues);
+
+        $missingItems = array_diff($serializedOldValues, $serializedNewValues);
+
+        return array_map('unserialize', $missingItems);
+    }
+
+    protected function extractAndSortKeyPairs($array, $keys) {
+        return array_map(function($item) use ($keys) {
+            // Extract only the relevant keys
+            $filteredItem = array_intersect_key($item, array_flip($keys));
+            // Sort keys to ensure consistent order
+            ksort($filteredItem);
+            return $filteredItem;
+        }, $array);
     }
 }
