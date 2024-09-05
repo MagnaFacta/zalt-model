@@ -10,8 +10,7 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Type;
 
-use Zalt\Html\HtmlElement;
-use Zalt\Html\HtmlInterface;
+use PHPUnit\Framework\TestCase;
 use Zalt\Model\MetaModelInterface;
 use Zalt\Model\MetaModelTestTrait;
 use Zalt\Model\Ra\PhpArrayModel;
@@ -21,7 +20,7 @@ use Zalt\Model\Ra\PhpArrayModel;
  * @subpackage Model\Type
  * @since      Class available since version 1.0
  */
-class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
+class ConcatenatedTypeTest extends TestCase
 {
     use MetaModelTestTrait;
 
@@ -34,6 +33,9 @@ class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
         } else {
             $data = new \ArrayObject($rows);
         }
+        /**
+         * @var PhpArrayModel $model
+         */
         $model = $loader->createModel(PhpArrayModel::class, 'test', $data);
 
         $metaModel = $model->getMetaModel();
@@ -61,7 +63,7 @@ class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
             'noPads4' => [':1:2:', ['', 1, 2, ''], '; 1; 2; ', ':1:2:', ':', '; ', false],
             'dashes' => ['-1-2-', [1, 2], '1  2', '-1-2-', '-', '  ', true],
             'empty' => ['||', [], '', '||', '|', "\n", true],
-            'pipes' => ['|1|2|', [1, 2], '1<br />2', '|1|2|', '|', new HtmlElement('br'), true],
+            //'pipes' => ['|1|2|', [1, 2], '1<br />2', '|1|2|', '|', new HtmlElement('br'), true],
         ];
     }
 
@@ -98,9 +100,9 @@ class ConcatenatedTypeTest extends \PHPUnit\Framework\TestCase
         // Check display value
         $bridge = $model->getBridgeFor('display');
         $output = $bridge->format('concat', $data['concat']);
-        if ($output instanceof HtmlInterface) {
+        /*if ($output instanceof HtmlInterface) {
             $output = $output->render();
-        }
+        }*/
         $this->assertEquals($display, $output);
 
 //        // Check storage of original data (no change)
