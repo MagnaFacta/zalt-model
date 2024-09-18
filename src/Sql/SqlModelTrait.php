@@ -218,12 +218,14 @@ trait SqlModelTrait
 
             }
         }
-        if ($filter) {
+        if ($filter && (! array_diff($primaryKeys, array_keys($filter)))) {
             $oldValues = $this->sqlRunner->fetchRow(
                 $tableName,
                 false,
                 $this->sqlRunner->createWhere($this->metaModel, $filter),
                 []);
+//            file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $tableName . ' new values: ' . print_r($newValues, true) . "\n", FILE_APPEND);
+//            file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $tableName . ' old values: ' . print_r($oldValues, true) . "\n", FILE_APPEND);
             $this->oldValues = array_merge($this->oldValues, $oldValues);
         } else {
             $oldValues = false;
@@ -232,6 +234,7 @@ trait SqlModelTrait
         // Check for actual values for this table to save.
         // dump($newValues);
         $saveValues = $this->filterDataForTable($tableName, $newValues, ! $oldValues);
+
         if ($saveValues) {
 //            dump($saveValues);
             if ($oldValues) {
@@ -266,6 +269,7 @@ trait SqlModelTrait
                 }
                 // Update the row, if the saveMode allows it
                 if ($save) {
+//                    file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $tableName . ' update: ' . print_r($saveValues, true) . "\n", FILE_APPEND);
                     $changed = $this->sqlRunner->updateInTable($tableName, $saveValues, $filter);
                     // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  'changed update ' . $changed . "\n", FILE_APPEND);
                     if ($changed) {
@@ -285,6 +289,8 @@ trait SqlModelTrait
                 return $saveValues + $oldValues;
 
             } else {
+//                file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): ' .  $tableName . ' insert: ' . print_r($saveValues, true) . "\n", FILE_APPEND);
+
                 // Perform insert
                 // dump($returnValues);
                 $newKeyValues = $this->sqlRunner->insertInTable($tableName, $saveValues);

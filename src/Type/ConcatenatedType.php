@@ -41,8 +41,6 @@ class ConcatenatedType extends AbstractModelType
     protected bool $valuePad = true;
 
     /**
-     * \MUtil\Ra::args() parameter passing is allowed.
-     *
      * @param string|ElementInterface $seperatorChar
      * @param string|ElementInterface $displaySeperator
      * @param bool $valuePad

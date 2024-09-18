@@ -138,8 +138,7 @@ class OneToManyTransformer extends NestedTransformer
             $saved[$key] = $sub->save($subItems[$key]);
         }
 
-        $filter = [$child => $row[$parent]];
-        $oldResults = $sub->load($filter);
+        $oldResults = $sub->load($keys);
         $subKeys = $sub->getMetaModel()->getKeys();
         $deletedValues = $this->findDeletedItems($oldResults, $subItems, $subKeys);
 
