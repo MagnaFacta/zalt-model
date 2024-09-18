@@ -17,7 +17,7 @@
         "laminas/laminas-servicemanager": "^3.22.0",
         "magnafacta/zalt-html": "main-dev",
         "phpstan/phpstan": "1.*",
-        "phpunit/phpunit": "10.*",
+        "phpunit/phpunit": "^10.5",
         "symfony/yaml": "^6.1"
     },
     "authors": [
