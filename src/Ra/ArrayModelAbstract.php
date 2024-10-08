@@ -43,7 +43,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
     protected array|null $oldValues = null;
 
     public function __construct(
-        protected MetaModelInterface $metaModel
+        protected readonly MetaModelInterface $metaModel
     )
     {  }
 

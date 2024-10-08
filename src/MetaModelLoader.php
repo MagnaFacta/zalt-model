@@ -69,7 +69,7 @@ class MetaModelLoader
             $metaModelName = $className;
         }
         $metaModel = null;
-        foreach ($parameters as $key => $parameter) {
+        foreach ($parameters as $parameter) {
             if ($parameter instanceof MetaModelInterface) {
                 $metaModel = $parameter;
             }

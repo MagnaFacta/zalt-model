@@ -32,15 +32,24 @@ interface ImportProcessorInterface
     public function getSourceModel(): ?DataReaderInterface;
 
     /**
-     * @return DataReaderInterface|null
+     * @return DataWriterInterface|null
      */
-    public function getTargetModel(): ?DataReaderInterface;
+    public function getTargetModel(): ?DataWriterInterface;
 
     /**
      * @param ModelTranslatorInterface $translator
      * @return ImportProcessorInterface
      */
     public function setImportTranslator(ModelTranslatorInterface $translator): ImportProcessorInterface;
+
+    /**
+     * Set the source model using a filename
+     *
+     * @param string $filename
+     * @param null|string $extension Optional extension if the extension of the file should not be used
+     * @return DataReaderInterface
+     */
+    public function setSourceFile(string $filename, ?string $extension = null): DataReaderInterface;
 
     /**
      * @param DataReaderInterface $model
