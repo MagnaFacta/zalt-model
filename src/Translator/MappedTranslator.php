@@ -21,6 +21,11 @@ use Zalt\Model\Exception\ModelTranslatorException;
 class MappedTranslator extends ModelTranslatorAbstract
 {
     /**
+     * @var array<string, mixed>  Optional map with default fixed values
+     */
+    protected array $defaultFixed = [];
+
+    /**
      * @var array Optional map to use when none specified in constructor
      */
     protected array $defaultMap = [];
@@ -32,12 +37,16 @@ class MappedTranslator extends ModelTranslatorAbstract
     public function __construct(
         TranslatorInterface $translator,
         protected array $map = [],
+        protected array $fixed = [],
     )
     {
         parent::__construct($translator);
 
         if (! $this->map) {
             $this->map = $this->defaultMap;
+        }
+        if (! $this->fixed) {
+            $this->fixed = $this->defaultFixed;
         }
     }
 
@@ -62,5 +71,18 @@ class MappedTranslator extends ModelTranslatorAbstract
     {
         $this->map = $map;
         return $this;
+    }
+
+    public function translateRowValues($row, mixed $rowId)
+    {
+        $row += $this->fixed;
+        foreach ($this->map as $input => $output) {
+            if (isset($row[$input])) {
+                $row[$output] = $row[$input];
+            }
+        }
+
+
+        return parent::translateRowValues($row, $rowId);
     }
 }
