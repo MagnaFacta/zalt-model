@@ -9,13 +9,13 @@ use Zalt\Model\Sql\JoinTableItem;
 class StraightJoinTableItem extends JoinTableItem
 {
     public function __construct(
-        protected readonly string $joinTable,
-        protected array $joinFields,
-        protected readonly bool $joinInner = true,
-        protected readonly ?string $tableAlias = null,
+        string $joinTable,
+        array $joinFields,
+        bool $joinInner = true,
+        ?string $tableAlias = null,
         protected readonly bool $straight = false,
     )
     {
-        parent::__construct($this->joinTable, $this->joinFields, $this->joinInner, $this->tableAlias);
+        parent::__construct($joinTable, $joinFields, $joinInner, $tableAlias);
     }
 }
