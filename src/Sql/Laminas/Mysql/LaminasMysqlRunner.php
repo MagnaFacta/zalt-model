@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Zalt\Model\Sql\Laminas;
+namespace Zalt\Model\Sql\Laminas\Mysql;
 
 use Laminas\Db\Adapter\Platform\Mysql;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Select;
 use Zalt\Model\Sql\JoinTableStore;
+use Zalt\Model\Sql\Laminas\LaminasRunner;
 
 class LaminasMysqlRunner extends LaminasRunner
 {
@@ -134,7 +135,6 @@ class LaminasMysqlRunner extends LaminasRunner
             if ($position === false) {
                 return $haystack;
             }
-            break;
         }
 
         $test = substr_replace($haystack, $replacement, $position, strlen($needle));
