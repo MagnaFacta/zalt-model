@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Zalt\Model\Sql\Laminas;
+namespace Zalt\Model\Sql\Laminas\Mysql;
 
 use Zalt\Model\Sql\JoinTableItem;
 
@@ -17,5 +17,13 @@ class StraightJoinTableItem extends JoinTableItem
     )
     {
         parent::__construct($joinTable, $joinFields, $joinInner, $tableAlias);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isStraight(): bool
+    {
+        return $this->straight;
     }
 }
