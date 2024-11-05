@@ -72,9 +72,9 @@ class JsonType extends AbstractModelType
      * Displays the content
      *
      * @param mixed $value
-     * @return string|ElementInterface
+     * @return string|ElementInterface|null
      */
-    public function formatTable(mixed $value): string|ElementInterface
+    public function formatTable(mixed $value): string|ElementInterface|null
     {
         if ((null === $value) || is_scalar($value)) {
             return $value;
