@@ -130,6 +130,8 @@ class OneToManyTransformer extends NestedTransformer
             }
         }
 
+        $oldResults = $sub->load($keys);
+
         $saved = [];
         foreach($subItems as $key => $subrow) {
             // Make sure the (possibly changed) parent key
@@ -138,7 +140,6 @@ class OneToManyTransformer extends NestedTransformer
             $saved[$key] = $sub->save($subItems[$key]);
         }
 
-        $oldResults = $sub->load($keys);
         $subKeys = $sub->getMetaModel()->getKeys();
         $deletedValues = $this->findDeletedItems($oldResults, $subItems, $subKeys);
 
