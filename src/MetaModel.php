@@ -469,6 +469,7 @@ class MetaModel implements MetaModelInterface
         $results = array();
 
         foreach ($this->_model as $name => $row) {
+            $name = (string)$name;
             if ($this->has($name, $columnName)) {
                 $results[$name] = $this->get($name, $columnName);
             }
@@ -496,6 +497,7 @@ class MetaModel implements MetaModelInterface
         $results = array();
 
         foreach ($this->_model as $name => $row) {
+            $name = (string)$name;
             if ($this->has($name, $columnName)) {
                 $results[] = $name;
             }
