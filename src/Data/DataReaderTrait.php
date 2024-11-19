@@ -141,9 +141,24 @@ trait DataReaderTrait
             // Elements that do not occur in post data when empty
             // while they should contain an empty array
             $excludes = array_fill_keys(array_merge(
-                $this->metaModel->getItemsFor('elementClass', 'MultiCheckbox'),
-                $this->metaModel->getItemsFor('elementClass', 'MultiSelect')
+                $this->metaModel->getItemsFor(['elementClass' => 'MultiCheckbox']),
+                $this->metaModel->getItemsFor(['elementClass' => 'MultiSelect'])
             ), []);
+
+            $displayers = array_diff(
+                array_merge(
+                    $this->metaModel->getItemsFor(['elementClass' => 'Hidden']),
+                    $this->metaModel->getItemsFor(['elementClass' => 'Exhibitor']),
+                    $this->metaModel->getItemsFor(['elementClass' => 'Html']),
+                ),
+                $this->metaModel->getColNames('no_displayer'),
+            );
+            foreach($displayers as $displayer) {
+                if (isset($postData[$displayer], $modelData[$displayer])) {
+                    unset($postData[$displayer]);
+                }
+            }
+
         } else {
             $excludes = [];
         }
