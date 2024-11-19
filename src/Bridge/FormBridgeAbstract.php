@@ -288,7 +288,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
             self::MULTI_OPTIONS
         );
 
-        return $this->_addToForm($name, 'exhibitor', $options, false, false);
+        return $this->_addToForm($name, 'exhibitor', $options, false, true);
     }
 
     /**
@@ -315,7 +315,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         $options = Ra::pairs($options, 1);
 
 
-        return $this->_addToForm($name, 'Hidden', $options, true, false);
+        return $this->_addToForm($name, 'Hidden', $options, true, true);
     }
 
     public function addHiddenMulti($name_args)
