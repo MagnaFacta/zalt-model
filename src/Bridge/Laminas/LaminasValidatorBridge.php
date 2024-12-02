@@ -262,7 +262,14 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                 } else {
                     $options[''] = null;
                 }
-                $validators[InArray::class] = [InArray::class, false, ['haystack' => array_keys($options)]];
+                switch ($this->metaModel->get($name, 'elementClass')) {
+                    case 'Exhibitor':
+                    case 'None':
+                        break;
+
+                    default:
+                        $validators[InArray::class] = [InArray::class, false, ['haystack' => array_keys($options)]];
+                }
             }
         }
         if ($required && (! $this->metaModel->is($name, 'autoInsertNotEmptyValidator', false)) && (! $validators[NotEmpty::class])) {
