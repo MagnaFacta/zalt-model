@@ -322,7 +322,9 @@ class UnionModel implements FullDataInterface
 
                 $this->changed += $model->getChanged();
                 $this->oldValues = $model->getOldValues();
-                return array($this->modelField => $newName) + $this->map($result, $newName, true, false);
+                $resultValues = array($this->modelField => $newName) + $this->map($result, $newName, true, false);
+
+                return $this->metaModel->processAfterSave($resultValues);
             }
         }
 
