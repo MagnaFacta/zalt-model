@@ -72,18 +72,32 @@ class DisplayBridge extends BridgeAbstract
             $format = $this->metaModel->get($name, 'numberFormat');
             if (is_callable($format)) {
                 $output['numberFormat'] = $format;
-            } else {
-                $output['numberFormat'] = function ($value) {
-                    // use($format)
-                    // return \Zend_Locale_Format::toNumber($value, array('number_format' => $format));
-                    // TODO: how are we going to format numbers from now on?
+            } elseif (is_int($format)) {
+                $output['numberFormat'] = function ($value) use ($format) {
+                    if (! strlen((string) $value)) {
+                        return $value;
+                    }
                     $locale = localeconv();
-                    return number_format($value,2,
-                                         $locale['decimal_point'],
-                                         $locale['thousands_sep']);
-                    
+                    return number_format((float) $value, $format, $locale['decimal_point'], $locale['thousands_sep']);
+                };
+            } else {
+                $output['numberFormat'] = function ($value) use ($format) {
+                    if (! strlen((string) $value)) {
+                        return $value;
+                    }
+                    return sprintf($format, (float) $value);
+                    // return \Zend_Locale_Format::toNumber($value, array('number_format' => $format));
                 };
             }
+        } elseif ($this->metaModel->has($name, 'decimals')) {
+            $decimals = $this->metaModel->get($name, 'decimals');
+            $output['decimals'] = function ($value) use ($decimals) {
+                if (! strlen((string) $value)) {
+                    return $value;
+                }
+                $locale = localeconv();
+                return number_format((float) $value, $decimals, $locale['decimal_point'], $locale['thousands_sep']);
+            };
         }
 
         if ($this->metaModel->has($name, 'markCallback')) {
