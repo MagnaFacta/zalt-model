@@ -11,7 +11,8 @@ class OneToManyTransformer extends NestedTransformer
     public function __construct(
         DataReaderInterface $subModel,
         array $joinFields,
-        string|null $name = null
+        string|null $name = null,
+        protected readonly bool $nullableRelation = false,
     )
     {
         $this->addModel($subModel, $joinFields, $name);
@@ -144,7 +145,12 @@ class OneToManyTransformer extends NestedTransformer
         $deletedValues = $this->findDeletedItems($oldResults, $subItems, $subKeys);
 
         foreach($deletedValues as $deletedValue) {
-            $sub->delete($deletedValue);
+            if (!$this->nullableRelation) {
+                $sub->delete($deletedValue);
+                continue;
+            }
+            $sub->save($deletedValue + [$child => null]);
+
         }
 
         $row[$name] = $saved;
