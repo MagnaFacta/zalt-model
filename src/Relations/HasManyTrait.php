@@ -8,7 +8,9 @@ use Zalt\Model\Transform\OneToManyTransformer;
 
 trait HasManyTrait
 {
-    public function hasMany(DataReaderInterface|string $model, array|string $joins, string|null $name = null): void
+    protected OneToManyTransformer $oneToManyTransformer;
+
+    public function hasMany(DataReaderInterface|string $model, array|string $joins, string|null $name = null, bool $nullableRelation = false): void
     {
         if (is_string($model) && class_exists($model)) {
             $model = $this->getMetaModel()->getMetaModelLoader()->createModel($model);
@@ -22,7 +24,7 @@ trait HasManyTrait
             $joins = [$parentJoinField => $joins];
         }
 
-        $parentMetaModel->addTransformer(new OneToManyTransformer($model, $joins, $name));
+        $parentMetaModel->addTransformer(new $this->oneToManyTransformer($model, $joins, $name, $nullableRelation));
         $parentMetaModel->set($name, [
             'model' => $model,
             'type' => MetaModelInterface::TYPE_CHILD_MODEL,
