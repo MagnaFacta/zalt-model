@@ -168,6 +168,10 @@ class NestedTransformer extends SubmodelTransformerAbstract
         foreach ($this->_subModels as $sub) {
             $subSorts = [];
             foreach ($sort as $key => $value) {
+                if (SORT_ASC !== $value && SORT_DESC !== $value) {
+                    $key = $value;
+                    $value = SORT_ASC;
+                }
                 if ($sub->getMetaModel()->has($key)) {
                     $subSorts[$key] = $value;
                 }
