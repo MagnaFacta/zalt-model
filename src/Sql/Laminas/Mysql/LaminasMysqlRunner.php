@@ -75,7 +75,7 @@ class LaminasMysqlRunner extends LaminasRunner
         return $resultSet->toArray() ?: [];
     }
 
-    public function getFullSelect(string|JoinTableStore $tables, array|null $columns = null,  $where, array|Expression|string|null $sort = null, int|null $limit = null, int|null $offset = null): Select
+    public function getFullSelect(string|JoinTableStore $tables, array|null $columns = null,  mixed $where = null, array|Expression|string|null $sort = null, int|null $limit = null, int|null $offset = null): Select
     {
         $select = $this->getSelect($tables);
         if ($columns) {
