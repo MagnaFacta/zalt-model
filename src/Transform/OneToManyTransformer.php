@@ -121,10 +121,12 @@ class OneToManyTransformer extends NestedTransformer
         $subItems = $row[$name];
         $keys = [];
 
+        $softDeleteValues = [];
         // Get the parent key values.
         foreach ($join as $parent => $child) {
             if (isset($row[$parent])) {
                 $keys[$child] = $row[$parent];
+                $softDeleteValues[$child] = null;
             } else {
                 // if there is no parent identifier set, don't save
                 return;
@@ -149,7 +151,7 @@ class OneToManyTransformer extends NestedTransformer
                 $sub->delete($deletedValue);
                 continue;
             }
-            $sub->save($deletedValue + [$child => null]);
+            $sub->save($deletedValue + $softDeleteValues);
 
         }
 
