@@ -268,7 +268,18 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
                         break;
 
                     default:
-                        $validators[InArray::class] = [InArray::class, false, ['haystack' => array_keys($options)]];
+                        if ($this->metaModel->getWithDefault($name, 'registerInArrayValidator', false)) {
+                            break;
+                        }
+                        $haystack = [];
+                        foreach ($options as $key => $value) {
+                            if (is_array($value)) {
+                                $haystack += array_keys($value);
+                            } else {
+                                $haystack[] = $key;
+                            }
+                        }
+                        $validators[InArray::class] = [InArray::class, false, ['haystack' => $haystack]];
                 }
             }
         }

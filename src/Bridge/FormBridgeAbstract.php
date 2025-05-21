@@ -55,7 +55,7 @@ abstract class FormBridgeAbstract implements FormBridgeInterface
         self::FILE_OPTIONS       => ['accept', 'count', 'destination', 'extension', 'filename', 'valueDisabled'],
         self::GROUP_OPTIONS      => ['elements', 'legend', 'separator'],
         self::JQUERY_OPTIONS     => ['jQueryParams'],
-        self::MULTI_OPTIONS      => ['disable', 'multiOptions', 'onchange', 'separator', 'size'],
+        self::MULTI_OPTIONS      => ['disable', 'multiOptions', 'onchange', 'registerInArrayValidator', 'separator', 'size'],
         self::PASSWORD_OPTIONS   => ['renderPassword', 'repeatLabel'],
         self::SUBFORM_OPTIONS    => ['class', 'decorators', 'escape', 'form', 'label', 'tabindex'],
         self::TAB_OPTIONS        => ['value'],

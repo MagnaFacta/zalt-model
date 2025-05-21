@@ -118,6 +118,7 @@ class OneToManyTransformer extends NestedTransformer
             return;
         }
 
+        $child    = '';
         $subItems = $row[$name];
         $keys = [];
 
