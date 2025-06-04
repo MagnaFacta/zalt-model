@@ -8,7 +8,7 @@ use Zalt\Model\Transform\OneToManyTransformer;
 
 trait HasManyTrait
 {
-    protected OneToManyTransformer $oneToManyTransformer;
+    protected string $oneToManyTransformer = OneToManyTransformer::class;
 
     public function hasMany(DataReaderInterface|string $model, array|string $joins, string|null $name = null, bool $nullableRelation = false): void
     {
