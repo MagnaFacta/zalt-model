@@ -51,6 +51,7 @@ class LaminasSelectModel implements DataReaderInterface
         if ($columns) {
             $select->columns($this->laminasRunner->createColumns($this->metaModel, $columns));
         }
+        // file_put_contents('data/logs/echo.txt', __CLASS__ . '->' . __FUNCTION__ . '(' . __LINE__ . '): cols: ' . print_r($this->laminasRunner->createColumns($this->metaModel, $columns), true) . "\n", FILE_APPEND);
         $select->where($this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter)));
         $select->order($this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort)));
 
@@ -117,12 +118,16 @@ class LaminasSelectModel implements DataReaderInterface
      */
     public function loadPage(int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
+        if ($columns) {
+            $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
+        }
         $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
 
         $selectRows  = clone $this->select;
-        $selectRows->columns($columns);
+        if ($columns) {
+             $selectRows->columns($columns);
+        }
         $selectRows->where($where);
         $selectRows->order($order);
         $output = $this->laminasRunner->fetchRowsFromSelect($selectRows, ($page - 1) * $items, $items);
@@ -135,7 +140,9 @@ class LaminasSelectModel implements DataReaderInterface
      */
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
+        if ($columns) {
+            $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
+        }
         $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
 
@@ -153,7 +160,9 @@ class LaminasSelectModel implements DataReaderInterface
         }
 
         $selectRows  = clone $this->select;
-        $selectRows->columns($columns);
+        if ($columns) {
+            $selectRows->columns($columns);
+        }
         $selectRows->where($where);
         $selectRows->order($order);
         $output = $this->laminasRunner->fetchRowsFromSelect($selectRows, ($page - 1) * $items, $items);
