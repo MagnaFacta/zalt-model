@@ -170,9 +170,9 @@ class ToManyTransformer extends NestedTransformer
             }
         }
 
-        $deleteIds = array_column($deletedResults, $key);
+        $deleteIds = array_column($deletedResults, $tableIdField);
         if (!empty($deleteIds)) {
-            $sub->delete([$key => $deleteIds]);
+            $sub->delete([$tableIdField => $deleteIds]);
         }
 
         $row[$name] = $newResults;
