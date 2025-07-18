@@ -21,6 +21,11 @@ use Zalt\Model\MetaModelInterface;
 class MaybeTimeType extends DateTimeType
 {
     /**
+     * @var bool Should the time from input data be used or ignored?
+     */
+    protected bool $editTime = true;
+
+    /**
      * @var string The format to use when the time is equal to the $maybeTimeValue
      */
     protected string $maybeDateFormat = 'd-m-Y';
@@ -39,9 +44,10 @@ class MaybeTimeType extends DateTimeType
     {
         $output = parent::getSettings();
 
+        $output['editTime']        = $this->editTime;
         $output['maybeDateFormat'] = $this->maybeDateFormat;
         $output['maybeTimeFormat'] = $this->maybeTimeFormat;
-        $output['maybeTimeValue'] = $this->maybeTimeValue;
+        $output['maybeTimeValue']  = $this->maybeTimeValue;
 
         return $output;
     }
@@ -68,4 +74,35 @@ class MaybeTimeType extends DateTimeType
         return $value;
     }
 
+    public function getStringValue($value, $isNew, $name, array $context, MetaModelInterface $metaModel)
+    {
+        if (! $metaModel->getWithDefault($name, 'editTime', $this->editTime)) {
+            if (!$value instanceof DateTimeInterface) {
+                $value = self::toDate(
+                    $value,
+                    $metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat),
+                    $metaModel->getWithDefault($name, 'dateFormat', $this->dateFormat),
+                    false);
+
+                if ($value instanceof DateTimeInterface) {
+                    $maybeTimeFormat = $metaModel->getWithDefault($name, 'maybeTimeFormat', $this->maybeTimeFormat);
+                    $maybeTimeValue  = $metaModel->getWithDefault($name, 'maybeTimeValue', $this->maybeTimeValue);
+                    if ($value->format($maybeTimeFormat) != $maybeTimeValue) {
+                        if ($value instanceof \DateTimeImmutable) {
+                            $value = \DateTime::createFromImmutable($value);
+                        }
+                        list($hour, $minute, $second) = explode(':', $maybeTimeValue);
+                        if ($value instanceof \DateTime) {
+                            $value->setTime((int) $hour, (int) $minute, (int) $second);
+
+                            return $value->format($metaModel->getWithDefault($name, 'storageFormat', $this->storageFormat));
+                        }
+                    }
+                }
+            }
+        }
+        // dump($value);
+
+        return parent::getStringValue($value, $isNew, $name, $context, $metaModel);
+    }
 }
