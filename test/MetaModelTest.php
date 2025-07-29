@@ -72,6 +72,15 @@ class MetaModelTest extends \PHPUnit\Framework\TestCase
 
             $this->assertCount(2, $mm->get($field, 'field4'));
 
+            // Test with array keyu
+            $this->assertCount(2, $mm->get($field, 'field4'));
+            $mm->remove($field, 'field4[2]');
+            $this->assertFalse($mm->has($field, 'field4[2]'));
+            $this->assertNull($mm->get($field, 'field4[2]'));
+
+            $this->assertCount(1, $mm->get($field, 'field4'));
+
+            
             $this->assertFalse($mm->has($field, 'field5'));
             $this->assertNull($mm->get($field, 'field5'));
 

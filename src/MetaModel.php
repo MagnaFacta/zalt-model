@@ -1205,7 +1205,20 @@ class MetaModel implements MetaModelInterface
             }
         } elseif (isset($this->_model[$name][$key])) {
             unset($this->_model[$name][$key]);
+        } elseif (substr($key, -1) == ']') {
+            // Otherwise extract subkey
+            $pos    = strpos($key, '[');
+            $subkey = substr($key, $pos + 1, -1);
+            $key    = substr($key, 0, $pos);
+
+            if (isset($this->_model[$name][$key][$subkey])) {
+                unset($this->_model[$name][$key][$subkey]);
+                if (! count($this->_model[$name][$key])) {
+                    unset($this->_model[$name][$key]);
+                }
+            }
         }
+
 
         return $this;
     }
