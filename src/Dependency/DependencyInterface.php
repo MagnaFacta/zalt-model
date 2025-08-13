@@ -38,7 +38,7 @@ interface DependencyInterface
      * @param mixed $effectedSettings A single setting or an array of settings
      * @return \Zalt\Model\Dependency\DependencyInterface (continuation pattern)
      */
-    public function addEffected($effectedField, $effectedSettings): DependencyInterface;
+    public function addEffected($effectedField, $effectedSettings = null): DependencyInterface;
 
     /**
      * Add to the fields effected by this dependency
