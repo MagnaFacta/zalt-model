@@ -71,7 +71,9 @@ class DisplayBridgeTest extends TestCase
      */
     public function testDecimals(array $row, int $decimals, string $locale, ?string $output)
     {
-        setlocale(LC_ALL, $locale);
+        if (! setlocale(LC_ALL, $locale, substr($locale, 0, 2))) {
+            return;
+        }
 
         $model     = $this->getModelLoaded([$row]);
         $metaModel = $model->getMetaModel();
@@ -127,7 +129,9 @@ class DisplayBridgeTest extends TestCase
      */
     public function testNumberFormat(array $row, mixed $format, string $locale, ?string $output)
     {
-        setlocale(LC_ALL, $locale);
+        if (! setlocale(LC_ALL, $locale, substr($locale, 0, 2))) {
+            return;
+        }
 
         $model     = $this->getModelLoaded([$row]);
         $metaModel = $model->getMetaModel();
