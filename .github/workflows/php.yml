@@ -27,6 +27,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, intl-77.1, json, libxml, mbstring
+          ini-values: intl.default_locale=en
           coverage: xdebug
 
       - name: Get composer cache directory
