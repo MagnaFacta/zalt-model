@@ -145,7 +145,10 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
                     } else {
                         if (is_int($value) && $value != $field) {
                             $output->equalTo(1, 0);
-                        }  else {
+
+                        }  elseif ($value instanceof Expression) {
+                            $output->expression($value->getExpression());
+                        } else {
                             $output->literal('(' . $value . ')');
                         }
                     }
