@@ -1,4 +1,6 @@
 composer.phar
-/vendor/
-/nbproject/
 /composer.lock
+/vendor/
+/.idea
+test/.phpunit.cache
+test/html-coverage
