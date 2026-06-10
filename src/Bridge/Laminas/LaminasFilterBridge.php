@@ -45,7 +45,7 @@ class LaminasFilterBridge extends \Zalt\Model\Bridge\BridgeAbstract implements F
 
     protected ProjectOverloader $filterOverloader;
 
-    public function __construct(DataReaderInterface $dataModel, ProjectOverloader $projectOverloader = null)
+    public function __construct(DataReaderInterface $dataModel, ?ProjectOverloader $projectOverloader = null)
     {
         parent::__construct($dataModel);
 

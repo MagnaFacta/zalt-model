@@ -175,12 +175,12 @@ class MetaModel implements MetaModelInterface
      *
      * @param mixed $dependency DependencyInterface or string or array to create one
      * @param mixed $dependsOn Optional string field name or array of fields that do the changing
-     * @param array $effects Optional array of field => array(setting) of settings are changed, array of whatever
+     * @param null|array $effects Optional array of field => array(setting) of settings are changed, array of whatever
      * the dependency accepts as an addEffects() argument
      * @param mixed $key A key to identify the specific dependency.
      * @return int The actual key used.
      */
-    public function addDependency($dependency, $dependsOn = null, array $effects = null,  $key = null)
+    public function addDependency($dependency, $dependsOn = null, null|array $effects = null,  $key = null)
     {
         if (! $dependency instanceof DependencyInterface) {
             if (is_array($dependency)) {

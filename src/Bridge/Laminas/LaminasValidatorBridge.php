@@ -71,7 +71,7 @@ class LaminasValidatorBridge extends \Zalt\Model\Bridge\BridgeAbstract implement
 
     protected ProjectOverloader $validatorOverloader;
 
-    public function __construct(DataReaderInterface $dataModel, ProjectOverloader $projectOverloader = null)
+    public function __construct(DataReaderInterface $dataModel, ?ProjectOverloader $projectOverloader = null)
     {
         parent::__construct($dataModel);
 

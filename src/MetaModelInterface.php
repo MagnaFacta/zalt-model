@@ -122,12 +122,12 @@ interface MetaModelInterface
      *
      * @param mixed $dependency DependencyInterface or string or array to create one
      * @param mixed $dependsOn Optional string field name or array of fields that do the changing
-     * @param array $effects Optional array of field => array(setting) of settings are changed, array of whatever
+     * @param null|array $effects Optional array of field => array(setting) of settings are changed, array of whatever
      * the dependency accepts as an addEffects() argument
      * @param mixed $key A key to identify the specific dependency.
      * @return int The actual key used.
      */
-    public function addDependency($dependency, $dependsOn = null, array $effects = null,  $key = null);
+    public function addDependency($dependency, $dependsOn = null, null|array $effects = null,  $key = null);
 
     /**
      * @param string $alias Alternative to map to
@@ -144,10 +144,10 @@ interface MetaModelInterface
      *
      * @param DataReaderInterface $model
      * @param array $joins The join fields for the sub model
-     * @param string $name Optional 'field' name, otherwise model name is used
+     * @param string|null $name Optional 'field' name, otherwise model name is used
      * @return NestedTransformer The added transformer
      */
-    public function addModel(DataReaderInterface $model, array $joins, string $name = null);
+    public function addModel(DataReaderInterface $model, array $joins, ?string $name = null);
 
     /**
      * Add a model transformer
@@ -419,10 +419,10 @@ interface MetaModelInterface
      * with a subkey, that subkey has to exist for the name.
      *
      * @param string $name Field name
-     * @param string $subkey Optional field key
+     * @param string|null $subkey Optional field key
      * @return boolean
      */
-    public function has(string $name, string $subkey = null): bool;
+    public function has(string $name, ?string $subkey = null): bool;
 
     /**
      * Returns True when one of the names exists in the model.

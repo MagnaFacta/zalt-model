@@ -266,7 +266,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null) : array
+    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, ?int $offset = null, ?int $limit = null) : array
     {
         $select = $this->getSelect($tables);
 
@@ -288,7 +288,7 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
     /**
      * @inheritDoc
      */
-    public function fetchRowsFromSelect(Select $select, int $offset = null, int $limit = null) : array
+    public function fetchRowsFromSelect(Select $select, ?int $offset = null, ?int $limit = null) : array
     {
         if (null !== $offset) {
             $select->offset($offset);

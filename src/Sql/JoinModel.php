@@ -40,11 +40,11 @@ class JoinModel implements FullDataInterface
      * Check the passed saveTable information and return 'new style' SAVE_MODE
      * constant array
      *
-     * @param array $saveTables Optional array containing the table names to save,
+     * @param ?array $saveTables Optional array containing the table names to save,
      * otherwise the tables set to save at model level will be saved.
      * @return array Containing savetable data
      */
-    protected function _checkSaveTables(array $saveTables = null): array
+    protected function _checkSaveTables(?array $saveTables = null): array
     {
         if (null === $saveTables) {
             return $this->saveTables;
@@ -173,7 +173,7 @@ class JoinModel implements FullDataInterface
         return $this;
     }
 
-    public function delete($filter = null, array $saveTables = null): int
+    public function delete($filter = null, ?array $saveTables = null): int
     {
         $saveTables = $this->_checkSaveTables($saveTables);
 
@@ -325,7 +325,7 @@ class JoinModel implements FullDataInterface
         return $this->metaModel->processOneRowAfterLoad($postData + $modelData + $excludes, $create, true);
     }
 
-    public function save(array $newValues, array $filter = null, array $saveTables = null): array
+    public function save(array $newValues, ?array $filter = null, ?array $saveTables = null): array
     {
         $this->oldValues = [];
         $oldChanged    = $this->changed;

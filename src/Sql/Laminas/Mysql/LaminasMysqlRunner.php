@@ -48,7 +48,7 @@ class LaminasMysqlRunner extends LaminasRunner
     /**
      * @inheritDoc
      */
-    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null) : array
+    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, ?int $offset = null, ?int $limit = null) : array
     {
         $select = $this->getFullSelect($tables, $columns, $where, $sort, $limit, $offset);
 
@@ -59,7 +59,7 @@ class LaminasMysqlRunner extends LaminasRunner
     /**
      * @inheritDoc
      */
-    public function fetchExtendedRowsFromSelect(string|JoinTableStore $tables, Select $select, int $offset = null, int $limit = null) : array
+    public function fetchExtendedRowsFromSelect(string|JoinTableStore $tables, Select $select, ?int $offset = null, ?int $limit = null) : array
     {
         $statement = $this->sql->prepareStatementForSqlObject($select);
 

@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql;
 
-use Zalt\Model\Data\FullDataInterface;
 use Zalt\Model\MetaModel;
 
 /**
@@ -62,7 +61,7 @@ trait SqlModelTrait
      * @param ?string $originalColumn
      * @return \Zalt\Model\Data\FullDataInterface Provides a fluent interface
      */
-    public function addColumn(mixed $column, string $columnName = null, string $originalColumn = null)
+    public function addColumn(mixed $column, ?string $columnName = null, ?string $originalColumn = null)
     {
         if (null === $columnName) {
             $columnName = strtr((string) $column, ' .,;:?!\'"()<=>-*+\\/&%^', '______________________');
@@ -183,7 +182,7 @@ trait SqlModelTrait
      * @param ?array  $oldKeys The original keys as they where before the changes
      * @return array The values for this table as they were updated
      */
-    protected function saveTableData(string $tableName, array $newValues, array $oldKeys = null)
+    protected function saveTableData(string $tableName, array $newValues, ?array $oldKeys = null)
     {
         if (! $newValues) {
             return [];

@@ -60,11 +60,11 @@ class RequiredRowsTransformer extends ModelTransformerAbstract
     /**
      * Returns the required rows set or calculates the rows using the $model and the required rows info
      *
-     * @param MetaModelInterface $model Optional model for calculation
+     * @param MetaModelInterface|null $model Optional model for calculation
      * @return array
      * @throws ModelException
      */
-    public function getDefaultRow(MetaModelInterface $model = null): array
+    public function getDefaultRow(?MetaModelInterface $model = null): array
     {
         if (! $this->_defaultRow) {
             $requireds = $this->getRequiredRows();

@@ -377,7 +377,7 @@ abstract class BridgeAbstract implements BridgeInterface
      *
      * @param ?array $row Or load from model
      */
-    public function setRow(array $row = null)
+    public function setRow(?array $row = null)
     {
         $this->setMode(self::MODE_SINGLE_ROW);
 

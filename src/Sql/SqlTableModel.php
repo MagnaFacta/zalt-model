@@ -118,7 +118,7 @@ class SqlTableModel implements FullDataInterface
         );
     }
 
-    public function save(array $newValues, array $filter = null) : array
+    public function save(array $newValues, ?array $filter = null) : array
     {
         $oldKeys = [];
         if ($filter) {

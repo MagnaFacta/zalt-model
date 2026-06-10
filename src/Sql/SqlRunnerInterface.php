@@ -78,7 +78,7 @@ interface SqlRunnerInterface
      * @param mixed  $sort
      * @return array Nested rows of data
      */
-    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, int $offset = null, int $limit = null): array;
+    public function fetchRows(string|JoinTableStore $tables, mixed $columns, mixed $where, mixed $sort, ?int $offset = null, ?int $limit = null): array;
 
     /**
      * A debugging helper function

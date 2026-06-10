@@ -34,7 +34,7 @@ class UnionModel implements FullDataInterface
         ]);
     }
 
-    public function addUnionModel(DataReaderInterface $model, array $fieldMap = null, $name = null): self
+    public function addUnionModel(DataReaderInterface $model, ?array $fieldMap = null, $name = null): self
     {
         if (null === $name) {
             $name = $model->getName();
@@ -279,7 +279,7 @@ class UnionModel implements FullDataInterface
         return $result;
     }
 
-    public function save(array $newValues, array $filter = null): array
+    public function save(array $newValues, ?array $filter = null): array
     {
         $newValues = $this->metaModel->processRowBeforeSave($newValues);
 
@@ -348,7 +348,7 @@ class UnionModel implements FullDataInterface
         return $this->metaModel->getName();
     }
 
-    public function setClearableKeys(array $keys = null): void
+    public function setClearableKeys(?array $keys = null): void
     {
         if ($keys === null) {
             $keys = $this->metaModel->getKeys();

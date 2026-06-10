@@ -69,12 +69,14 @@ abstract class ArrayModelAbstract implements DataReaderInterface
             } elseif (is_array($value)) {
                 $subFilter = true;
                 if (1 == count($value)) {
-                    if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
-                        $result = str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS]);
-                        $subFilter = false;
-                    } elseif (isset($value[MetaModelInterface::FILTER_CONTAINS_NOT])) {
-                        $result = ! str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS_NOT]);
-                        $subFilter = false;
+                    if (! empty($row[$name])) {
+                        if (isset($value[MetaModelInterface::FILTER_CONTAINS])) {
+                            $result = str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS]);
+                            $subFilter = false;
+                        } elseif (isset($value[MetaModelInterface::FILTER_CONTAINS_NOT])) {
+                            $result = !str_contains($row[$name], $value[MetaModelInterface::FILTER_CONTAINS_NOT]);
+                            $subFilter = false;
+                        }
                     }
                 } elseif (2 == count($value)) {
                     if (isset($value[MetaModelInterface::FILTER_BETWEEN_MAX], $value[MetaModelInterface::FILTER_BETWEEN_MIN])) {
@@ -362,11 +364,11 @@ abstract class ArrayModelAbstract implements DataReaderInterface
      * Save a single model item.
      *
      * @param array $newValues The values to store for a single model item.
-     * @param array $filter If the filter contains old key values these are used
+     * @param null|array $filter If the filter contains old key values these are used
      * to decide on update versus insert.
      * @return array The values as they are after saving (they may change).
      */
-    public function save(array $newValues, array $filter = null): array
+    public function save(array $newValues, ?array $filter = null): array
     {
         $data = $this->_loadAll();
 

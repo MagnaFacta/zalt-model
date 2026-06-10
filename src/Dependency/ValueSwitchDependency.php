@@ -67,7 +67,7 @@ class ValueSwitchDependency extends DependencyAbstract
      *
      * @param array $switches
      */
-    public function __construct(array $switches = null, TranslatorInterface $translate)
+    public function __construct(array $switches, TranslatorInterface $translate)
     {
         parent::__construct($translate);
 
