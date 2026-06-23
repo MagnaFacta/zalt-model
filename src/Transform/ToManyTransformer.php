@@ -151,7 +151,7 @@ class ToManyTransformer extends NestedTransformer
         foreach($oldResults as $oldResult) {
             $index = array_search($oldResult[$tableIdField], $dataKeys);
             if ($index !== false) {
-                $saveRows[] = $oldResult;
+                $saveRows[] = $data[$index] + $oldResult;
                 unset($data[$index]);
             } else {
                 $deletedResults[] = $oldResult;
