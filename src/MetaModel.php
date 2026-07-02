@@ -858,7 +858,7 @@ class MetaModel implements MetaModelInterface
      */
     public function hasDependencies()
     {
-        return (boolean) $this->_model_dependencies;
+        return (bool) $this->_model_dependencies;
     }
 
     /**
@@ -896,7 +896,7 @@ class MetaModel implements MetaModelInterface
      */
     public function hasItemsUsed()
     {
-        return (boolean) $this->_model_used;
+        return (bool) $this->_model_used;
     }
 
     /**

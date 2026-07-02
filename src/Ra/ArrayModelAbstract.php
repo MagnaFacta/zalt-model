@@ -107,7 +107,7 @@ abstract class ArrayModelAbstract implements DataReaderInterface
             } else {
                 if (is_numeric($name)) {
                     // Allow literal value interpretation
-                    $result = (boolean) $value;
+                    $result = (bool) $value;
                 } else {
                     $val = isset($row[$name]) ? $row[$name] : null;
 

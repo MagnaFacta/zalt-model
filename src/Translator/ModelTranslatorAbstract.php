@@ -166,7 +166,7 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
         }
 
         $options = $metaModel->get($key, 'multiOptions');
-        if ($options && (! isset($options[$value])) && in_array($value, $options)) {
+        if ($options && $value && (! isset($options[$value])) && in_array($value, $options)) {
             $value = array_search($value, $options);
         }
 
@@ -278,7 +278,7 @@ abstract class ModelTranslatorAbstract implements ModelTranslatorInterface
      */
     public function hasErrors(): bool
     {
-        return (boolean) $this->errors;
+        return (bool) $this->errors;
     }
 
     /**
