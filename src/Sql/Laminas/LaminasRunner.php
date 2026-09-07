@@ -11,23 +11,24 @@ declare(strict_types=1);
 
 namespace Zalt\Model\Sql\Laminas;
 
-use Zalt\Model\Sql\JoinCondition;
-use Zalt\Model\Sql\JoinTableItem;
-use Zalt\Model\Sql\JoinTableStore;
-use function intval;
 use Laminas\Db\Adapter\Adapter;
 use Laminas\Db\Metadata\Source\Factory;
 use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Db\Sql\Expression;
 use Laminas\Db\Sql\Predicate\Literal;
 use Laminas\Db\Sql\Predicate\Predicate;
+use Laminas\Db\Sql\Predicate\PredicateInterface;
 use Laminas\Db\Sql\Predicate\PredicateSet;
 use Laminas\Db\Sql\Sql;
 use Laminas\Db\Sql\Select;
 use Laminas\Db\Sql\Where;
 use Laminas\Db\TableGateway\TableGateway;
 use Zalt\Model\MetaModelInterface;
+use Zalt\Model\Sql\JoinCondition;
+use Zalt\Model\Sql\JoinTableItem;
+use Zalt\Model\Sql\JoinTableStore;
 use Zalt\Model\Sql\SqlRunnerInterface;
+use function intval;
 
 /**
  *
@@ -148,6 +149,8 @@ class LaminasRunner implements \Zalt\Model\Sql\SqlRunnerInterface
 
                         }  elseif ($value instanceof Expression) {
                             $output->expression($value->getExpression());
+                        }  elseif ($value instanceof PredicateInterface) {
+                            $output->addPredicate($value);
                         } else {
                             $output->literal('(' . $value . ')');
                         }
