@@ -94,7 +94,7 @@ class MetaModelLoader
 
     public function createType(string $class, ...$parameters)
     {
-        return $this->loadSubType($class, 'Tyoe', ...$parameters);
+        return $this->loadSubType($class, 'Type', ...$parameters);
     }
 
     public function getDefaultTypeInterface(int $type): ?ModelTypeInterface
