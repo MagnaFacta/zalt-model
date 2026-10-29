@@ -25,9 +25,7 @@ use Zalt\Model\Sql\SqlRunnerInterface;
 
 class ObjectModelRepository
 {
-    private array $propertyAttributes = [
-        Column::class,
-    ];
+    public const PREFIX_DELIMITER = '_';
 
     public function __construct(
         private readonly MetaModelLoader $metaModelLoader,
@@ -44,7 +42,7 @@ class ObjectModelRepository
     {
         // check Cache first!
 
-        return $this->createModel($className);
+        return $this->createModel($className, $groups);
     }
 
     public function createModel(string $className, array $groups = []): FullDataInterface
@@ -64,7 +62,12 @@ class ObjectModelRepository
 
             $joins = $reflectionClass->getAttributes(JoinTable::class);
             foreach ($joins as $join) {
-                $model->addTable($join->tableName, $join->joinFields, !$join->readonly, $join->alias, $join->joinType === JoinType::INNER);
+                $joinInfo = $join->newInstance();
+                if (!$this->appliesTo($joinInfo->groups, $groups)) {
+                    continue;
+                }
+
+                $model->addTable($joinInfo->tableName, $joinInfo->joinFields, !$joinInfo->readonly, $joinInfo->alias, $joinInfo->joinType === JoinType::INNER);
             }
         } else {
             $model = new PhpArrayModel($metaModel, new \ArrayObject());
@@ -95,7 +98,9 @@ class ObjectModelRepository
 
             $settings = $this->getFieldInfo($parameter, $tableInfo, $groups);
 
-            $metaModel->set($name, $settings);
+            if ($settings) {
+                $metaModel->set($name, $settings);
+            }
 
             if ($parameter->getName() !== $name) {
                 $metaModel->setAlias($parameter->getName(), $name);
@@ -108,81 +113,101 @@ class ObjectModelRepository
         $transformerAttributes = $reflectionClass->getAttributes(Transformer::class);
         foreach ($transformerAttributes as $transformerAttribute) {
             $attribute = $transformerAttribute->newInstance();
-            if ($attribute->groups && $this->isInGroup($groups, $attribute->groups)) {
+            if (!$this->appliesTo($attribute->groups, $groups)) {
                 continue;
             }
-            $transformer = $this->projectOverloader->create($attribute->className, ...$attribute->options);
+            $transformer = $this->metaModelLoader->createTransformer($attribute->class, ...$attribute->options);
             $metaModel->addTransformer($transformer);
         }
     }
     private function getFieldInfo(
         ReflectionParameter $parameter,
-        Table $mainTableInfo,
+        ?Table $mainTableInfo = null,
         array $groups = [],
     ): array
     {
-        $settings = [];
+        $base = [];
+        $grouped = [];
 
-        $attributes = $parameter->getAttributes();
+        $attributes = $parameter->getAttributes(MetaSetterInterface::class, \ReflectionAttribute::IS_INSTANCEOF);
         foreach ($attributes as $reflectionAttribute) {
             $attribute = $reflectionAttribute->newInstance();
 
-            if (property_exists($attribute, 'groups' && $attribute->groups !== null && !$this->isInGroup($groups, (array)$attribute->groups))) {
+            $attributeGroups = $attribute->groups ?? null;
+            if (!$this->appliesTo($attributeGroups, $groups)) {
                 continue;
             }
 
             if ($attribute instanceof Custom) {
-                $settings = array_merge($settings, $attribute->options);
-                continue;
-            }
-            if (!$attribute instanceof MetaSetterInterface) {
-                continue;
+                $info = $attribute->options;
+            } else {
+                $info = get_object_vars($attribute);
+                unset($info['groups']);
+                $info = array_filter($info, function ($value) {
+                    return $value !== null;
+                });
             }
 
-            $attributeInfo = get_object_vars($attribute);
-            foreach($attributeInfo as $attributeName => $attributeValue) {
-                if ($attributeValue instanceof Trans) {
-                    $attributeInfo[$attributeName] = $this->translator->trans($attributeValue->id);
-                }
-                if ($attributeValue instanceof CallableRef) {
-                    $this->projectOverloader->create($attributeValue->className);
-                    $class = $this->container->get($attributeValue->className);
-                    if (method_exists($class, $attributeValue->methodName)) {
-                        $attributeInfo[$attributeName] = $class->{$attributeValue->methodName}();
-                    }
-                }
+            if ($attributeGroups === null) {
+                $base[] = $info;
+            } else {
+                $grouped[] = $info;
             }
-            $settings = array_merge($settings, $attributeInfo);
         }
 
-        return $settings;
+        $settings = array_merge([], ...$base, ...$grouped);
+        return array_map($this->resolveValue(...), $settings);
+    }
+
+    private function resolveValue(mixed $value): mixed
+    {
+        if ($value instanceof Trans) {
+            return $this->translator->trans($value->id);
+        }
+
+        if ($value instanceof CallableRef) {
+            $object = $this->container->get($value->className);
+            if (!method_exists($object, $value->methodName)) {
+                throw new MetaModelException("Method $value->className::$value->methodName() does not exist");
+            }
+            return $object->{$value->methodName}();
+        }
+        return $value;
     }
 
     private function getFieldNameFromParameter(
         ReflectionParameter $parameter,
-        Table|null $mainTableInfo = null,
+        ?Table $mainTableInfo = null,
         array $groups = [],
     ): ?string
     {
+        $column = null;
 
         $columnAttributes = $parameter->getAttributes(Column::class);
         foreach($columnAttributes as $columnAttribute) {
             $columnInfo = $columnAttribute->newInstance();
-
-            if ($columnInfo->groups !== null && $this->isInGroup($groups, (array)$columnInfo->groups)) {
+            if (! $this->appliesTo($columnInfo->groups, $groups)) {
                 continue;
             }
 
-            if ($columnInfo->prefix) {
-                return $columnInfo->prefix . $columnInfo->name;
+            if ($column === null || $columnInfo->groups !== null) {
+                $column = $columnInfo;
             }
-            if ($mainTableInfo && $columnInfo->table && $mainTableInfo->name === $columnInfo->table && $mainTableInfo->prefix) {
-                return $mainTableInfo->prefix . $columnInfo->name;
-            }
-            return $columnInfo->name;
         }
 
-        return null;
+        if ($column === null) {
+            return null;
+        }
+
+        $name = $column->name ?? $parameter->getName();
+        if ($column->prefix) {
+            return $column->prefix . static::PREFIX_DELIMITER . $name;
+        }
+        if ($mainTableInfo?->prefix && ($column->table === null || $column->table === $mainTableInfo->name)) {
+            return $mainTableInfo->prefix . static::PREFIX_DELIMITER . $name;
+        }
+
+        return $name;
     }
 
     private function getTableInfo(ReflectionClass $reflectionClass): ?Table
@@ -196,8 +221,11 @@ class ObjectModelRepository
         return null;
     }
 
-    private function isInGroup(array $requestedGroups, array $itemGroups): bool
+    private function appliesTo(string|array|null $itemGroups, array $requestGroups): bool
     {
-        return !empty(array_intersect($requestedGroups, $itemGroups));
+        if ($itemGroups === null || $requestGroups === []) {
+            return true;
+        }
+        return (bool) array_intersect((array) $itemGroups, $requestGroups);
     }
 }
