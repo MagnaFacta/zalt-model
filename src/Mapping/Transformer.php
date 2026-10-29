@@ -4,7 +4,7 @@ namespace Zalt\Model\Mapping;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class Transformer
 {
     public function __construct(

@@ -6,7 +6,7 @@ use Attribute;
 use Zalt\Model\Mapping\MetaSetterInterface;
 use Zalt\Model\Mapping\Trans;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::IS_REPEATABLE)]
 class HtmlElement implements MetaSetterInterface
 {
     public string $elementClass = 'html';

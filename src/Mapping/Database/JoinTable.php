@@ -4,7 +4,7 @@ namespace Zalt\Model\Mapping\Database;
 
 use Attribute;
 
-#[Attribute(Attribute::TARGET_CLASS)]
+#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
 class JoinTable
 {
     public function __construct(

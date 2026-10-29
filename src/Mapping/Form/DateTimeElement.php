@@ -6,7 +6,7 @@ use Attribute;
 use Zalt\Model\Mapping\MetaSetterInterface;
 use Zalt\Model\Mapping\Trans;
 
-#[Attribute(Attribute::TARGET_PARAMETER)]
+#[Attribute(Attribute::TARGET_PARAMETER | Attribute::IS_REPEATABLE)]
 class DateTimeElement implements MetaSetterInterface
 {
     public string $elementClass = 'datetime';
@@ -15,8 +15,8 @@ class DateTimeElement implements MetaSetterInterface
         public readonly Trans|string|null $label = null,
         public readonly Trans|string|null $description = null,
         public readonly mixed $default = null,
-        public readonly bool $disabled = false,
-        public readonly bool $readonly = false,
+        public readonly ?bool $disabled = null,
+        public readonly ?bool $readonly = null,
         public readonly string|null $format = null,
         public array|null $elementOptions = null,
         public string|array|null $groups = null,
