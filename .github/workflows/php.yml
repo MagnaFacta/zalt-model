@@ -9,6 +9,9 @@ on:
 permissions:
   contents: read
 
+env:
+    COMPOSER_ROOT_VERSION: 2.x-dev
+
 jobs:
   phpunit:
     strategy:
@@ -39,7 +42,7 @@ jobs:
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
           key: ${{ runner.os }}-composer-${{ matrix.stability }}-${{ hashFiles('**/composer.json') }}
-          restore-keys: ${{ runner.os }}-composer-${{ matrix.prefer }}-
+          restore-keys: ${{ runner.os }}-composer-${{ matrix.stability }}-
 
       - name: Install dependencies
         run: composer update --${{ matrix.stability }} --prefer-dist --no-interaction
@@ -64,7 +67,7 @@ jobs:
             ${{ runner.os }}-php-
 
       - name: Install dependencies
-        run: COMPOSER_ROOT_VERSION=2.x-dev composer install --prefer-dist --no-progress
+        run: composer install --prefer-dist --no-progress
 
       - name: Run phpstan
         run: vendor/bin/phpstan --no-progress
