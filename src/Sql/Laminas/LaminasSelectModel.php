@@ -140,9 +140,7 @@ class LaminasSelectModel implements DataReaderInterface
      */
     public function loadPageWithCount(?int &$total, int $page, int $items, $filter = null, $sort = null, $columns = null): array
     {
-        if ($columns) {
-            $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
-        }
+        $columns = $this->laminasRunner->createColumns($this->metaModel, $columns);
         $where   = $this->laminasRunner->createWhere($this->metaModel, $this->checkFilter($filter));
         $order   = $this->laminasRunner->createSort($this->metaModel, $this->checkSort($sort));
 
